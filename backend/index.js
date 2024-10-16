@@ -1,14 +1,25 @@
-﻿const express = require('express');
+﻿// backend/index.js
+const express = require('express');
+const cors = require('cors');
 const app = express();
-const port = process.env.PORT || 5000;
 
+// Middleware
 app.use(express.json());
+app.use(cors());
 
-// Basic route
-app.get('/', (req, res) => {
-    res.send('Hello from the Floorball League Backend!');
-});
+// Firebase inicializace
+require('./firebase');
 
-app.listen(port, () => {
-    console.log(`Server running on port ${port}`);
+// Načtení rout
+const leagueRoutes = require('./routes/leagueRoutes');
+const userRoutes = require('./routes/userRoutes');
+
+// Použití rout pro API
+app.use('/api/leagues', leagueRoutes);
+app.use('/api/users', userRoutes);
+
+// Spuštění serveru
+const PORT = process.env.PORT || 5000;
+app.listen(PORT, () => {
+    console.log(`Server is running on port ${PORT}`);
 });
