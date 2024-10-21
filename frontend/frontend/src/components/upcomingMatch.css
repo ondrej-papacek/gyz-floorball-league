@@ -1,0 +1,14 @@
+﻿.upcoming-match {
+    padding: 20px;
+    width: 35%;
+    background-color: #f8f8f8;
+    border-radius: 5px;
+}
+
+.match-details {
+    font-size: 14px;
+}
+
+.match-details p {
+    margin: 10px 0;
+}
