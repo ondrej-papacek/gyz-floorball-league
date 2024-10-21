@@ -5,8 +5,8 @@ function Navbar() {
     return (
         <nav className="navbar">
             <div className="logo">
-                <img src="/assets/logo.jpeg" alt="School Logo" />
-                <img src="/assets/logo-text.jpg" alt="School Name" className="school-name" />
+                <img src="/images/logo.jpeg" alt="School Logo" />
+                <img src="/images/logo-text.jpg" alt="School Name" className="school-name" />
             </div>
             <ul className="nav-links">
                 <li><a href="#teams">Týmy</a></li>
