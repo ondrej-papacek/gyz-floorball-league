@@ -17,7 +17,7 @@ function UpcomingMatch() {
 
     return (
         <section className="upcoming-match">
-            <h2>Upcoming Match</h2>
+            <h2>Nadcházející zápasy</h2>
             {match ? (
                 <div className="match-details">
                     <p>
@@ -28,7 +28,7 @@ function UpcomingMatch() {
                     <p>Location: {match.location}</p>
                 </div>
             ) : (
-                <p>No upcoming match scheduled</p>
+                <p>Nejsou plánovány žádné zápasy</p>
             )}
         </section>
     );

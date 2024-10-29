@@ -1,11 +1,10 @@
 ﻿// backend/firebase.js
 const admin = require('firebase-admin');
-const serviceAccount = require('./serviceAccountKey.json');
+const serviceAccount = require('./gyz-floorball-league-firebase-adminsdk-yi33x-5e8d104d29.json');
 
 // Inicializace Firebase Admin SDK
 admin.initializeApp({
     credential: admin.credential.cert(serviceAccount),
-    databaseURL: "https://gyz-floorball-league.firebaseio.com"
 });
 
 const db = admin.firestore();

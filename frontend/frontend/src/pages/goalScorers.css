@@ -1,0 +1,50 @@
+﻿.goal-scorers-page {
+    background-color: #333;
+    color: #fff;
+    padding: 2rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.goal-scorers-title {
+    color: #d9a326;
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.gym-section {
+    width: 100%;
+    max-width: 800px;
+    margin-bottom: 2rem;
+}
+
+.gym-title {
+    color: #d9a326;
+    text-align: left;
+    margin-bottom: 1rem;
+    font-size: 1.2rem;
+}
+
+.goal-scorers-table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: #444;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.goal-scorers-table th, .goal-scorers-table td {
+    padding: 0.75rem;
+    text-align: center;
+    color: #fff;
+    border-bottom: 1px solid #555;
+}
+
+.goal-scorers-table th {
+    background-color: #555;
+}
+
+.goal-scorers-table tr:hover {
+    background-color: #666;
+}
