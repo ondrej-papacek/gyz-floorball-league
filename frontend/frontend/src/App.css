@@ -1,4 +1,10 @@
 body {
+  background-color: #222;
+  color: #fff;
+  font-family: Poppins, sans-serif;
+  display: flex;
+  justify-content: center;
+  align-items: center;
   margin: 0;
   padding: 0;
 }
@@ -6,14 +12,15 @@ body {
 .content-section {
   display: flex;
   justify-content: space-between;
-  padding: 20px;
+  align-items: flex-start;
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 20px 5px;
 }
 
-.news-section {
-  flex: 3;
-}
-
-.upcoming-match {
-  flex: 1;
-  margin-left: 20px;
+.main-content {
+  display: flex;
+  flex-direction: column;
+  width: 75%;
+  gap: 30px;
 }

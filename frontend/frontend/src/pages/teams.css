@@ -1,0 +1,99 @@
+﻿.teams-page {
+    background-color: #333;
+    color: #fff;
+    padding: 2rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.teams-title {
+    color: #d9a326;
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.gym-section {
+    width: 100%;
+    max-width: 800px;
+    margin-bottom: 2rem;
+}
+
+.gym-title {
+    color: #d9a326;
+    text-align: left;
+    margin-bottom: 1rem;
+    font-size: 1.2rem;
+}
+
+.teams-table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: #444;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.teams-table th, .teams-table td {
+    padding: 0.75rem;
+    text-align: center;
+    color: #fff;
+    border-bottom: 1px solid #555;
+}
+
+.teams-table th {
+    background-color: #555;
+}
+
+.teams-table tr:hover {
+    background-color: #666;
+}
+
+.expand-btn {
+    background: none;
+    border: none;
+    color: #d9a326;
+    font-size: 1.2rem;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+}
+
+.expand-btn:hover {
+    transform: scale(1.2);
+}
+
+.expanded-row {
+    background-color: #d9a326;
+    /*border: solid 2px white;*/
+}
+
+tr.expanded-row:hover {
+    background-color: #d9a326;
+}
+
+.match-details {
+    padding: 1rem;
+    background-color: #444;
+    border-radius: 8px;
+    color: white;
+}
+
+.match-details h4 {
+    margin: 0 0 0.5rem 0;
+    color: #d9a326;
+    text-align: left;
+}
+
+.match-details ul {
+    display: flex;
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+.match-details li {
+    padding: 0.25rem 0;
+    margin-left: 10px;
+}
+
+

@@ -1,8 +1,23 @@
 ﻿.upcoming-match {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
     padding: 20px;
     width: 35%;
-    background-color: #f8f8f8;
-    border-radius: 5px;
+    background-color: #333;
+    color: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    transition: transform 0.3s ease;
+}
+
+.upcoming-match:hover {
+    transform: scale(1.03);
+}
+
+.upcoming-match h2 {
+    color: white;
+    margin-bottom: 5px;
 }
 
 .match-details {
@@ -12,3 +27,4 @@
 .match-details p {
     margin: 10px 0;
 }
+
