@@ -13,10 +13,20 @@ require('./firebase');
 // Načtení rout
 const leagueRoutes = require('./routes/leagueRoutes');
 const userRoutes = require('./routes/userRoutes');
+const scheduleRoutes = require('./routes/scheduleRoutes');
+const teamRoutes = require('./routes/teamRoutes');
+const playerRoutes = require('./routes/playerRoutes');
+const playoffRoutes = require('./routes/playoffRoutes');
+const goalScorerRoutes = require('./routes/goalScorerRoutes');
 
 // Použití rout pro API
 app.use('/api/leagues', leagueRoutes);
 app.use('/api/users', userRoutes);
+app.use('/api/schedule', scheduleRoutes);
+app.use('/api/teams', teamRoutes);
+app.use('/api/players', playerRoutes);
+app.use('/api/playoff', playoffRoutes);
+app.use('/api/goalScorers', goalScorerRoutes);
 
 // Spuštění serveru
 const PORT = process.env.PORT || 5000;
