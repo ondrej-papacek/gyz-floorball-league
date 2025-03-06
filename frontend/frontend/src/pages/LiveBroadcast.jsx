@@ -1,38 +1,47 @@
 ﻿import React, { useState, useEffect } from 'react';
-import LiveMatch from '../components/LiveMatch';
-import '../pages/liveBroadcast.css';
+import { db } from '../services/firebase';
+import { doc, onSnapshot } from 'firebase/firestore';
+import './liveBroadcast.css';
 
-function LiveBroadcast({ liveMatchData }) {
+function LiveBroadcast() {
+    const [liveData, setLiveData] = useState(null);
+
+    useEffect(() => {
+        const broadcastDoc = doc(db, 'liveBroadcast', 'currentMatch');
+        const unsubscribe = onSnapshot(broadcastDoc, (docSnapshot) => {
+            if (docSnapshot.exists()) {
+                setLiveData(docSnapshot.data());
+            } else {
+                console.error('Živý přenos nebyl nalezen.');
+            }
+        });
+
+        return () => unsubscribe();
+    }, []);
+
+    if (!liveData) {
+        return <p>Načítání živého přenosu...</p>;
+    }
+
     return (
         <div className="live-broadcast-page">
-            <h2 className="broadcast-title">Aktuální Živý Zápas</h2>
-            <div className=".broadcast-match-info">
-                <span>27.10.2024 15:00</span>
-            </div>
-
-            {/* Main Scoreboard */}
+            <h2 className="broadcast-title">ŽIVÝ ZÁPAS</h2>
+            <div className="broadcast-match-info">{liveData.date}</div>
             <div className="broadcast-scoreboard">
-                {/* Team A Section */}
-                <div className="broadcast-team team-a">
-                    <img src="/team-logos/prvaci.png" alt="Team A Logo" className="broadcast-team-logo"/>
-                    <span className=".broadcast-team-name">Prváci</span>
-                    <span className="broadcast-scorers">John Moe</span>
+                <div className="broadcast-team">
+                    <img src="/team-logos/prvaci.png" alt={`${liveData.teamA} Logo`} className="broadcast-team-logo" />
+                    <div className="broadcast-team-name">{liveData.teamA}</div>
                 </div>
-
-                {/* Score and Period Information */}
                 <div className="broadcast-score-info">
-                    <div className="broadcast-score">1 - 1</div>
-                    <div className="broadcast-period-info">
-                        <span>1. POLOČAS</span>
-                        <span className="time-left">6:26</span>
+                    <div className="broadcast-score">
+                        {liveData.scoreA} - {liveData.scoreB}
                     </div>
+                    <div className="broadcast-period-info">{liveData.periodInfo}</div>
+                    <div className="broadcast-time-left">{liveData.timeLeft}</div>
                 </div>
-
-                {/* Team B Section */}
-                <div className="broadcast-team team-b">
-                    <img src="/team-logos/druhaci.png" alt="Team B Logo" className="team-logo"/>
-                    <span className="team-name">Druháci</span>
-                    <span className="broadcast-scorers">John Doe</span>
+                <div className="broadcast-team">
+                    <img src="/team-logos/druhaci.png" alt={`${liveData.teamB} Logo`} className="broadcast-team-logo" />
+                    <div className="broadcast-team-name">{liveData.teamB}</div>
                 </div>
             </div>
         </div>

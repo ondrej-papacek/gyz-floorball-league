@@ -1,0 +1,54 @@
+.manage-news-page {
+    padding: 20px;
+    background-color: #333;
+    color: #fff;
+    border-radius: 8px;
+}
+
+.news-form {
+    background-color: #444;
+    padding: 15px;
+    border-radius: 6px;
+    margin-bottom: 10px;
+    display: flex;
+    flex-direction: column;
+}
+
+.news-form input,
+.news-form textarea {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 10px;
+    border-radius: 4px;
+}
+
+.news-form button {
+    padding: 10px;
+    background-color: #f0b323;
+    border: none;
+    color: black;
+    cursor: pointer;
+}
+
+.news-list {
+    margin-top: 20px;
+}
+
+.news-item {
+    background-color: #555;
+    padding: 10px;
+    border-radius: 6px;
+    margin-bottom: 10px;
+    display: flex;
+}
+
+.news-item img {
+    width: 80px;
+    height: 80px;
+    border-radius: 4px;
+    margin-right: 10px;
+}
+
+.news-item button {
+    margin-right: 5px;
+}

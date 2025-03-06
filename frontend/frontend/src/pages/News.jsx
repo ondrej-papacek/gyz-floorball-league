@@ -1,37 +1,48 @@
-﻿import React, { useState, useRef } from 'react';
+﻿import React, { useState, useEffect, useRef } from 'react';
 import '../pages/news.css';
+import { fetchNews, addNews, updateNews, deleteNews } from '../services/newsService';
+import { uploadImageToCloudinary } from '../services/cloudinaryService';
+import { auth } from '../services/firebase';
+import { getFirestore, doc, getDoc } from 'firebase/firestore';
 
-export const newsData = [
-    {
-        id: 1,
-        title: "Úspěch na turnaji ve florbalu",
-        date: "2024-10-08",
-        shortDescription: "Náš školní tým zvítězil v okresním turnaji ve florbalu!",
-        longDescription: "Náš školní florbalový tým zvítězil na okresním turnaji, který se konal 10.8.2024. Hráči prokázali úžasnou týmovou spolupráci a sportovního ducha. Gratulujeme všem, kteří se podíleli! Tento úspěch je velkým milníkem pro náš tým a jsme na hráče nesmírně pyšní. Sledujte nás pro informace o nadcházejícím regionálním turnaji, kde doufáme v další vítězství!",
-        image: "/images/hero-img3.png"
-    },
-    {
-        id: 2,
-        title: "Nové tréninky ve florbalu",
-        date: "2024-08-15",
-        shortDescription: "Byly oznámeny nové tréninky pro mladší hráče.",
-        longDescription: "Od 15.8.2024 zahajujeme nové tréninkové lekce určené pro mladší hráče (8-12 let). Tyto lekce jsou zaměřeny na rozvoj základních dovedností a představení mladým hráčům radosti z florbalu. Každý trénink je veden zkušenými trenéry, kteří dbají na rozvoj dovedností a zároveň na zábavu. Pokud máte zájem, kontaktujte nás pro zajištění místa!",
-        image: "/images/hero-img2.png"
-    },
-    {
-        id: 3,
-        title: "Seznamte se s naším novým trenérem",
-        date: "2024-08-20",
-        shortDescription: "Představujeme našeho nového trenéra, bývalého reprezentanta!",
-        longDescription: "S radostí vítáme našeho nového trenéra, bývalého reprezentanta s více než desetiletými zkušenostmi. Trenér Alex se k nám připojil 20.8.2024 a přináší s sebou bohaté znalosti a nadšení pro tým. Jeho vedení a zkušenosti očekáváme, že pozvednou náš tým na novou úroveň. Těšíme se na jeho přínos pro hráče a celý školní florbalový program.",
-        image: "/images/hero-img.jpg"
-    }
-];
+const db = getFirestore();
 
 function News() {
+    const [newsData, setNewsData] = useState([]);
     const [expandedNews, setExpandedNews] = useState(null);
     const [lightboxImage, setLightboxImage] = useState(null);
+    const [userRole, setUserRole] = useState(null);
     const contentRefs = useRef({});
+
+    useEffect(() => {
+        const fetchUserRole = async () => {
+            try {
+                const user = auth.currentUser;
+                if (user) {
+                    const userDocRef = doc(db, 'users', user.uid);
+                    const userDoc = await getDoc(userDocRef);
+
+                    if (userDoc.exists()) {
+                        setUserRole(userDoc.data().role);
+                    } else {
+                        alert('Vaše role nebyla nalezena. Kontaktujte administrátora.');
+                    }
+                }
+            } catch (error) {
+                alert('Nepodařilo se načíst informace o roli.');
+            }
+        };
+
+        fetchUserRole();
+    }, []);
+
+    useEffect(() => {
+        const loadNews = async () => {
+            const news = await fetchNews();
+            setNewsData(news);
+        };
+        loadNews();
+    }, []);
 
     const toggleNews = (id) => {
         setExpandedNews(expandedNews === id ? null : id);
@@ -48,6 +59,88 @@ function News() {
     const getHeight = (id) => {
         const element = contentRefs.current[id];
         return element ? `${element.scrollHeight}px` : "0px";
+    };
+
+    const handleAddNews = async () => {
+        const title = prompt('Zadejte název novinky:');
+        if (!title) return alert('Musíte zadat název.');
+
+        const shortDescription = prompt('Zadejte krátký popis:');
+        if (!shortDescription) return alert('Musíte zadat krátký popis.');
+
+        const longDescription = prompt('Zadejte dlouhý popis:');
+        if (!longDescription) return alert('Musíte zadat dlouhý popis.');
+
+        const fileInput = document.createElement('input');
+        fileInput.type = 'file';
+        fileInput.accept = 'image/*';
+        fileInput.click();
+
+        fileInput.onchange = async () => {
+            const file = fileInput.files[0];
+            if (!file) return alert('Musíte vybrat obrázek.');
+
+            try {
+                const imageUrl = await uploadImageToCloudinary(file);
+                const newArticle = {
+                    title,
+                    shortDescription,
+                    longDescription,
+                    image: imageUrl,
+                    date: new Date().toISOString(),
+                };
+
+                const addedArticle = await addNews(newArticle);
+                setNewsData([addedArticle, ...newsData]);
+            } catch {
+                alert('Nepodařilo se přidat novinku.');
+            }
+        };
+    };
+
+    const handleEditNews = async (id) => {
+        const article = newsData.find((news) => news.id === id);
+        if (!article) return;
+
+        const title = prompt('Upravte název novinky:', article.title);
+        const shortDescription = prompt('Upravte krátký popis:', article.shortDescription);
+        const longDescription = prompt('Upravte dlouhý popis:', article.longDescription);
+
+        const fileInput = document.createElement('input');
+        fileInput.type = 'file';
+        fileInput.accept = 'image/*';
+        fileInput.click();
+
+        fileInput.onchange = async () => {
+            const file = fileInput.files[0];
+            let imageUrl = article.image;
+
+            if (file) {
+                try {
+                    imageUrl = await uploadImageToCloudinary(file);
+                } catch {
+                    alert('Nepodařilo se nahrát nový obrázek.');
+                }
+            }
+
+            const updatedArticle = {
+                ...article,
+                title,
+                shortDescription,
+                longDescription,
+                image: imageUrl,
+            };
+
+            await updateNews(id, updatedArticle);
+            setNewsData(newsData.map((n) => (n.id === id ? updatedArticle : n)));
+        };
+    };
+
+    const handleDeleteNews = async (id) => {
+        if (window.confirm('Opravdu chcete smazat tuto novinku?')) {
+            await deleteNews(id);
+            setNewsData(newsData.filter((news) => news.id !== id));
+        }
     };
 
     return (
@@ -69,17 +162,14 @@ function News() {
                                 ref={(el) => (contentRefs.current[news.id] = el)}
                                 className={`news-description ${expandedNews === news.id ? 'expanded' : ''}`}
                                 style={{
-                                    maxHeight: expandedNews === news.id ? getHeight(news.id) : "0px",
-                                    transition: "max-height 0.5s ease",
-                                    overflow: "hidden",
+                                    maxHeight: expandedNews === news.id ? getHeight(news.id) : '0px',
+                                    transition: 'max-height 0.5s ease',
+                                    overflow: 'hidden',
                                 }}
                             >
                                 {news.longDescription}
                             </div>
-                            <button
-                                onClick={() => toggleNews(news.id)}
-                                className="news-toggle-button"
-                            >
+                            <button onClick={() => toggleNews(news.id)} className="news-toggle-button">
                                 {expandedNews === news.id ? 'Číst méně' : 'Číst více'}
                             </button>
                         </div>
@@ -92,13 +182,21 @@ function News() {
                             />
                             <p className="news-image-caption">{news.title}</p>
                         </div>
+                        {userRole === 'admin' && (
+                            <div className="admin-controls">
+                                <button onClick={() => handleEditNews(news.id)}>Upravit</button>
+                                <button onClick={() => handleDeleteNews(news.id)}>Smazat</button>
+                            </div>
+                        )}
                     </div>
                 );
             })}
 
+            {userRole === 'admin' && <button onClick={handleAddNews}>Přidat novinku</button>}
+
             {lightboxImage && (
                 <div className="lightbox" onClick={closeLightbox}>
-                    <img src={lightboxImage} alt="Expanded view" className="lightbox-image"/>
+                    <img src={lightboxImage} alt="Expanded view" className="lightbox-image" />
                 </div>
             )}
         </div>

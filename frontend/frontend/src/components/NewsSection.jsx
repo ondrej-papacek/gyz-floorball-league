@@ -1,13 +1,18 @@
 ﻿import React, { useState, useEffect } from 'react';
 import './NewsSection.css';
-import { newsData } from '../pages/News.jsx';
+import { fetchNews } from '../services/newsService'; // Backend service
 import { Link } from 'react-router-dom';
 
 function NewsSection() {
     const [news, setNews] = useState([]);
 
     useEffect(() => {
-        setNews(newsData.slice(0, 3));
+        const loadLatestNews = async () => {
+            const allNews = await fetchNews(); // Fetch all news
+            setNews(allNews.slice(0, 3)); // Take the latest 3
+        };
+
+        loadLatestNews();
     }, []);
 
     return (
@@ -18,7 +23,6 @@ function NewsSection() {
             ) : (
                 <ul className="news-list">
                     {news.map((article) => {
-                        // Format date directly
                         const formattedDate = new Date(article.date).toLocaleDateString('cs-CZ', {
                             year: 'numeric',
                             month: 'long',

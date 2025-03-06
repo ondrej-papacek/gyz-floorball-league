@@ -1,50 +1,57 @@
 ﻿import React, { useEffect, useState } from 'react';
 import { db } from '../services/firebase';
+import { collection, getDocs, query, orderBy } from 'firebase/firestore';
 import '../pages/schedule.css';
 
 function Schedule() {
-    const [nizsiRounds, setNizsiRounds] = useState([]);
-    const [vyssiRounds, setVyssiRounds] = useState([]);
-    const [fridays, setFridays] = useState([]);
+    const [lowerMatches, setLowerMatches] = useState([]);
+    const [upperMatches, setUpperMatches] = useState([]);
 
     useEffect(() => {
         const fetchSchedule = async () => {
             try {
-                // Načtení zápasů z Firebase pro nižší gymnázium
-                const nizsiSnapshot = await db.collection('leagues').doc('2025_lower').collection('matches').get();
-                const nizsiData = nizsiSnapshot.docs.map(doc => doc.data());
+                // Fetch Lower Gymnasium Matches
+                const lowerQuery = query(
+                    collection(db, 'leagues/2025_lower/matches'),
+                    orderBy('round')
+                );
+                const lowerSnapshot = await getDocs(lowerQuery);
+                const lowerData = lowerSnapshot.docs.map((doc) => doc.data());
+                setLowerMatches(lowerData);
 
-                // Načtení zápasů z Firebase pro vyšší gymnázium
-                const vyssiSnapshot = await db.collection('leagues').doc('2025_upper').collection('matches').get();
-                const vyssiData = vyssiSnapshot.docs.map(doc => doc.data());
-
-                setNizsiRounds(nizsiData);
-                setVyssiRounds(vyssiData);
-
-                // Generování pátků pro zobrazení rozpisu
-                setFridays(generateFridays(Math.max(nizsiData.length, vyssiData.length)));
+                // Fetch Upper Gymnasium Matches
+                const upperQuery = query(
+                    collection(db, 'leagues/2025_upper/matches'),
+                    orderBy('round')
+                );
+                const upperSnapshot = await getDocs(upperQuery);
+                const upperData = upperSnapshot.docs.map((doc) => doc.data());
+                setUpperMatches(upperData);
             } catch (error) {
-                console.error("Chyba při načítání rozpisu:", error);
+                console.error('Error fetching schedule:', error);
             }
         };
 
         fetchSchedule();
     }, []);
 
-    const generateFridays = (totalFridays) => {
-        const fridays = [];
-        let currentFriday = getNextFriday(new Date());
-        for (let i = 0; i < totalFridays; i++) {
-            fridays.push(currentFriday.toLocaleDateString('cs-CZ'));
-            currentFriday.setDate(currentFriday.getDate() + 7);
-        }
-        return fridays;
-    };
+    const renderMatches = (matches) => {
+        const rounds = matches.reduce((acc, match) => {
+            acc[match.round] = acc[match.round] || [];
+            acc[match.round].push(match);
+            return acc;
+        }, {});
 
-    const getNextFriday = (date) => {
-        const nextFriday = new Date(date);
-        nextFriday.setDate(date.getDate() + ((5 - date.getDay() + 7) % 7));
-        return nextFriday;
+        return Object.entries(rounds).map(([round, matches]) => (
+            <div key={round} className="round">
+                <h4>Kolo {round}</h4>
+                {matches.map((match, index) => (
+                    <p key={index}>
+                        {match.teamA} vs {match.teamB}
+                    </p>
+                ))}
+            </div>
+        ));
     };
 
     return (
@@ -53,32 +60,12 @@ function Schedule() {
 
             <div className="gym-section">
                 <h3 className="gym-title">Nižší gymnázium</h3>
-                <div className="rounds-container">
-                    {nizsiRounds.map((match, index) => (
-                        <div key={`nizsi-match-${index}`} className="round">
-                            <h4>Kolo {index + 1}</h4>
-                            <h5 className="friday-date">
-                                {fridays[index]}
-                            </h5>
-                            <p>{match.home} vs {match.away}</p>
-                        </div>
-                    ))}
-                </div>
+                <div className="rounds-container">{renderMatches(lowerMatches)}</div>
             </div>
 
             <div className="gym-section">
                 <h3 className="gym-title">Vyšší gymnázium</h3>
-                <div className="rounds-container">
-                    {vyssiRounds.map((match, index) => (
-                        <div key={`vyssi-match-${index}`} className="round">
-                            <h4>Kolo {index + 1}</h4>
-                            <h5 className="friday-date">
-                                {index < fridays.length ? fridays[index] : fridays[fridays.length - 1]}
-                            </h5>
-                            <p>{match.home} vs {match.away}</p>
-                        </div>
-                    ))}
-                </div>
+                <div className="rounds-container">{renderMatches(upperMatches)}</div>
             </div>
         </div>
     );

@@ -27,7 +27,7 @@ function HeroSection() {
             <div className="hero-content">
                 <img src="/images/logo-league.png" alt="Hlavní logo školní florbalové ligy"
                      className="hero-league-logo"/>
-                <h1>Školní Florbalová Liga</h1>
+                <h1>Školní florbalová liga</h1>
             </div>
         </section>
     );

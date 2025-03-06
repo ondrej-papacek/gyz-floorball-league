@@ -1,0 +1,23 @@
+﻿.manage-playoffs-page {
+    padding: 20px;
+    background-color: #333;
+    color: #fff;
+    border-radius: 8px;
+}
+
+.playoff-round {
+    background-color: #444;
+    padding: 15px;
+    border-radius: 6px;
+    margin-bottom: 10px;
+}
+
+.playoff-round h2 {
+    color: #f0b323;
+}
+
+.edit-score input {
+    width: 40px;
+    text-align: center;
+    margin: 0 5px;
+}
