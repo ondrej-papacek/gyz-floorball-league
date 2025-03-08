@@ -1,16 +1,25 @@
-﻿import { initializeApp } from 'firebase/app';
-import { getFirestore } from 'firebase/firestore';
+﻿// Import the functions you need from the SDKs you need
+import { initializeApp } from "firebase/app";
+import { getFirestore } from "firebase/firestore";
+import { getAuth } from 'firebase/auth';
+import { getAnalytics } from "firebase/analytics";
+//
+// https://firebase.google.com/docs/web/setup#available-libraries
 
+// Your web app's Firebase configuration
+// For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
-    apiKey: "YOUR_API_KEY",
-    authDomain: "YOUR_AUTH_DOMAIN",
-    projectId: "YOUR_PROJECT_ID",
-    storageBucket: "YOUR_STORAGE_BUCKET",
-    messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-    appId: "YOUR_APP_ID",
+    apiKey: "AIzaSyC3H7d94_dy5KQhDK-8KYqYDHiOb-sA3qQ",
+    authDomain: "gyz-floorball-league.firebaseapp.com",
+    projectId: "gyz-floorball-league",
+    storageBucket: "gyz-floorball-league.appspot.com",
+    messagingSenderId: "294187826654",
+    appId: "1:294187826654:web:35428fa2ecf926f578f14f",
+    measurementId: "G-26TE8X5W1X"
 };
 
+// Initialize Firebase
 const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
-
-export { db };
+const analytics = getAnalytics(app);
+export const db = getFirestore(app);
+export const auth = getAuth(app);

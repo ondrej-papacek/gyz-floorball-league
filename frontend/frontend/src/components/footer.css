@@ -1,0 +1,77 @@
+﻿.footer-container {
+    margin-top: 30px;
+    background-color: #d9a326;
+    width: 100%;
+    border-top-right-radius: 15px;
+    border-top-left-radius: 15px;
+}
+
+.footer {
+    max-width: 1280px;
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    padding: 40px 200px 10px 200px;
+}
+
+.footer-logo-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    gap: 15px;
+}
+
+.footer-league-logo {
+    width: 160px;
+    filter: saturate(1.5);
+}
+
+.footer-school-name-logo {
+    width: 160px;
+    border-radius: 10px;
+}
+
+.footer-links {
+    display: flex;
+    flex-direction: column;
+    justify-items: flex-end;
+    align-items: end;
+    margin-top: 18px;
+}
+
+.footer-links ul {
+    list-style-type: none;
+    text-align: left;
+    line-height: 2.25;
+    font-size: 14px;
+    padding-left: 0;
+}
+
+.footer-links ul a {
+    color: white;
+}
+
+.footer-socials-container {
+    align-items: center;
+    justify-content: center;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.footer-socials-container a {
+    padding: 5px;
+    font-size: 28px;
+    color: #222;
+}
+
+.footer-socials-container a:hover {
+    color: white;
+}
+
+.footer-copyright {
+    padding: 20px;
+    text-align: center;
+    font-size: 14px;
+}
