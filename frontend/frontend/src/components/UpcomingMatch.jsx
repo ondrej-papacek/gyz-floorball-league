@@ -14,7 +14,14 @@ const UpcomingMatch = () => {
                 }
 
                 const data = await response.json();
-                setMatch(data);
+
+                console.log("Received Upcoming Match Data:", data);
+
+                if (data.date) {
+                    setMatch(data);
+                } else {
+                    setError('Invalid match data received.');
+                }
             } catch (err) {
                 setError('Failed to fetch upcoming match.');
                 console.error('Error fetching match:', err);
@@ -30,7 +37,7 @@ const UpcomingMatch = () => {
             {error && <p className="error">{error}</p>}
             {match ? (
                 <div>
-                    <p><strong>{match.teamA}</strong> vs <strong>{match.teamB}</strong></p>
+                    <p><strong>{match.teamA_name}</strong> vs <strong>{match.teamB_name}</strong></p>
                     <p>Date: {new Date(match.date).toLocaleDateString('cs-CZ')}</p>
                 </div>
             ) : (

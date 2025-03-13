@@ -2,7 +2,7 @@
 const router = express.Router();
 const {
     generateSchedule,
-    getUpcomingMatch,  // ✅ Keep this
+    getUpcomingMatch,
     getMatches,
     updateMatch,
     deleteMatch,

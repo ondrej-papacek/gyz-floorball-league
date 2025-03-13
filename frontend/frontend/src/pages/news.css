@@ -1,5 +1,6 @@
 .news-page {
     background-color: #333;
+    border-radius: 8px;
     color: #fff;
     padding: 2rem;
     display: flex;

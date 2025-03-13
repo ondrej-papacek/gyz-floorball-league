@@ -1,14 +1,40 @@
-﻿const db = require('../firebase'); // Firestore setup
+﻿const db = require('../firebase');
 
 // Fetch all news articles, sorted by date
 exports.getNews = async (req, res, next) => {
     try {
-        const snapshot = await db.collection('news').orderBy('date', 'desc').get(); // Order by date descending
-        const news = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+        const snapshot = await db.collection('news').orderBy('date', 'desc').get();
+        const news = snapshot.docs.map((doc) => {
+            const newsItem = doc.data();
+            return {
+                id: doc.id,
+                ...newsItem,
+                date: newsItem.date.toDate(),
+            };
+        });
         res.status(200).json(news);
     } catch (error) {
-        console.error('Chyba při načítání novinek:', error);
-        res.status(500).json({ error: 'Nepodařilo se načíst novinky.' });
+        console.error('Error fetching news:', error);
+        res.status(500).json({ error: 'Failed to fetch news.' });
+    }
+};
+
+exports.getLatestNews = async (req, res, next) => {
+    try {
+        const snapshot = await db.collection('news').orderBy('date', 'desc').limit(3).get();
+        const latestNews = snapshot.docs.map((doc) => {
+            const newsItem = doc.data();
+            return {
+                id: doc.id,
+                ...newsItem,
+                date: newsItem.date.toDate(),
+            };
+        });
+
+        res.status(200).json(latestNews);
+    } catch (error) {
+        console.error('Error fetching latest news:', error);
+        res.status(500).json({ error: 'Failed to fetch latest news.' });
     }
 };
 
@@ -17,7 +43,7 @@ exports.addNews = async (req, res, next) => {
     try {
         const { title, shortDescription, longDescription, image, date } = req.body;
         const newArticle = { title, shortDescription, longDescription, image, date: date || new Date().toISOString() };
-        const docRef = await db.collection('news').add(newArticle); // Add to Firestore
+        const docRef = await db.collection('news').add(newArticle);
         res.status(201).json({ id: docRef.id, ...newArticle });
     } catch (error) {
         console.error('Chyba při přidávání novinky:', error);
@@ -30,8 +56,8 @@ exports.updateNews = async (req, res, next) => {
     try {
         const { id } = req.params;
         const updatedData = req.body;
-        const docRef = db.collection('news').doc(id); // Reference to the document
-        await docRef.update(updatedData); // Update Firestore document
+        const docRef = db.collection('news').doc(id);
+        await docRef.update(updatedData);
         res.status(200).json({ id, ...updatedData });
     } catch (error) {
         console.error('Chyba při úpravě novinky:', error);
@@ -43,8 +69,8 @@ exports.updateNews = async (req, res, next) => {
 exports.deleteNews = async (req, res, next) => {
     try {
         const { id } = req.params;
-        const docRef = db.collection('news').doc(id); // Reference to the document
-        await docRef.delete(); // Delete document from Firestore
+        const docRef = db.collection('news').doc(id);
+        await docRef.delete();
         res.status(200).json({ message: 'Novinka byla úspěšně smazána.' });
     } catch (error) {
         console.error('Chyba při mazání novinky:', error);

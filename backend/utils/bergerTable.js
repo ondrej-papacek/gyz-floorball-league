@@ -1,39 +1,48 @@
-﻿const generateBergerTable = (teams, cycles = 1) => {
-    const rounds = [];
-    const numRounds = teams.length % 2 === 0 ? teams.length - 1 : teams.length;
-    const halfSize = Math.floor(teams.length / 2);
-    const rotatedTeams = [...teams];
+﻿const generateBergerTable = (teams) => {
+    if (!Array.isArray(teams) || teams.length < 2) {
+        throw new Error("Invalid team data provided to BergerTable");
+    }
 
-    for (let cycle = 0; cycle < cycles; cycle++) {
-        for (let round = 0; round < numRounds; round++) {
-            const matches = [];
+    const numTeams = teams.length;
+    const numRounds = numTeams - 1;
+    const matches = [];
+    const scheduledMatches = new Set();
+    let rotatedTeams = [...teams];
 
-            const activeTeams = rotatedTeams.length % 2 === 0 ? rotatedTeams : rotatedTeams.slice(0, -1);
+    for (let round = 0; round < numRounds; round++) {
+        const roundMatches = [];
 
-            for (let i = 0; i < halfSize; i++) {
-                const home = activeTeams[i];
-                const away = activeTeams[activeTeams.length - 1 - i];
+        for (let i = 0; i < Math.floor(numTeams / 2); i++) {
+            const teamA = rotatedTeams[i];
+            const teamB = rotatedTeams[numTeams - 1 - i];
 
-                if (home && away) {
-                    matches.push({
-                        home: cycle === 0 ? home : away,
-                        away: cycle === 0 ? away : home,
-                        scoreA: 0,
-                        scoreB: 0,
-                        status: 'upcoming',
-                        date: new Date().toISOString(),
-                    });
-                }
+            const matchKey = [teamA.id, teamB.id].sort().join("-");
+            if (!scheduledMatches.has(matchKey)) {
+                scheduledMatches.add(matchKey);
+
+                roundMatches.push({
+                    teamA: teamA.id,
+                    teamB: teamB.id,
+                    teamA_name: teamA.name,
+                    teamB_name: teamB.name,
+                    scoreA: 0,
+                    scoreB: 0,
+                    status: "upcoming",
+                    round: round + 1,
+                });
             }
+        }
 
-            rounds.push(matches);
+        matches.push(roundMatches);
 
-            const lastElement = rotatedTeams.pop();
-            rotatedTeams.splice(1, 0, lastElement);
+        if (numTeams % 2 !== 0) {
+            rotatedTeams.splice(1, 0, rotatedTeams.pop());
+        } else {
+            rotatedTeams = [rotatedTeams[0], ...rotatedTeams.slice(2), rotatedTeams[1]];
         }
     }
 
-    return rounds;
+    return matches;
 };
 
 module.exports = generateBergerTable;
