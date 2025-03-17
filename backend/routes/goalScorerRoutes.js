@@ -4,12 +4,12 @@ const {
     getGoalScorers,
     addGoalScorer,
     updateGoalScorer,
-    deleteGoalScorer,
+    deleteGoalScorer
 } = require('../controllers/goalScorerController');
 
-router.get('/:year/:division/goalScorers', getGoalScorers);
-router.post('/:year/:division/goalScorers', addGoalScorer);
-router.put('/:year/:division/goalScorers/:goalScorerId', updateGoalScorer);
-router.delete('/:year/:division/goalScorers/:goalScorerId', deleteGoalScorer);
+router.get('/:year/:division', getGoalScorers);
+router.post('/:year/:division', addGoalScorer);
+router.put('/:year/:division/:goalScorerId', updateGoalScorer);
+router.delete('/:year/:division/:goalScorerId', deleteGoalScorer);
 
 module.exports = router;

@@ -28,29 +28,25 @@ exports.generateSchedule = async (req, res, next) => {
             name: doc.data()?.name || "Unknown",
         }));
 
-        if (!teams || teams.length === 0) {
-            console.error(`No teams found for ${division}.`);
+        if (!teams.length) {
             return res.status(400).json({ message: `No teams found for ${division}.` });
         }
 
         const schedule = generateBergerTable(teams);
 
-        if (!schedule || schedule.length === 0) {
-            console.error("Failed to generate valid schedule.");
+        if (!schedule.length) {
             return res.status(500).json({ message: "Failed to generate valid schedule." });
         }
 
         console.log(`Schedule successfully generated for ${division}.`);
 
         const matchesRef = db.collection("leagues").doc(`${year}_${division}`).collection("matches");
-
         const batch = db.batch();
         let currentDate = new Date(year, 2, 21);
 
         schedule.forEach((round, roundIndex) => {
             round.forEach((match) => {
                 const matchRef = matchesRef.doc();
-
                 batch.set(matchRef, {
                     round: roundIndex + 1,
                     teamA: match.teamA,
@@ -63,158 +59,175 @@ exports.generateSchedule = async (req, res, next) => {
                     date: Timestamp.fromDate(new Date(currentDate)),
                 });
             });
-
             currentDate.setDate(currentDate.getDate() + 7);
         });
 
         await batch.commit();
-        res.status(200).json({ message: `Rozpis zápasů pro ${division} byl úspěšně vygenerován!` });
+        res.status(200).json({ message: `Schedule for ${division} successfully generated!` });
     } catch (error) {
         console.error("Error in generateSchedule:", error);
-        next(new Error("Nepodařilo se vygenerovat rozpis zápasů."));
-    }
-};
-
-exports.getUpcomingMatch = async (req, res) => {
-    try {
-        console.log("Fetching upcoming match...");
-
-        const now = Timestamp.now();
-        const matchesRef = db.collectionGroup("matches");
-
-        const querySnapshot = await matchesRef
-            .where("status", "==", "upcoming")
-            .where("date", ">=", now)
-            .orderBy("date")
-            .limit(1)
-            .get();
-
-        if (querySnapshot.empty) {
-            console.log("No upcoming matches found in Firestore.");
-            return res.status(404).json({ message: "No upcoming matches available. Please check the database." });
-        }
-
-        const matchDoc = querySnapshot.docs[0];
-        const match = matchDoc.data();
-        const matchId = matchDoc.id;
-
-        console.log("Upcoming Match Found:", match);
-
-        res.status(200).json({
-            id: matchId,
-            teamA: match.teamA,
-            teamB: match.teamB,
-            teamA_name: match.teamA_name,
-            teamB_name: match.teamB_name,
-            round: match.round,
-            status: match.status,
-            scoreA: match.scoreA,
-            scoreB: match.scoreB,
-            date: match.date.toDate(),
-        });
-    } catch (error) {
-        console.error("Error fetching upcoming match:", error);
-        res.status(500).json({ error: "Internal Server Error", details: error.message });
+        next(new Error("Failed to generate match schedule."));
     }
 };
 
 exports.getMatches = async (req, res, next) => {
     try {
         const { year, division } = req.params;
-
         const matchesSnapshot = await db
-            .collection('leagues')
+            .collection("leagues")
             .doc(`${year}_${division}`)
-            .collection('matches')
+            .collection("matches")
             .get();
 
-        const matches = await Promise.all(matchesSnapshot.docs.map(async doc => {
-            const matchData = doc.data();
-
-            let teamAName = matchData.teamA_name || "Unknown";
-            let teamBName = matchData.teamB_name || "Unknown";
-
-            if (matchData.teamA && matchData.teamA.path) {
-                try {
-                    const teamARef = await db.doc(matchData.teamA.path).get();
-                    if (teamARef.exists) teamAName = teamARef.data().name;
-                } catch (error) {
-                    console.warn("Failed to fetch teamA:", error);
-                }
-            }
-
-            if (matchData.teamB && matchData.teamB.path) {
-                try {
-                    const teamBRef = await db.doc(matchData.teamB.path).get();
-                    if (teamBRef.exists) teamBName = teamBRef.data().name;
-                } catch (error) {
-                    console.warn("Failed to fetch teamB:", error);
-                }
-            }
-
-            return {
-                id: doc.id,
-                teamA: teamAName,
-                teamB: teamBName,
-                round: matchData.round,
-                status: matchData.status,
-                scoreA: matchData.scoreA,
-                scoreB: matchData.scoreB,
-                date: matchData.date.toDate(),
-            };
-        }));
-
+        const matches = matchesSnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
         res.status(200).json(matches);
     } catch (error) {
-        next(new Error('Failed to load matches.'));
+        next(new Error("Failed to load matches."));
     }
 };
 
-
+// Update match details
 exports.updateMatch = async (req, res, next) => {
     try {
         const { year, division, matchId } = req.params;
         const matchData = req.body;
         await db
-            .collection('leagues')
+            .collection("leagues")
             .doc(`${year}_${division}`)
-            .collection('matches')
+            .collection("matches")
             .doc(matchId)
             .update(matchData);
 
-        res.status(200).json({ message: 'Zápas byl úspěšně aktualizován.' });
+        res.status(200).json({ message: "Match successfully updated." });
     } catch (error) {
-        next(new Error('Nepodařilo se aktualizovat zápas.'));
+        next(new Error("Failed to update match."));
     }
 };
 
+// Delete a single match
 exports.deleteMatch = async (req, res, next) => {
     try {
         const { year, division, matchId } = req.params;
         await db
-            .collection('leagues')
+            .collection("leagues")
             .doc(`${year}_${division}`)
-            .collection('matches')
+            .collection("matches")
             .doc(matchId)
             .delete();
-        res.status(200).json({ message: 'Zápas byl úspěšně smazán.' });
+
+        res.status(200).json({ message: "Match successfully deleted." });
     } catch (error) {
-        next(new Error('Nepodařilo se smazat zápas.'));
+        next(new Error("Failed to delete match."));
     }
 };
 
+// Delete all matches in a division
 exports.deleteAllMatches = async (req, res, next) => {
     try {
         const { year, division } = req.params;
-        const matchesRef = db.collection('leagues').doc(`${year}_${division}`).collection('matches');
+        const matchesRef = db.collection("leagues").doc(`${year}_${division}`).collection("matches");
         const matchesSnapshot = await matchesRef.get();
 
         const batch = db.batch();
         matchesSnapshot.docs.forEach((doc) => batch.delete(doc.ref));
         await batch.commit();
 
-        res.status(200).json({ message: 'Všechny zápasy byly úspěšně smazány.' });
+        res.status(200).json({ message: "All matches successfully deleted." });
     } catch (error) {
-        next(new Error('Nepodařilo se smazat všechny zápasy.'));
+        next(new Error("Failed to delete all matches."));
     }
 };
+
+exports.getUpcomingMatch = async (req, res, next) => {
+    try {
+        const { year } = req.query;
+
+        if (!year) {
+            return res.status(400).json({ message: "Missing required query parameter: year" });
+        }
+
+        const lowerMatchesRef = db.collection("leagues")
+            .doc(`${year}_lower`)
+            .collection("matches")
+            .where("status", "==", "upcoming")
+            .orderBy("date")
+            .limit(1);
+
+        const upperMatchesRef = db.collection("leagues")
+            .doc(`${year}_upper`)
+            .collection("matches")
+            .where("status", "==", "upcoming")
+            .orderBy("date")
+            .limit(1);
+
+        const [lowerSnapshot, upperSnapshot] = await Promise.all([
+            lowerMatchesRef.get(),
+            upperMatchesRef.get()
+        ]);
+
+        if (lowerSnapshot.empty || upperSnapshot.empty) {
+            return res.status(404).json({ message: "No upcoming matches found." });
+        }
+
+        const lowerMatch = lowerSnapshot.docs[0].data();
+        const upperMatch = upperSnapshot.docs[0].data();
+
+        res.status(200).json({
+            date: lowerMatch.date.toDate().toLocaleDateString("cs-CZ"),
+            lowerMatch: {
+                teamA: lowerMatch.teamA_name,
+                teamB: lowerMatch.teamB_name,
+            },
+            upperMatch: {
+                teamA: upperMatch.teamA_name,
+                teamB: upperMatch.teamB_name,
+            }
+        });
+    } catch (error) {
+        next(new Error("Failed to fetch upcoming matches."));
+    }
+};
+
+exports.startLiveMatch = async (req, res, next) => {
+    try {
+        const { year, division } = req.params;
+
+        const matchesRef = db.collection("leagues")
+            .doc(`${year}_${division}`)
+            .collection("matches");
+
+        const querySnapshot = await matchesRef
+            .where("status", "==", "upcoming")
+            .orderBy("date")
+            .limit(1)
+            .get();
+
+        if (querySnapshot.empty) {
+            return res.status(404).json({ message: "No upcoming matches available." });
+        }
+
+        const matchDoc = querySnapshot.docs[0];
+        const matchId = matchDoc.id;
+        const matchRef = matchDoc.ref;
+
+        const liveMatchRef = db.collection("liveBroadcast").doc("currentMatch");
+
+        await liveMatchRef.set({
+            matchRef: matchRef,
+            status: "live",
+            timeLeft: 600,
+            periodInfo: "1. POLOČAS"
+        });
+
+        await matchRef.update({ status: "live" });
+
+        res.status(200).json({ message: "Match is now live!", matchId });
+    } catch (error) {
+        console.error("Error starting live match:", error);
+        next(new Error("Failed to start live match."));
+    }
+};
+
+
+
+

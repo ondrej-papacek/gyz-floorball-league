@@ -12,7 +12,8 @@ function LiveBroadcast() {
             if (docSnapshot.exists()) {
                 setLiveData(docSnapshot.data());
             } else {
-                console.error('Živý přenos nebyl nalezen.');
+                console.error("No live broadcast found.");
+                setLiveData(null);
             }
         });
 
@@ -20,28 +21,26 @@ function LiveBroadcast() {
     }, []);
 
     if (!liveData) {
-        return <p>Načítání živého přenosu...</p>;
+        return <p>Loading live match broadcast...</p>;
     }
 
     return (
         <div className="live-broadcast-page">
             <h2 className="broadcast-title">ŽIVÝ ZÁPAS</h2>
-            <div className="broadcast-match-info">{liveData.date}</div>
+            <div className="broadcast-match-info">{new Date(liveData.date.seconds * 1000).toLocaleString()}</div>
             <div className="broadcast-scoreboard">
                 <div className="broadcast-team">
-                    <img src="/team-logos/prvaci.png" alt={`${liveData.teamA} Logo`} className="broadcast-team-logo" />
-                    <div className="broadcast-team-name">{liveData.teamA}</div>
+                    <img src={`/images/team-logos/${liveData.teamA.toLowerCase()}.png`} alt={`${liveData.teamA} Logo`} className="broadcast-team-logo" />
+                    <div className="broadcast-team-name">{liveData.teamA_name}</div>
                 </div>
                 <div className="broadcast-score-info">
-                    <div className="broadcast-score">
-                        {liveData.scoreA} - {liveData.scoreB}
-                    </div>
+                    <div className="broadcast-score">{liveData.scoreA} - {liveData.scoreB}</div>
                     <div className="broadcast-period-info">{liveData.periodInfo}</div>
                     <div className="broadcast-time-left">{liveData.timeLeft}</div>
                 </div>
                 <div className="broadcast-team">
-                    <img src="/team-logos/druhaci.png" alt={`${liveData.teamB} Logo`} className="broadcast-team-logo" />
-                    <div className="broadcast-team-name">{liveData.teamB}</div>
+                    <img src={`/images/team-logos/${liveData.teamB.toLowerCase()}.png`} alt={`${liveData.teamB} Logo`} className="broadcast-team-logo" />
+                    <div className="broadcast-team-name">{liveData.teamB_name}</div>
                 </div>
             </div>
         </div>

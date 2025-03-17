@@ -4,22 +4,31 @@
     }
 
     const numTeams = teams.length;
+    const isOdd = numTeams % 2 !== 0;
     const numRounds = numTeams - 1;
     const matches = [];
     const scheduledMatches = new Set();
+
     let rotatedTeams = [...teams];
+
+    if (isOdd) {
+        rotatedTeams.push({ id: "bye", name: "BYE" });
+    }
 
     for (let round = 0; round < numRounds; round++) {
         const roundMatches = [];
 
-        for (let i = 0; i < Math.floor(numTeams / 2); i++) {
+        for (let i = 0; i < Math.floor(rotatedTeams.length / 2); i++) {
             const teamA = rotatedTeams[i];
-            const teamB = rotatedTeams[numTeams - 1 - i];
+            const teamB = rotatedTeams[rotatedTeams.length - 1 - i];
+
+            if (teamA.id === "bye" || teamB.id === "bye") {
+                continue;
+            }
 
             const matchKey = [teamA.id, teamB.id].sort().join("-");
             if (!scheduledMatches.has(matchKey)) {
                 scheduledMatches.add(matchKey);
-
                 roundMatches.push({
                     teamA: teamA.id,
                     teamB: teamB.id,
@@ -35,11 +44,7 @@
 
         matches.push(roundMatches);
 
-        if (numTeams % 2 !== 0) {
-            rotatedTeams.splice(1, 0, rotatedTeams.pop());
-        } else {
-            rotatedTeams = [rotatedTeams[0], ...rotatedTeams.slice(2), rotatedTeams[1]];
-        }
+        rotatedTeams = [rotatedTeams[0], ...rotatedTeams.slice(2), rotatedTeams[1]];
     }
 
     return matches;
