@@ -22,26 +22,33 @@ function LiveMatch() {
             }
 
             const liveData = docSnapshot.data();
+            console.log("🔥 LiveData from Firestore:", liveData);
 
             if (!liveData.matchRef) {
-                console.error("No match reference found.");
+                console.error("No match reference found in Firestore document.");
                 setMatchData(null);
                 return;
             }
 
-            // ✅ Fetch the referenced match document
-            const matchRef = doc(db, liveData.matchRef.path); // Ensures correct reference type
-            const matchSnap = await getDoc(matchRef);
+            console.log("matchRef:", liveData.matchRef);
 
-            if (!matchSnap.exists()) {
-                console.error("Match reference not found.");
-                setMatchData(null);
-                return;
+            try {
+                const matchRef = doc(db, liveData.matchRef.path);
+                const matchSnap = await getDoc(matchRef);
+
+                if (!matchSnap.exists()) {
+                    console.error("Match reference document does not exist.");
+                    setMatchData(null);
+                    return;
+                }
+
+                console.log("Match data fetched:", matchSnap.data());
+                const matchInfo = matchSnap.data();
+                setMatchData({ ...matchInfo, ...liveData });
+                setTimeLeft(liveData.timeLeft || 0);
+            } catch (error) {
+                console.error("Firestore Reference Error:", error);
             }
-
-            const matchInfo = matchSnap.data();
-            setMatchData({ ...matchInfo, ...liveData });
-            setTimeLeft(liveData.timeLeft || 0);
         });
 
         return () => unsubscribe();
