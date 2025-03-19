@@ -22,10 +22,17 @@ function LiveMatch() {
             }
 
             const liveData = docSnapshot.data();
-            console.log("🔥 LiveData from Firestore:", liveData);
+            console.log("LiveData from Firestore:", liveData);
+            console.log("Fetched timeLeft:", liveData.timeLeft, "Type:", typeof liveData.timeLeft);
 
-            if (!liveData.matchRef) {
-                console.error("No match reference found in Firestore document.");
+            const parsedTimeLeft = typeof liveData.timeLeft === "string"
+                ? parseInt(liveData.timeLeft, 10)
+                : liveData.timeLeft || 0;
+
+            setTimeLeft(parsedTimeLeft);
+
+            if (!liveData.matchRef || typeof liveData.matchRef !== 'object' || !liveData.matchRef.path) {
+                console.error("No valid match reference found in Firestore document.", liveData.matchRef);
                 setMatchData(null);
                 return;
             }
@@ -45,7 +52,7 @@ function LiveMatch() {
                 console.log("Match data fetched:", matchSnap.data());
                 const matchInfo = matchSnap.data();
                 setMatchData({ ...matchInfo, ...liveData });
-                setTimeLeft(liveData.timeLeft || 0);
+
             } catch (error) {
                 console.error("Firestore Reference Error:", error);
             }
@@ -64,6 +71,10 @@ function LiveMatch() {
 
         return () => clearInterval(timer);
     }, [matchData, timeLeft]);
+
+    const timeLeftFormatted = timeLeft > 0
+        ? `${Math.floor(timeLeft / 60)}:${String(timeLeft % 60).padStart(2, '0')}`
+        : "0:00";
 
     if (!matchData) {
         return <p>Loading live match...</p>;
@@ -85,7 +96,7 @@ function LiveMatch() {
                     <div className="score">{`${matchData.scoreA} - ${matchData.scoreB}`}</div>
                     <div className="period-info">
                         <span>{matchData.periodInfo}</span>
-                        <span className="time-left">{`${Math.floor(timeLeft / 60)}:${String(timeLeft % 60).padStart(2, '0')}`}</span>
+                        <span className="time-left">{timeLeftFormatted}</span>
                     </div>
                 </div>
                 <div className="team team-b">

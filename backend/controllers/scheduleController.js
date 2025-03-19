@@ -207,26 +207,37 @@ exports.startLiveMatch = async (req, res, next) => {
         }
 
         const matchDoc = querySnapshot.docs[0];
-        const matchId = matchDoc.id;
-        const matchRef = matchDoc.ref;
+        const matchRef = matchDoc.ref;  // Firestore reference to the match
+        const matchData = matchDoc.data();
 
         const liveMatchRef = db.collection("liveBroadcast").doc("currentMatch");
 
         await liveMatchRef.set({
             matchRef: matchRef,
-            status: "live",
+            teamA: matchData.teamA,
+            teamB: matchData.teamB,
+            teamA_name: matchData.teamA_name,
+            teamB_name: matchData.teamB_name,
+            scoreA: 0,
+            scoreB: 0,
+            scorerA: [],
+            scorerB: [],
+            periodInfo: "1. POLOČAS",
             timeLeft: 600,
-            periodInfo: "1. POLOČAS"
+            status: "live",
+            date: matchData.date
         });
 
         await matchRef.update({ status: "live" });
 
-        res.status(200).json({ message: "Match is now live!", matchId });
+        res.status(200).json({ message: "Match is now live!", matchId: matchDoc.id });
     } catch (error) {
         console.error("Error starting live match:", error);
         next(new Error("Failed to start live match."));
     }
 };
+
+
 
 
 
