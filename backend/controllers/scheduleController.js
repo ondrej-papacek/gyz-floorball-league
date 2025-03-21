@@ -42,7 +42,7 @@ exports.generateSchedule = async (req, res, next) => {
 
         const matchesRef = db.collection("leagues").doc(`${year}_${division}`).collection("matches");
         const batch = db.batch();
-        let currentDate = new Date(year, 2, 21);
+        let currentDate = new Date(year, 2, 21); // Start from March 21, 2025
 
         schedule.forEach((round, roundIndex) => {
             round.forEach((match) => {
@@ -59,6 +59,7 @@ exports.generateSchedule = async (req, res, next) => {
                     date: Timestamp.fromDate(new Date(currentDate)),
                 });
             });
+
             currentDate.setDate(currentDate.getDate() + 7);
         });
 
@@ -86,7 +87,6 @@ exports.getMatches = async (req, res, next) => {
     }
 };
 
-// Update match details
 exports.updateMatch = async (req, res, next) => {
     try {
         const { year, division, matchId } = req.params;
@@ -104,7 +104,6 @@ exports.updateMatch = async (req, res, next) => {
     }
 };
 
-// Delete a single match
 exports.deleteMatch = async (req, res, next) => {
     try {
         const { year, division, matchId } = req.params;
@@ -121,7 +120,6 @@ exports.deleteMatch = async (req, res, next) => {
     }
 };
 
-// Delete all matches in a division
 exports.deleteAllMatches = async (req, res, next) => {
     try {
         const { year, division } = req.params;
@@ -207,7 +205,7 @@ exports.startLiveMatch = async (req, res, next) => {
         }
 
         const matchDoc = querySnapshot.docs[0];
-        const matchRef = matchDoc.ref;  // Firestore reference to the match
+        const matchRef = matchDoc.ref;
         const matchData = matchDoc.data();
 
         const liveMatchRef = db.collection("liveBroadcast").doc("currentMatch");
@@ -236,9 +234,3 @@ exports.startLiveMatch = async (req, res, next) => {
         next(new Error("Failed to start live match."));
     }
 };
-
-
-
-
-
-

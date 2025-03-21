@@ -9,7 +9,6 @@ function Schedule() {
     useEffect(() => {
         const fetchSchedule = async () => {
             try {
-                // Fetch lower division matches
                 const lowerQuery = query(
                     collection(db, "leagues/2025_lower/matches"),
                     orderBy("round")
@@ -21,7 +20,6 @@ function Schedule() {
                     division: "lower",
                 }));
 
-                // Fetch upper division matches
                 const upperQuery = query(
                     collection(db, "leagues/2025_upper/matches"),
                     orderBy("round")
@@ -33,30 +31,36 @@ function Schedule() {
                     division: "upper",
                 }));
 
-                // Merge rounds with correct pairing
-                const maxRounds = Math.max(lowerData.length, upperData.length);
+                const scheduleStartDate = new Date(2025, 2, 21); // March 21, 2025
                 const mergedRounds = [];
+                let lowerIndex = 0, upperIndex = 0;
 
-                for (let i = 0; i < maxRounds; i++) {
+                while (lowerIndex < lowerData.length || upperIndex < upperData.length) {
+                    const roundDate = new Date(scheduleStartDate);
+                    roundDate.setDate(scheduleStartDate.getDate() + mergedRounds.length * 7);
+
                     const roundMatches = [];
 
-                    if (lowerData[i]) {
+                    if (lowerIndex < lowerData.length) {
                         roundMatches.push({
-                            ...lowerData[i],
+                            ...lowerData[lowerIndex],
                             type: "lower",
                         });
+                        lowerIndex++;
                     }
-                    if (upperData[i]) {
+
+                    if (upperIndex < upperData.length) {
                         roundMatches.push({
-                            ...upperData[i],
+                            ...upperData[upperIndex],
                             type: "upper",
                         });
+                        upperIndex++;
                     }
 
                     mergedRounds.push({
-                        round: i + 1,
+                        round: mergedRounds.length + 1,
+                        date: roundDate,
                         matches: roundMatches,
-                        date: lowerData[i]?.date || upperData[i]?.date,
                     });
                 }
 
@@ -75,16 +79,13 @@ function Schedule() {
             <div className="rounds-container">
                 {mergedMatches.map((roundData) => (
                     <div key={roundData.round} className="round">
-                        <h4>Kolo {roundData.round}</h4>
-                        <p className="match-date">
-                            <strong>{new Date(roundData.date.toDate()).toLocaleDateString("cs-CZ")}</strong>
-                        </p>
+                        <h4>{roundData.date.toLocaleDateString("cs-CZ")}</h4>
                         {roundData.matches.map((match, index) => (
                             <p key={index} className={match.type === "lower" ? "match-lower" : "match-upper"}>
                                 <strong>{match.teamA_name}</strong> vs <strong>{match.teamB_name}</strong>
                                 <span className={match.type === "lower" ? "lower-tag" : "upper-tag"}>
-                    ({match.type === "lower" ? "Lower Gymnasium" : "Upper Gymnasium"})
-                </span>
+                                    ({match.type === "lower" ? "Lower Gymnasium" : "Upper Gymnasium"})
+                                </span>
                             </p>
                         ))}
                     </div>

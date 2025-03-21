@@ -1,7 +1,6 @@
 ﻿const db = require('../firebase');
 const admin = require('firebase-admin');
 
-// Update live match scores and goalscorers dynamically
 exports.updateMatchLive = async (req, res, next) => {
     try {
         const { scoreA, scoreB, scorerA, scorerB, periodInfo, timeLeft } = req.body;
@@ -34,7 +33,6 @@ exports.updateMatchLive = async (req, res, next) => {
     }
 };
 
-// Fetch the currently live match
 exports.getLiveMatch = async (req, res, next) => {
     try {
         const liveMatchRef = db.collection('liveBroadcast').doc('currentMatch');
@@ -50,7 +48,6 @@ exports.getLiveMatch = async (req, res, next) => {
     }
 };
 
-// Complete live match, update stats, and store results
 exports.completeMatch = async (req, res, next) => {
     try {
         const liveMatchRef = db.collection('liveBroadcast').doc('currentMatch');
@@ -90,10 +87,8 @@ exports.completeMatch = async (req, res, next) => {
         await teamARef.update(teamAStats);
         await teamBRef.update(teamBStats);
 
-        // Store match result
         await matchesRef.doc(matchData.id).update({ scoreA, scoreB, status: "completed" });
 
-        // Save all goalscorers
         const updateGoalScorer = async (scorers, team) => {
             if (!scorers || scorers.length === 0) return;
 
@@ -114,8 +109,6 @@ exports.completeMatch = async (req, res, next) => {
 
         await updateGoalScorer(scorerA, teamA_name);
         await updateGoalScorer(scorerB, teamB_name);
-
-        // Remove match from live broadcast
         await liveMatchRef.delete();
 
         res.status(200).json({ message: 'Match completed and updated successfully.' });
@@ -124,7 +117,6 @@ exports.completeMatch = async (req, res, next) => {
     }
 };
 
-// **Clear live match manually (for debugging/admins)**
 exports.clearLiveMatch = async (req, res, next) => {
     try {
         const liveMatchRef = db.collection('liveBroadcast').doc('currentMatch');

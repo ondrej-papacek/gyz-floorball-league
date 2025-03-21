@@ -23,7 +23,9 @@ function LiveMatch() {
 
             const liveData = docSnapshot.data();
             console.log("LiveData from Firestore:", liveData);
-            console.log("Fetched timeLeft:", liveData.timeLeft, "Type:", typeof liveData.timeLeft);
+            console.log("matchRef Type:", typeof liveData.matchRef, "matchRef Value:", liveData.matchRef);
+            console.log("matchRef ID:", liveData.matchRef.id ? liveData.matchRef.id : "No ID");
+            console.log("matchRef Path:", liveData.matchRef.path ? liveData.matchRef.path : "No Path");
 
             const parsedTimeLeft = typeof liveData.timeLeft === "string"
                 ? parseInt(liveData.timeLeft, 10)
@@ -31,17 +33,16 @@ function LiveMatch() {
 
             setTimeLeft(parsedTimeLeft);
 
-            if (!liveData.matchRef || typeof liveData.matchRef !== 'object' || !liveData.matchRef.path) {
-                console.error("No valid match reference found in Firestore document.", liveData.matchRef);
+            if (!liveData.matchRef) {
+                console.error("No matchRef found in Firestore document.");
                 setMatchData(null);
                 return;
             }
 
-            console.log("matchRef:", liveData.matchRef);
-
             try {
-                const matchRef = doc(db, liveData.matchRef.path);
-                const matchSnap = await getDoc(matchRef);
+                console.log("Fetching match document from:", liveData.matchRef.path);
+
+                const matchSnap = await getDoc(liveData.matchRef); // Use Firestore reference directly
 
                 if (!matchSnap.exists()) {
                     console.error("Match reference document does not exist.");
@@ -50,8 +51,7 @@ function LiveMatch() {
                 }
 
                 console.log("Match data fetched:", matchSnap.data());
-                const matchInfo = matchSnap.data();
-                setMatchData({ ...matchInfo, ...liveData });
+                setMatchData({ ...matchSnap.data(), ...liveData });
 
             } catch (error) {
                 console.error("Firestore Reference Error:", error);

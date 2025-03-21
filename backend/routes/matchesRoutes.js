@@ -9,7 +9,3 @@ router.put('/:year/:division/:matchId', updateMatchLive);
 router.put('/:year/:division/:matchId/complete', completeMatch);
 
 module.exports = router;
-
-
-
-module.exports = router;

@@ -26,7 +26,7 @@
                 continue;
             }
 
-            const matchKey = [teamA.id, teamB.id].sort().join("-");
+            const matchKey = `${teamA.id}-${teamB.id}`;
             if (!scheduledMatches.has(matchKey)) {
                 scheduledMatches.add(matchKey);
                 roundMatches.push({
@@ -43,7 +43,6 @@
         }
 
         matches.push(roundMatches);
-
         rotatedTeams = [rotatedTeams[0], ...rotatedTeams.slice(2), rotatedTeams[1]];
     }
 
