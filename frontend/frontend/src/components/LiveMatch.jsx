@@ -1,6 +1,6 @@
 ﻿import React, { useState, useEffect } from 'react';
 import { db } from '../services/firebase';
-import { doc, onSnapshot, getDoc } from 'firebase/firestore';
+import { doc, onSnapshot, getDoc, updateDoc } from 'firebase/firestore';
 import './liveMatch.css';
 
 const formatDate = (timestamp) => {
@@ -12,9 +12,9 @@ function LiveMatch() {
     const [timeLeft, setTimeLeft] = useState(0);
 
     useEffect(() => {
-        const matchDoc = doc(db, 'liveBroadcast', 'currentMatch');
+        const broadcastRef = doc(db, 'liveBroadcast', 'currentMatch');
 
-        const unsubscribe = onSnapshot(matchDoc, async (docSnapshot) => {
+        const unsubscribe = onSnapshot(broadcastRef, async (docSnapshot) => {
             if (!docSnapshot.exists()) {
                 console.error("No live match found.");
                 setMatchData(null);
@@ -22,50 +22,55 @@ function LiveMatch() {
             }
 
             const liveData = docSnapshot.data();
-            console.log("LiveData from Firestore:", liveData);
-            console.log("matchRef Type:", typeof liveData.matchRef, "matchRef Value:", liveData.matchRef);
-            console.log("matchRef ID:", liveData.matchRef.id ? liveData.matchRef.id : "No ID");
-            console.log("matchRef Path:", liveData.matchRef.path ? liveData.matchRef.path : "No Path");
 
-            const parsedTimeLeft = typeof liveData.timeLeft === "string"
-                ? parseInt(liveData.timeLeft, 10)
-                : liveData.timeLeft || 0;
-
-            setTimeLeft(parsedTimeLeft);
-
-            if (!liveData.matchRef) {
-                console.error("No matchRef found in Firestore document.");
-                setMatchData(null);
+            if (!liveData.matchRefPath) {
+                console.error("matchRefPath is missing from liveBroadcast/currentMatch");
+                setMatchData(liveData); // fallback
                 return;
             }
 
             try {
-                console.log("Fetching match document from:", liveData.matchRef.path);
-
-                const matchSnap = await getDoc(liveData.matchRef); // Use Firestore reference directly
+                const matchDocRef = doc(db, liveData.matchRefPath);
+                const matchSnap = await getDoc(matchDocRef);
 
                 if (!matchSnap.exists()) {
-                    console.error("Match reference document does not exist.");
-                    setMatchData(null);
+                    console.error("Match reference not found.");
+                    setMatchData(liveData); // fallback
                     return;
                 }
 
-                console.log("Match data fetched:", matchSnap.data());
-                setMatchData({ ...matchSnap.data(), ...liveData });
+                const fullMatchData = { ...matchSnap.data(), ...liveData };
+                setMatchData(fullMatchData);
 
+                if (typeof fullMatchData.timeLeft === "number") {
+                    setTimeLeft(fullMatchData.timeLeft);
+                } else {
+                    setTimeLeft(0);
+                }
             } catch (error) {
-                console.error("Firestore Reference Error:", error);
+                console.error("Error loading matchRefPath:", error);
+                setMatchData(liveData);
             }
         });
 
         return () => unsubscribe();
     }, []);
 
+    // Sync timeLeft to Firestore
     useEffect(() => {
         let timer;
-        if (matchData && matchData.status === "live" && timeLeft > 0) {
-            timer = setInterval(() => {
-                setTimeLeft((prevTime) => (prevTime > 0 ? prevTime - 1 : 0));
+
+        if (matchData?.status === "live" && timeLeft > 0) {
+            timer = setInterval(async () => {
+                const newTime = timeLeft - 1;
+                setTimeLeft(newTime);
+
+                try {
+                    const ref = doc(db, 'liveBroadcast', 'currentMatch');
+                    await updateDoc(ref, { timeLeft: newTime });
+                } catch (error) {
+                    console.error("Failed to update timeLeft in Firestore:", error);
+                }
             }, 1000);
         }
 
@@ -88,7 +93,7 @@ function LiveMatch() {
             </div>
             <div className="scoreboard">
                 <div className="team team-a">
-                    <img src={`/images/team-logos/${matchData.teamA.toLowerCase()}.png`} alt={`${matchData.teamA} Logo`} />
+                    <img src={`/images/team-logos/${matchData.teamA?.toLowerCase() || "unknown"}.png`} alt={`${matchData.teamA} Logo`} />
                     <span className="team-name">{matchData.teamA_name}</span>
                     <span className="scorers">{matchData.scorerA?.length ? matchData.scorerA.join(", ") : "No scorer details"}</span>
                 </div>
@@ -100,7 +105,7 @@ function LiveMatch() {
                     </div>
                 </div>
                 <div className="team team-b">
-                    <img src={`/images/team-logos/${matchData.teamB.toLowerCase()}.png`} alt={`${matchData.teamB} Logo`} />
+                    <img src={`/images/team-logos/${matchData.teamB?.toLowerCase() || "unknown"}.png`} alt={`${matchData.teamB} Logo`} />
                     <span className="team-name">{matchData.teamB_name}</span>
                     <span className="scorers">{matchData.scorerB?.length ? matchData.scorerB.join(", ") : "No scorer details"}</span>
                 </div>

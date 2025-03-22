@@ -212,6 +212,7 @@ exports.startLiveMatch = async (req, res, next) => {
 
         await liveMatchRef.set({
             matchRef: matchRef,
+            matchRefPath: matchRef.path,
             teamA: matchData.teamA,
             teamB: matchData.teamB,
             teamA_name: matchData.teamA_name,
