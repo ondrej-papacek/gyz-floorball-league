@@ -149,14 +149,14 @@ exports.getUpcomingMatch = async (req, res, next) => {
             .collection("matches")
             .where("status", "==", "upcoming")
             .orderBy("date")
-            .limit(1);
+            .limit(3);
 
         const upperMatchesRef = db.collection("leagues")
             .doc(`${year}_upper`)
             .collection("matches")
             .where("status", "==", "upcoming")
             .orderBy("date")
-            .limit(1);
+            .limit(3);
 
         const [lowerSnapshot, upperSnapshot] = await Promise.all([
             lowerMatchesRef.get(),
@@ -167,21 +167,33 @@ exports.getUpcomingMatch = async (req, res, next) => {
             return res.status(404).json({ message: "No upcoming matches found." });
         }
 
-        const lowerMatch = lowerSnapshot.docs[0].data();
-        const upperMatch = upperSnapshot.docs[0].data();
+        const rounds = [];
 
-        res.status(200).json({
-            date: lowerMatch.date.toDate().toLocaleDateString("cs-CZ"),
-            lowerMatch: {
-                teamA: lowerMatch.teamA_name,
-                teamB: lowerMatch.teamB_name,
-            },
-            upperMatch: {
-                teamA: upperMatch.teamA_name,
-                teamB: upperMatch.teamB_name,
-            }
-        });
+        for (let i = 0; i < 3; i++) {
+            if (i >= lowerSnapshot.size || i >= upperSnapshot.size) break;
+
+            const lowerDoc = lowerSnapshot.docs[i];
+            const upperDoc = upperSnapshot.docs[i];
+
+            const lowerMatch = lowerDoc.data();
+            const upperMatch = upperDoc.data();
+
+            rounds.push({
+                date: lowerMatch.date.toDate().toISOString(),
+                lowerMatch: {
+                    teamA_name: lowerMatch.teamA_name,
+                    teamB_name: lowerMatch.teamB_name,
+                },
+                upperMatch: {
+                    teamA_name: upperMatch.teamA_name,
+                    teamB_name: upperMatch.teamB_name,
+                }
+            });
+        }
+
+        res.status(200).json(rounds);
     } catch (error) {
+        console.error("Error in getUpcomingMatch:", error);
         next(new Error("Failed to fetch upcoming matches."));
     }
 };

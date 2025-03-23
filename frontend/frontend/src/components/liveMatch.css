@@ -1,64 +1,68 @@
-﻿/* Container Styling */
-.live-match-container {
+﻿.live-match-container {
     width: 90%;
     flex-grow: 1;
     display: flex;
     flex-direction: column;
-    padding: 20px;
+    padding: 15px;
     background-color: #333;
     color: #ffffff;
     border-radius: 10px;
     box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
     text-align: center;
-    font-family: Arial, sans-serif;
     transition: transform 0.3s ease;
 }
 
 .live-match-container:hover {
-    transform: scale(1.03);
+    transform: scale(1.02);
+}
+
+.live-match-background {
+    background-color: #444;
+    border-radius: 10px;
+    padding: 12px;
 }
 
 .live-match-container h2 {
-    color: white;
+    color: #f0b323;
+    font-weight: bold;
     margin-bottom: 5px;
 }
 
-/* Match Info (Date and Time) */
 .match-info {
-    font-size: 0.9rem;
+    font-size: 0.95rem;
     color: #ccc;
-    margin-bottom: 10px;
+    margin-bottom: 12px;
 }
 
-/* Scoreboard Styling */
 .scoreboard {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 0 100px;
+    padding: 0 60px;
+    flex-wrap: wrap;
 }
 
-/* Team Section Styling */
 .team {
     display: flex;
     flex-direction: column;
     align-items: center;
 }
 
-.team-logo {
-    width: 100px;
-    height: 100px;
+.team img {
+    width: 90px;
+    height: 90px;
     border-radius: 10px;
-    margin-bottom: 5px;
+    margin-bottom: 10px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
 }
 
 .team-name {
     font-size: 1.5rem;
     font-weight: bold;
     color: #d9a326;
+    margin-bottom: 4px;
 }
 
-/* Score Information */
 .score-info {
     display: flex;
     flex-direction: column;
@@ -73,14 +77,21 @@
 }
 
 .period-info {
-    font-size: 0.9rem;
+    font-size: 0.95rem;
     color: #d9a326;
-    margin-top: 5px;
+    margin-top: 6px;
 }
 
 .time-left {
-    display: block;
     font-size: 1rem;
     color: #d9a326;
-    margin-top: 3px;
+    margin-top: 4px;
+}
+
+@media (max-width: 600px) {
+    .scoreboard {
+        flex-direction: column;
+        padding: 0 20px;
+        gap: 16px;
+    }
 }

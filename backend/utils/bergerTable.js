@@ -3,50 +3,53 @@
         throw new Error("Invalid team data provided to BergerTable");
     }
 
-    const numTeams = teams.length;
-    const isOdd = numTeams % 2 !== 0;
-    const numRounds = numTeams - 1;
-    const matches = [];
-    const scheduledMatches = new Set();
-
-    let rotatedTeams = [...teams];
+    const isOdd = teams.length % 2 !== 0;
+    const teamsCopy = [...teams];
 
     if (isOdd) {
-        rotatedTeams.push({ id: "bye", name: "BYE" });
+        teamsCopy.push({ id: "bye", name: "BYE" });
     }
+
+    const totalTeams = teamsCopy.length;
+    const numRounds = totalTeams - 1;
+    const matches = [];
 
     for (let round = 0; round < numRounds; round++) {
         const roundMatches = [];
 
-        for (let i = 0; i < Math.floor(rotatedTeams.length / 2); i++) {
-            const teamA = rotatedTeams[i];
-            const teamB = rotatedTeams[rotatedTeams.length - 1 - i];
+        for (let i = 0; i < totalTeams / 2; i++) {
+            const teamA = teamsCopy[i];
+            const teamB = teamsCopy[totalTeams - 1 - i];
 
-            if (teamA.id === "bye" || teamB.id === "bye") {
-                continue;
-            }
+            if (teamA.id === "bye" || teamB.id === "bye") continue;
 
-            const matchKey = `${teamA.id}-${teamB.id}`;
-            if (!scheduledMatches.has(matchKey)) {
-                scheduledMatches.add(matchKey);
-                roundMatches.push({
-                    teamA: teamA.id,
-                    teamB: teamB.id,
-                    teamA_name: teamA.name,
-                    teamB_name: teamB.name,
-                    scoreA: 0,
-                    scoreB: 0,
-                    status: "upcoming",
-                    round: round + 1,
-                });
-            }
+            roundMatches.push({
+                teamA: teamA.id,
+                teamB: teamB.id,
+                teamA_name: teamA.name,
+                teamB_name: teamB.name,
+                scoreA: 0,
+                scoreB: 0,
+                status: "upcoming",
+                round: round + 1,
+            });
         }
 
         matches.push(roundMatches);
-        rotatedTeams = [rotatedTeams[0], ...rotatedTeams.slice(2), rotatedTeams[1]];
+
+        const first = teamsCopy[0];
+        const rotated = [first, ...rotateRight(teamsCopy.slice(1))];
+        for (let i = 0; i < totalTeams; i++) {
+            teamsCopy[i] = rotated[i];
+        }
     }
 
     return matches;
+};
+
+const rotateRight = (arr) => {
+    if (arr.length <= 1) return arr;
+    return [arr[arr.length - 1], ...arr.slice(0, arr.length - 1)];
 };
 
 module.exports = generateBergerTable;

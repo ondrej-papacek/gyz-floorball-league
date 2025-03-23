@@ -87,30 +87,36 @@ function LiveMatch() {
 
     return (
         <div className="live-match-container">
-            <h2>LIVE MATCH</h2>
-            <div className="match-info">
-                <span>{formatDate(matchData.date)}</span>
-            </div>
-            <div className="scoreboard">
-                <div className="team team-a">
-                    <img src={`/images/team-logos/${matchData.teamA?.toLowerCase() || "unknown"}.png`} alt={`${matchData.teamA} Logo`} />
-                    <span className="team-name">{matchData.teamA_name}</span>
-                    <span className="scorers">{matchData.scorerA?.length ? matchData.scorerA.join(", ") : "No scorer details"}</span>
+            <div className="live-match-background">
+                <h2>ŽIVÝ ZÁPAS</h2>
+                <div className="match-info">
+                    <span>{formatDate(matchData.date)}</span>
                 </div>
-                <div className="score-info">
-                    <div className="score">{`${matchData.scoreA} - ${matchData.scoreB}`}</div>
-                    <div className="period-info">
-                        <span>{matchData.periodInfo}</span>
-                        <span className="time-left">{timeLeftFormatted}</span>
+                <div className="scoreboard">
+                    <div className="team team-a">
+                        <img src={`/images/team-logos/${matchData.teamA?.toLowerCase() || "unknown"}.png`}
+                             alt={`${matchData.teamA} Logo`}/>
+                        <span className="team-name">{matchData.teamA_name}</span>
+                        <span
+                            className="scorers">{matchData.scorerA?.length ? matchData.scorerA.join(", ") : "No scorer details"}</span>
+                    </div>
+                    <div className="score-info">
+                        <div className="score">{`${matchData.scoreA} - ${matchData.scoreB}`}</div>
+                        <div className="period-info">
+                            <span>{matchData.periodInfo}</span>
+                            <span className="time-left">{timeLeftFormatted}</span>
+                        </div>
+                    </div>
+                    <div className="team team-b">
+                        <img src={`/images/team-logos/${matchData.teamB?.toLowerCase() || "unknown"}.png`}
+                             alt={`${matchData.teamB} Logo`}/>
+                        <span className="team-name">{matchData.teamB_name}</span>
+                        <span
+                            className="scorers">{matchData.scorerB?.length ? matchData.scorerB.join(", ") : "No scorer details"}</span>
+                    </div>
                     </div>
                 </div>
-                <div className="team team-b">
-                    <img src={`/images/team-logos/${matchData.teamB?.toLowerCase() || "unknown"}.png`} alt={`${matchData.teamB} Logo`} />
-                    <span className="team-name">{matchData.teamB_name}</span>
-                    <span className="scorers">{matchData.scorerB?.length ? matchData.scorerB.join(", ") : "No scorer details"}</span>
-                </div>
             </div>
-        </div>
     );
 }
 

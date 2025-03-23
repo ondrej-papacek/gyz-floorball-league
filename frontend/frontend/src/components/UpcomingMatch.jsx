@@ -2,7 +2,7 @@
 import './UpcomingMatch.css';
 
 const UpcomingMatch = () => {
-    const [match, setMatch] = useState(null);
+    const [rounds, setRounds] = useState([]);
     const [error, setError] = useState('');
 
     useEffect(() => {
@@ -14,11 +14,10 @@ const UpcomingMatch = () => {
                 }
 
                 const data = await response.json();
-
                 console.log("Received Upcoming Match Data:", data);
 
-                if (data.lowerMatch && data.upperMatch) {
-                    setMatch(data);
+                if (Array.isArray(data) && data.length > 0) {
+                    setRounds(data);
                 } else {
                     setError('Invalid match data received.');
                 }
@@ -35,11 +34,16 @@ const UpcomingMatch = () => {
         <div className="upcoming-match">
             <h2>Nadcházející zápasy</h2>
             {error && <p className="error">{error}</p>}
-            {match ? (
-                <div>
-                    <p><strong>Datum:</strong> {match.date}</p>
-                    <p><strong>Nižší gymnázium:</strong> {match.lowerMatch.teamA} vs {match.lowerMatch.teamB}</p>
-                    <p><strong>Vyšší gymnázium:</strong> {match.upperMatch.teamA} vs {match.upperMatch.teamB}</p>
+
+            {rounds.length > 0 ? (
+                <div className="upcoming-rounds">
+                    {rounds.map((round, index) => (
+                        <div key={index} className="round-box">
+                            <p className="round-date"><strong>Datum:</strong> {new Date(round.date).toLocaleDateString("cs-CZ")}</p>
+                            <p><strong>Nižší gymnázium:</strong> {round.lowerMatch.teamA_name} vs {round.lowerMatch.teamB_name}</p>
+                            <p><strong>Vyšší gymnázium:</strong> {round.upperMatch.teamA_name} vs {round.upperMatch.teamB_name}</p>
+                        </div>
+                    ))}
                 </div>
             ) : (
                 <p>Žádné nadcházející zápasy nebyly nalezeny.</p>

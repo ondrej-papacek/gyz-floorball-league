@@ -76,18 +76,21 @@ function Schedule() {
     return (
         <div className="schedule-page">
             <h2 className="schedule-title">Rozpis zápasů</h2>
-            <div className="rounds-container">
+            <div className="grid-of-rounds">
                 {mergedMatches.map((roundData) => (
-                    <div key={roundData.round} className="round">
-                        <h4>{roundData.date.toLocaleDateString("cs-CZ")}</h4>
-                        {roundData.matches.map((match, index) => (
-                            <p key={index} className={match.type === "lower" ? "match-lower" : "match-upper"}>
-                                <strong>{match.teamA_name}</strong> vs <strong>{match.teamB_name}</strong>
-                                <span className={match.type === "lower" ? "lower-tag" : "upper-tag"}>
-                                    ({match.type === "lower" ? "Lower Gymnasium" : "Upper Gymnasium"})
-                                </span>
-                            </p>
-                        ))}
+                    <div key={roundData.round} className="round-card">
+                        <h4 className="round-title">{`Kolo ${roundData.round} – ${roundData.date.toLocaleDateString("cs-CZ")}`}</h4>
+                        <div className="match-grid">
+                            {roundData.matches.map((match, index) => (
+                                <div className="match-card" key={index}>
+                                    <div className="match-teams">
+                                        <strong>{match.teamA_name}</strong>
+                                        <span className="vs-label">vs</span>
+                                        <strong>{match.teamB_name}</strong>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
                     </div>
                 ))}
             </div>
