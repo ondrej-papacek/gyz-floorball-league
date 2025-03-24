@@ -1,5 +1,5 @@
 ﻿import React, { useState, useEffect } from 'react';
-import './NewsSection.css';
+import './newsSection.css';
 import { fetchLatestNews } from '../services/newsService';
 import { Link } from 'react-router-dom';
 
