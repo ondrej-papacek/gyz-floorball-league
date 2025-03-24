@@ -8,7 +8,7 @@ const UpcomingMatch = () => {
     useEffect(() => {
         const fetchMatch = async () => {
             try {
-                const response = await fetch(`http://localhost:5000/api/schedule/upcoming-match?year=2025`);
+                const response = await fetch(`${import.meta.env.VITE_API_URL}/api/schedule/upcoming-match?year=2025`);
                 if (!response.ok) {
                     throw new Error(`HTTP error! Status: ${response.status}`);
                 }

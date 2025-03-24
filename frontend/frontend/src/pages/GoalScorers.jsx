@@ -7,7 +7,6 @@ function GoalScorers() {
     const [scorersLower, setScorersLower] = useState([]);
     const [scorersUpper, setScorersUpper] = useState([]);
 
-    // Fetch goal scorers from Firestore
     useEffect(() => {
         const fetchGoalScorers = async () => {
             try {

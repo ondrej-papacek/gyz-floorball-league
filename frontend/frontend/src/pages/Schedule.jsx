@@ -31,7 +31,7 @@ function Schedule() {
                     division: "upper",
                 }));
 
-                const scheduleStartDate = new Date(2025, 2, 21); // March 21, 2025
+                const scheduleStartDate = new Date(2025, 2, 21);
                 const mergedRounds = [];
                 let lowerIndex = 0, upperIndex = 0;
 
