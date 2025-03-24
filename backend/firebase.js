@@ -1,7 +1,8 @@
 ﻿const admin = require('firebase-admin');
 
-const raw = process.env.FIREBASE_CONFIG;
-const serviceAccount = JSON.parse(raw.replace(/\\n/g, '\n'));
+const serviceAccount = JSON.parse(
+    Buffer.from(process.env.FIREBASE_CONFIG_BASE64, 'base64').toString('utf8')
+);
 
 if (!admin.apps.length) {
    admin.initializeApp({
