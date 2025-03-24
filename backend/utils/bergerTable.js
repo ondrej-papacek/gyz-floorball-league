@@ -1,39 +1,55 @@
-﻿const generateBergerTable = (teams, cycles = 1) => {
-    const rounds = [];
-    const numRounds = teams.length % 2 === 0 ? teams.length - 1 : teams.length;
-    const halfSize = Math.floor(teams.length / 2);
-    const rotatedTeams = [...teams];
+﻿const generateBergerTable = (teams) => {
+    if (!Array.isArray(teams) || teams.length < 2) {
+        throw new Error("Invalid team data provided to BergerTable");
+    }
 
-    for (let cycle = 0; cycle < cycles; cycle++) {
-        for (let round = 0; round < numRounds; round++) {
-            const matches = [];
+    const isOdd = teams.length % 2 !== 0;
+    const teamsCopy = [...teams];
 
-            const activeTeams = rotatedTeams.length % 2 === 0 ? rotatedTeams : rotatedTeams.slice(0, -1);
+    if (isOdd) {
+        teamsCopy.push({ id: "bye", name: "BYE" });
+    }
 
-            for (let i = 0; i < halfSize; i++) {
-                const home = activeTeams[i];
-                const away = activeTeams[activeTeams.length - 1 - i];
+    const totalTeams = teamsCopy.length;
+    const numRounds = totalTeams - 1;
+    const matches = [];
 
-                if (home && away) {
-                    matches.push({
-                        home: cycle === 0 ? home : away,
-                        away: cycle === 0 ? away : home,
-                        scoreA: 0,
-                        scoreB: 0,
-                        status: 'upcoming',
-                        date: new Date().toISOString(),
-                    });
-                }
-            }
+    for (let round = 0; round < numRounds; round++) {
+        const roundMatches = [];
 
-            rounds.push(matches);
+        for (let i = 0; i < totalTeams / 2; i++) {
+            const teamA = teamsCopy[i];
+            const teamB = teamsCopy[totalTeams - 1 - i];
 
-            const lastElement = rotatedTeams.pop();
-            rotatedTeams.splice(1, 0, lastElement);
+            if (teamA.id === "bye" || teamB.id === "bye") continue;
+
+            roundMatches.push({
+                teamA: teamA.id,
+                teamB: teamB.id,
+                teamA_name: teamA.name,
+                teamB_name: teamB.name,
+                scoreA: 0,
+                scoreB: 0,
+                status: "upcoming",
+                round: round + 1,
+            });
+        }
+
+        matches.push(roundMatches);
+
+        const first = teamsCopy[0];
+        const rotated = [first, ...rotateRight(teamsCopy.slice(1))];
+        for (let i = 0; i < totalTeams; i++) {
+            teamsCopy[i] = rotated[i];
         }
     }
 
-    return rounds;
+    return matches;
+};
+
+const rotateRight = (arr) => {
+    if (arr.length <= 1) return arr;
+    return [arr[arr.length - 1], ...arr.slice(0, arr.length - 1)];
 };
 
 module.exports = generateBergerTable;

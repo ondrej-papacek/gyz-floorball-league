@@ -1,35 +1,42 @@
-﻿import React from 'react';
+﻿import React, { useState, useEffect } from 'react';
+import { db } from '../services/firebase';
+import { collection, getDocs } from 'firebase/firestore';
 import '../pages/goalScorers.css';
 
-// Mock data for goal scorers
-const goalScorersData = {
-    nizsi: [
-        { id: 1, name: "Jan Novák", goals: 15, team: "Prima" },
-        { id: 2, name: "Petr Svoboda", goals: 12, team: "Sekunda" },
-        { id: 3, name: "Eva Kovářová", goals: 10, team: "Tercie" },
-        { id: 4, name: "Anna Procházková", goals: 8, team: "Kvarta" },
-        { id: 5, name: "Karel Dvořák", goals: 7, team: "Sekunda" },
-        { id: 6, name: "Martin Beneš", goals: 6, team: "Prima" },
-        { id: 7, name: "Kateřina Novotná", goals: 5, team: "Tercie" },
-        { id: 8, name: "Tomáš Krejčí", goals: 4, team: "Kvarta" },
-        { id: 9, name: "Ivana Černá", goals: 3, team: "Prima" },
-        { id: 10, name: "Marek Horák", goals: 2, team: "Sekunda" }
-    ],
-    vyssi: [
-        { id: 1, name: "Lucie Malá", goals: 20, team: "Prváci" },
-        { id: 2, name: "Filip Konečný", goals: 18, team: "Druháci" },
-        { id: 3, name: "Radka Holubová", goals: 16, team: "Třeťáci" },
-        { id: 4, name: "David Kučera", goals: 14, team: "Čtvrťáci" },
-        { id: 5, name: "Nikola Fiala", goals: 12, team: "Prváci" },
-        { id: 6, name: "Ondřej Vlček", goals: 10, team: "Učitelé" },
-        { id: 7, name: "Alice Hlaváčková", goals: 9, team: "Druháci" },
-        { id: 8, name: "Jaroslav Urban", goals: 8, team: "Třeťáci" },
-        { id: 9, name: "Pavla Černá", goals: 7, team: "Čtvrťáci" },
-        { id: 10, name: "Roman Marek", goals: 5, team: "Učitelé" }
-    ]
-};
-
 function GoalScorers() {
+    const [scorersLower, setScorersLower] = useState([]);
+    const [scorersUpper, setScorersUpper] = useState([]);
+
+    // Fetch goal scorers from Firestore
+    useEffect(() => {
+        const fetchGoalScorers = async () => {
+            try {
+                const lowerQuerySnapshot = await getDocs(collection(db, "leagues/2025_lower/goalScorers"));
+                const upperQuerySnapshot = await getDocs(collection(db, "leagues/2025_upper/goalScorers"));
+
+                const lowerData = lowerQuerySnapshot.docs.map((doc) => ({
+                    id: doc.id,
+                    ...doc.data(),
+                }));
+                const upperData = upperQuerySnapshot.docs.map((doc) => ({
+                    id: doc.id,
+                    ...doc.data(),
+                }));
+
+                // Sort by goals (descending)
+                lowerData.sort((a, b) => b.goals - a.goals);
+                upperData.sort((a, b) => b.goals - a.goals);
+
+                setScorersLower(lowerData);
+                setScorersUpper(upperData);
+            } catch (error) {
+                console.error("Error fetching goal scorers:", error);
+            }
+        };
+
+        fetchGoalScorers();
+    }, []);
+
     const renderScorerRow = (scorer) => (
         <tr key={scorer.id}>
             <td>{scorer.name}</td>
@@ -54,7 +61,13 @@ function GoalScorers() {
                     </tr>
                     </thead>
                     <tbody>
-                    {goalScorersData.nizsi.map(renderScorerRow)}
+                    {scorersLower.length > 0 ? (
+                        scorersLower.map(renderScorerRow)
+                    ) : (
+                        <tr>
+                            <td colSpan="3" style={{ textAlign: "center" }}>Žádné údaje</td>
+                        </tr>
+                    )}
                     </tbody>
                 </table>
             </div>
@@ -71,7 +84,13 @@ function GoalScorers() {
                     </tr>
                     </thead>
                     <tbody>
-                    {goalScorersData.vyssi.map(renderScorerRow)}
+                    {scorersUpper.length > 0 ? (
+                        scorersUpper.map(renderScorerRow)
+                    ) : (
+                        <tr>
+                            <td colSpan="3" style={{ textAlign: "center" }}>Žádné údaje</td>
+                        </tr>
+                    )}
                     </tbody>
                 </table>
             </div>

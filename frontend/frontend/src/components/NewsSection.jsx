@@ -1,18 +1,20 @@
 ﻿import React, { useState, useEffect } from 'react';
 import './NewsSection.css';
-import { fetchNews } from '../services/newsService'; // Backend service
+import { fetchLatestNews } from '../services/newsService';
 import { Link } from 'react-router-dom';
 
 function NewsSection() {
     const [news, setNews] = useState([]);
 
     useEffect(() => {
-        const loadLatestNews = async () => {
-            const allNews = await fetchNews(); // Fetch all news
-            setNews(allNews.slice(0, 3)); // Take the latest 3
-        };
-
-        loadLatestNews();
+        (async () => {
+            try {
+                const latestNews = await fetchLatestNews();
+                setNews(latestNews);
+            } catch (error) {
+                console.error("Error loading latest news:", error);
+            }
+        })();
     }, []);
 
     return (
@@ -23,11 +25,13 @@ function NewsSection() {
             ) : (
                 <ul className="news-list">
                     {news.map((article) => {
-                        const formattedDate = new Date(article.date).toLocaleDateString('cs-CZ', {
-                            year: 'numeric',
-                            month: 'long',
-                            day: 'numeric',
-                        });
+                        const formattedDate = article.date
+                            ? new Date(article.date).toLocaleDateString('cs-CZ', {
+                                year: 'numeric',
+                                month: 'long',
+                                day: 'numeric',
+                            })
+                            : 'Neznámé datum';
 
                         return (
                             <li key={article.id} className="news-section-item">

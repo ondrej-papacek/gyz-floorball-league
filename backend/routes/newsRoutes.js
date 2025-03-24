@@ -1,11 +1,12 @@
 ﻿const express = require('express');
 const router = express.Router();
-const { getNews, addNews, updateNews, deleteNews } = require('../controllers/newsController');
+const { getNews, getLatestNews, addNews, updateNews, deleteNews } = require('../controllers/newsController');
 
 // Define routes for CRUD operations
-router.get('/', getNews); // Fetch all news
-router.post('/', addNews); // Add news
-router.put('/:id', updateNews); // Update news
-router.delete('/:id', deleteNews); // Delete news
+router.get('/', getNews);
+router.get('/latest', getLatestNews);
+router.post('/', addNews);
+router.put('/:id', updateNews);
+router.delete('/:id', deleteNews);
 
 module.exports = router;

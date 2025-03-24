@@ -11,37 +11,17 @@ function News() {
     const [newsData, setNewsData] = useState([]);
     const [expandedNews, setExpandedNews] = useState(null);
     const [lightboxImage, setLightboxImage] = useState(null);
-    const [userRole, setUserRole] = useState(null);
     const contentRefs = useRef({});
 
     useEffect(() => {
-        const fetchUserRole = async () => {
+        (async () => {
             try {
-                const user = auth.currentUser;
-                if (user) {
-                    const userDocRef = doc(db, 'users', user.uid);
-                    const userDoc = await getDoc(userDocRef);
-
-                    if (userDoc.exists()) {
-                        setUserRole(userDoc.data().role);
-                    } else {
-                        alert('Vaše role nebyla nalezena. Kontaktujte administrátora.');
-                    }
-                }
+                const news = await fetchNews();
+                setNewsData(news);
             } catch (error) {
-                alert('Nepodařilo se načíst informace o roli.');
+                console.error("Error loading news:", error);
             }
-        };
-
-        fetchUserRole();
-    }, []);
-
-    useEffect(() => {
-        const loadNews = async () => {
-            const news = await fetchNews();
-            setNewsData(news);
-        };
-        loadNews();
+        })();
     }, []);
 
     const toggleNews = (id) => {
@@ -61,97 +41,17 @@ function News() {
         return element ? `${element.scrollHeight}px` : "0px";
     };
 
-    const handleAddNews = async () => {
-        const title = prompt('Zadejte název novinky:');
-        if (!title) return alert('Musíte zadat název.');
-
-        const shortDescription = prompt('Zadejte krátký popis:');
-        if (!shortDescription) return alert('Musíte zadat krátký popis.');
-
-        const longDescription = prompt('Zadejte dlouhý popis:');
-        if (!longDescription) return alert('Musíte zadat dlouhý popis.');
-
-        const fileInput = document.createElement('input');
-        fileInput.type = 'file';
-        fileInput.accept = 'image/*';
-        fileInput.click();
-
-        fileInput.onchange = async () => {
-            const file = fileInput.files[0];
-            if (!file) return alert('Musíte vybrat obrázek.');
-
-            try {
-                const imageUrl = await uploadImageToCloudinary(file);
-                const newArticle = {
-                    title,
-                    shortDescription,
-                    longDescription,
-                    image: imageUrl,
-                    date: new Date().toISOString(),
-                };
-
-                const addedArticle = await addNews(newArticle);
-                setNewsData([addedArticle, ...newsData]);
-            } catch {
-                alert('Nepodařilo se přidat novinku.');
-            }
-        };
-    };
-
-    const handleEditNews = async (id) => {
-        const article = newsData.find((news) => news.id === id);
-        if (!article) return;
-
-        const title = prompt('Upravte název novinky:', article.title);
-        const shortDescription = prompt('Upravte krátký popis:', article.shortDescription);
-        const longDescription = prompt('Upravte dlouhý popis:', article.longDescription);
-
-        const fileInput = document.createElement('input');
-        fileInput.type = 'file';
-        fileInput.accept = 'image/*';
-        fileInput.click();
-
-        fileInput.onchange = async () => {
-            const file = fileInput.files[0];
-            let imageUrl = article.image;
-
-            if (file) {
-                try {
-                    imageUrl = await uploadImageToCloudinary(file);
-                } catch {
-                    alert('Nepodařilo se nahrát nový obrázek.');
-                }
-            }
-
-            const updatedArticle = {
-                ...article,
-                title,
-                shortDescription,
-                longDescription,
-                image: imageUrl,
-            };
-
-            await updateNews(id, updatedArticle);
-            setNewsData(newsData.map((n) => (n.id === id ? updatedArticle : n)));
-        };
-    };
-
-    const handleDeleteNews = async (id) => {
-        if (window.confirm('Opravdu chcete smazat tuto novinku?')) {
-            await deleteNews(id);
-            setNewsData(newsData.filter((news) => news.id !== id));
-        }
-    };
-
     return (
         <div className="news-page">
             <h2 className="news-title">Novinky</h2>
             {newsData.map((news) => {
-                const formattedDate = new Date(news.date).toLocaleDateString('cs-CZ', {
-                    year: 'numeric',
-                    month: 'long',
-                    day: 'numeric',
-                });
+                const formattedDate = news.date
+                    ? new Date(news.date).toLocaleDateString('cs-CZ', {
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric',
+                    })
+                    : 'Neznámé datum';
 
                 return (
                     <div key={news.id} className="news-item">
@@ -182,17 +82,9 @@ function News() {
                             />
                             <p className="news-image-caption">{news.title}</p>
                         </div>
-                        {userRole === 'admin' && (
-                            <div className="admin-controls">
-                                <button onClick={() => handleEditNews(news.id)}>Upravit</button>
-                                <button onClick={() => handleDeleteNews(news.id)}>Smazat</button>
-                            </div>
-                        )}
                     </div>
                 );
             })}
-
-            {userRole === 'admin' && <button onClick={handleAddNews}>Přidat novinku</button>}
 
             {lightboxImage && (
                 <div className="lightbox" onClick={closeLightbox}>

@@ -15,7 +15,8 @@
 }
 
 .news-section h2 {
-    color: white;
+    color: #d9a326;
+    font-weight: bold;
     font-size: 24px;
     margin-bottom: 1rem;
 }

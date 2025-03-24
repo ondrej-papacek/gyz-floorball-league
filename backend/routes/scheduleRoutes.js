@@ -1,20 +1,14 @@
 ﻿const express = require('express');
 const router = express.Router();
-const {
-    generateSchedule,
-    getUpcomingMatch,  // ✅ Keep this
-    getMatches,
-    updateMatch,
-    deleteMatch,
-    deleteAllMatches,
-} = require('../controllers/scheduleController');
+const scheduleController = require('../controllers/scheduleController');
 
 // API Endpoints
-router.post('/generate-schedule', generateSchedule);
-router.get('/upcoming-match', getUpcomingMatch);
-router.get('/:year/:division/matches', getMatches);
-router.put('/:year/:division/matches/:matchId', updateMatch);
-router.delete('/:year/:division/matches/:matchId', deleteMatch);
-router.delete('/:year/:division/matches', deleteAllMatches);
+router.post("/generate-schedule", scheduleController.generateSchedule);
+router.get("/:year/:division/matches", scheduleController.getMatches);
+router.put("/:year/:division/matches/:matchId", scheduleController.updateMatch);
+router.delete("/:year/:division/matches/:matchId", scheduleController.deleteMatch);
+router.delete("/:year/:division/matches", scheduleController.deleteAllMatches);
+router.get("/upcoming-match", scheduleController.getUpcomingMatch);
+router.put("/liveMatch/:year/:division", scheduleController.startLiveMatch);
 
 module.exports = router;

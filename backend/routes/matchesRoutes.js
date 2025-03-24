@@ -1,13 +1,11 @@
 ﻿const express = require('express');
 const router = express.Router();
 const {
-    getMatches,
-    updateMatchScore,
-    deleteMatch
+    updateMatchLive,
+    completeMatch,
 } = require('../controllers/matchesController');
 
-router.get('/:year/:division', getMatches);
-router.put('/:year/:division/:matchId', updateMatchScore);
-router.delete('/:year/:division/:matchId', deleteMatch);
+router.put('/:year/:division/:matchId', updateMatchLive);
+router.put('/:year/:division/:matchId/complete', completeMatch);
 
 module.exports = router;

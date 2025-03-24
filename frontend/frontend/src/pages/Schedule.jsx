@@ -4,68 +4,95 @@ import { collection, getDocs, query, orderBy } from 'firebase/firestore';
 import '../pages/schedule.css';
 
 function Schedule() {
-    const [lowerMatches, setLowerMatches] = useState([]);
-    const [upperMatches, setUpperMatches] = useState([]);
+    const [mergedMatches, setMergedMatches] = useState([]);
 
     useEffect(() => {
         const fetchSchedule = async () => {
             try {
-                // Fetch Lower Gymnasium Matches
                 const lowerQuery = query(
-                    collection(db, 'leagues/2025_lower/matches'),
-                    orderBy('round')
+                    collection(db, "leagues/2025_lower/matches"),
+                    orderBy("round")
                 );
                 const lowerSnapshot = await getDocs(lowerQuery);
-                const lowerData = lowerSnapshot.docs.map((doc) => doc.data());
-                setLowerMatches(lowerData);
+                const lowerData = lowerSnapshot.docs.map((doc) => ({
+                    id: doc.id,
+                    ...doc.data(),
+                    division: "lower",
+                }));
 
-                // Fetch Upper Gymnasium Matches
                 const upperQuery = query(
-                    collection(db, 'leagues/2025_upper/matches'),
-                    orderBy('round')
+                    collection(db, "leagues/2025_upper/matches"),
+                    orderBy("round")
                 );
                 const upperSnapshot = await getDocs(upperQuery);
-                const upperData = upperSnapshot.docs.map((doc) => doc.data());
-                setUpperMatches(upperData);
+                const upperData = upperSnapshot.docs.map((doc) => ({
+                    id: doc.id,
+                    ...doc.data(),
+                    division: "upper",
+                }));
+
+                const scheduleStartDate = new Date(2025, 2, 21); // March 21, 2025
+                const mergedRounds = [];
+                let lowerIndex = 0, upperIndex = 0;
+
+                while (lowerIndex < lowerData.length || upperIndex < upperData.length) {
+                    const roundDate = new Date(scheduleStartDate);
+                    roundDate.setDate(scheduleStartDate.getDate() + mergedRounds.length * 7);
+
+                    const roundMatches = [];
+
+                    if (lowerIndex < lowerData.length) {
+                        roundMatches.push({
+                            ...lowerData[lowerIndex],
+                            type: "lower",
+                        });
+                        lowerIndex++;
+                    }
+
+                    if (upperIndex < upperData.length) {
+                        roundMatches.push({
+                            ...upperData[upperIndex],
+                            type: "upper",
+                        });
+                        upperIndex++;
+                    }
+
+                    mergedRounds.push({
+                        round: mergedRounds.length + 1,
+                        date: roundDate,
+                        matches: roundMatches,
+                    });
+                }
+
+                setMergedMatches(mergedRounds);
             } catch (error) {
-                console.error('Error fetching schedule:', error);
+                console.error("Error fetching schedule:", error);
             }
         };
 
         fetchSchedule();
     }, []);
 
-    const renderMatches = (matches) => {
-        const rounds = matches.reduce((acc, match) => {
-            acc[match.round] = acc[match.round] || [];
-            acc[match.round].push(match);
-            return acc;
-        }, {});
-
-        return Object.entries(rounds).map(([round, matches]) => (
-            <div key={round} className="round">
-                <h4>Kolo {round}</h4>
-                {matches.map((match, index) => (
-                    <p key={index}>
-                        {match.teamA} vs {match.teamB}
-                    </p>
-                ))}
-            </div>
-        ));
-    };
-
     return (
         <div className="schedule-page">
             <h2 className="schedule-title">Rozpis zápasů</h2>
-
-            <div className="gym-section">
-                <h3 className="gym-title">Nižší gymnázium</h3>
-                <div className="rounds-container">{renderMatches(lowerMatches)}</div>
-            </div>
-
-            <div className="gym-section">
-                <h3 className="gym-title">Vyšší gymnázium</h3>
-                <div className="rounds-container">{renderMatches(upperMatches)}</div>
+            <div className="grid-of-rounds">
+                {mergedMatches.map((roundData) => (
+                    <div key={roundData.round} className="round-card">
+                        <h4 className="round-title">{`Kolo ${roundData.round} – ${roundData.date.toLocaleDateString("cs-CZ")}`}</h4>
+                        <div className="match-grid">
+                            {roundData.matches.map((match, index) => (
+                                <div className="match-card" key={index}>
+                                    <div className="match-teams">
+                                        <strong>{match.teamA_name}</strong>
+                                        <span className="vs-label">vs</span>
+                                        <strong>{match.teamB_name}</strong>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                ))}
             </div>
         </div>
     );

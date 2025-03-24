@@ -7,7 +7,7 @@ const app = express();
 app.use(express.json());
 app.use(cors());
 
-// Firebase inicializace
+// Firebase initialisation
 require('./firebase');
 
 const leagueRoutes = require('./routes/leagueRoutes');
