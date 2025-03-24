@@ -25,7 +25,7 @@ function LiveMatch() {
 
             if (!liveData.matchRefPath) {
                 console.error("matchRefPath is missing from liveBroadcast/currentMatch");
-                setMatchData(liveData); // fallback
+                setMatchData(liveData);
                 return;
             }
 
@@ -35,7 +35,7 @@ function LiveMatch() {
 
                 if (!matchSnap.exists()) {
                     console.error("Match reference not found.");
-                    setMatchData(liveData); // fallback
+                    setMatchData(liveData);
                     return;
                 }
 
@@ -56,7 +56,6 @@ function LiveMatch() {
         return () => unsubscribe();
     }, []);
 
-    // Sync timeLeft to Firestore
     useEffect(() => {
         let timer;
 
