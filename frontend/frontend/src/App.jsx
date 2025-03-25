@@ -41,17 +41,19 @@ function App() {
                     element={
                         <>
                             <div className="content-section">
-                                <div className="main-content">
-                                    <NewsSection />
-                                    <LiveMatch />
+                                <div className="left-panel">
+                                    <NewsSection/>
+                                    <LiveMatch/>
                                 </div>
-                                <UpcomingMatch />
+                                <div className="right-panel">
+                                    <UpcomingMatch/>
+                                </div>
                             </div>
                         </>
                     }
                 />
-                <Route path="/news" element={<News />} />
-                <Route path="/news/:id" element={<News />} />
+                <Route path="/news" element={<News/>}/>
+                <Route path="/news/:id" element={<News/>}/>
                 <Route path="/teams" element={<Teams />} />
                 <Route path="/goalScorers" element={<GoalScorers />} />
                 <Route path="/schedule" element={<Schedule />} />
