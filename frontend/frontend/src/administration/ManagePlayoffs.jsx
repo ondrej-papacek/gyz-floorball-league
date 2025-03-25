@@ -2,7 +2,7 @@
 import { db } from '../services/firebase';
 import { collection, getDocs, updateDoc, doc, setDoc } from 'firebase/firestore';
 import { useParams } from 'react-router-dom';
-import './ManagePlayoffs.css';
+import './managePlayoffs.css';
 
 const ManagePlayoffs = () => {
     const { leagueId } = useParams(); // Get league ID from URL
