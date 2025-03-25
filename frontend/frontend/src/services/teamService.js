@@ -1,6 +1,6 @@
 ﻿import axios from 'axios';
 
-const BASE_URL = `${import.meta.env.VITE_API_URL}/api/news`;
+const BASE_URL = `${import.meta.env.VITE_API_URL}/api/teams`;
 
 // Fetch teams from Firestore
 export const fetchTeams = async (year, division) => {
