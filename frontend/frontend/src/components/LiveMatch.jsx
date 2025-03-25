@@ -85,15 +85,15 @@ function LiveMatch() {
     }
 
     return (
-        <div className="live-match-container">
+        <div className="live-match-component-container">
             <div className="live-match-background">
                 <h2>ŽIVÝ ZÁPAS</h2>
                 <div className="match-info">
                     <span>{formatDate(matchData.date)}</span>
                 </div>
                 <div className="scoreboard">
-                    <div className="team team-a">
-                        <img src={`/images/team-logos/${matchData.teamA?.toLowerCase() || "unknown"}.png`}
+                    <div className="live-team team-a">
+                        <img src={`team-logos/${matchData.teamA?.toLowerCase() || "unknown"}.png`}
                              alt={`${matchData.teamA} Logo`}/>
                         <span className="team-name">{matchData.teamA_name}</span>
                         <span
@@ -106,8 +106,8 @@ function LiveMatch() {
                             <span className="time-left">{timeLeftFormatted}</span>
                         </div>
                     </div>
-                    <div className="team team-b">
-                        <img src={`/images/team-logos/${matchData.teamB?.toLowerCase() || "unknown"}.png`}
+                    <div className="live-team team-b">
+                        <img src={`/team-logos/${matchData.teamB?.toLowerCase() || "unknown"}.png`}
                              alt={`${matchData.teamB} Logo`}/>
                         <span className="team-name">{matchData.teamB_name}</span>
                         <span

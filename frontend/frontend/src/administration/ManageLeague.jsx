@@ -1,6 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import './ManageLeague.css';
+import './manageLeague.css';
 
 const ManageLeague = () => {
     const navigate = useNavigate();

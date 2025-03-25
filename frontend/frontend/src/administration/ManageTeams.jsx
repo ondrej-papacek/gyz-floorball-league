@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { db } from '../services/firebase';
 import { collection, getDocs, addDoc, deleteDoc, doc } from 'firebase/firestore';
-import './ManageTeams.css';
+import './manageTeams.css';
 
 const ManageTeams = ({ leagueId }) => {
     const [teams, setTeams] = useState([]);

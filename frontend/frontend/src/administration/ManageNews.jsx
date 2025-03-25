@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { db } from '../services/firebase';
 import { collection, getDocs, addDoc, updateDoc, deleteDoc, doc } from 'firebase/firestore';
 import { uploadImageToCloudinary } from '../services/cloudinaryService';
-import './ManageNews.css';
+import './manageNews.css';
 
 const ManageNews = () => {
     const [news, setNews] = useState([]);

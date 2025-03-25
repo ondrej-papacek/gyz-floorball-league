@@ -1,5 +1,5 @@
 ﻿import React, { useEffect, useState } from 'react';
-import './UpcomingMatch.css';
+import './upcomingMatch.css';
 
 const UpcomingMatch = () => {
     const [rounds, setRounds] = useState([]);

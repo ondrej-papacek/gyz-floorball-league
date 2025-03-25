@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import './ManageMatches.css';
+import './manageMatches.css';
 
 const ManageMatches = ({ year, division }) => {
     const [matches, setMatches] = useState([]);

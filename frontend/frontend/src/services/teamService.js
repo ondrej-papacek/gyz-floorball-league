@@ -1,6 +1,6 @@
 ﻿import axios from 'axios';
 
-const BASE_URL = 'http://localhost:5000/api/teams'; // Adjust if deployed
+const BASE_URL = `${import.meta.env.VITE_API_URL}/api/teams`;
 
 // Fetch teams from Firestore
 export const fetchTeams = async (year, division) => {
