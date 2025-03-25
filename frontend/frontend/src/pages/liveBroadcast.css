@@ -1,6 +1,6 @@
 ﻿.live-match-container {
     max-width: 1000px;
-    margin: 0 auto;
+    margin: auto auto;
     padding: 30px;
     background-color: #333;
     color: #fff;
@@ -13,6 +13,12 @@
 
 .live-match-container:hover {
     transform: scale(1.02);
+}
+
+.live-match-background h2 {
+    color: #f0b323;
+    font-weight: bold;
+    margin-bottom: 10px;
 }
 
 .match-info {
@@ -36,8 +42,8 @@
 }
 
 .team img {
-    width: 90px;
-    height: 90px;
+    width: 250px;
+    height: 250px;
     border-radius: 10px;
     margin-bottom: 10px;
     box-shadow: 0 2px 8px rgba(0,0,0,0.4);

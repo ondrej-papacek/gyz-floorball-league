@@ -62,7 +62,7 @@ function LiveBroadcast() {
                 </div>
                 <div className="scoreboard">
                     <div className="team team-a">
-                        <img src={`/images/team-logos/${liveData.teamA?.toLowerCase() || "unknown"}.png`} alt={`${liveData.teamA_name} Logo`} />
+                        <img src={`/team-logos/${liveData.teamA?.toLowerCase() || "unknown"}.png`} alt={`${liveData.teamA_name} Logo`} />
                         <span className="team-name">{liveData.teamA_name || "Neznámý tým A"}</span>
                         <span className="scorers">{liveData.scorerA?.length ? liveData.scorerA.join(", ") : "No scorer details"}</span>
                     </div>
@@ -74,7 +74,7 @@ function LiveBroadcast() {
                         </div>
                     </div>
                     <div className="team team-b">
-                        <img src={`/images/team-logos/${liveData.teamB?.toLowerCase() || "unknown"}.png`} alt={`${liveData.teamB_name} Logo`} />
+                        <img src={`/team-logos/${liveData.teamB?.toLowerCase() || "unknown"}.png`} alt={`${liveData.teamB_name} Logo`} />
                         <span className="team-name">{liveData.teamB_name || "Neznámý tým B"}</span>
                         <span className="scorers">{liveData.scorerB?.length ? liveData.scorerB.join(", ") : "No scorer details"}</span>
                     </div>
