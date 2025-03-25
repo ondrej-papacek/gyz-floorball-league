@@ -2,7 +2,6 @@
 const router = express.Router();
 const { getNews, getLatestNews, addNews, updateNews, deleteNews } = require('../controllers/newsController');
 
-// Define routes for CRUD operations
 router.get('/', getNews);
 router.get('/latest', getLatestNews);
 router.post('/', addNews);

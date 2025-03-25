@@ -1,5 +1,5 @@
-﻿const db = require('../firebase');
-const admin = require('firebase-admin');
+﻿const admin = require('../firebase');
+const db = admin.firestore();
 
 exports.updateMatchLive = async (req, res, next) => {
     try {

@@ -20,13 +20,8 @@ import ManageMatches from './administration/ManageMatches';
 import ManageNews from './administration/ManageNews';
 import ManageLeague from './administration/ManageLeague';
 import ManagePlayoffs from "./administration/ManagePlayoffs.jsx";
-
-const PrivateRoute = ({ element, requiredRole }) => {
-    const role = localStorage.getItem('role');
-    if (!role) return <Navigate to="/login" />;
-    if (requiredRole && role !== requiredRole) return <Navigate to="/" />;
-    return element;
-};
+import withRoleGuard from './guards/withRoleGuard';
+import ManageAccounts from "./administration/ManageAccounts.jsx";
 
 function App() {
     return (
@@ -58,39 +53,17 @@ function App() {
                 <Route path="/goalScorers" element={<GoalScorers />} />
                 <Route path="/schedule" element={<Schedule />} />
                 <Route path="/liveBroadcast" element={<LiveBroadcast />} />
-
-                {/* Login Route */}
                 <Route path="/login" element={<LoginPage />} />
 
-                {/* Admin Routes */}
-                <Route
-                    path="/admin"
-                    element={<PrivateRoute element={<AdminDashboard />} requiredRole="admin" />}
-                />
-                <Route
-                    path="/admin/liveBroadcast"
-                    element={<PrivateRoute element={<AdminLiveBroadcast />} requiredRole="admin" />}
-                />
-                <Route
-                    path="/admin/manage-teams"
-                    element={<PrivateRoute element={<ManageTeams />} requiredRole="admin" />}
-                />
-                <Route
-                    path="/admin/manage-matches"
-                    element={<PrivateRoute element={<ManageMatches />} requiredRole="admin" />}
-                />
-                <Route
-                    path="/admin/manage-news"
-                    element={<PrivateRoute element={<ManageNews />} requiredRole="admin" />}
-                />
-                <Route
-                    path="/admin/manage-league"
-                    element={<PrivateRoute element={<ManageLeague />} requiredRole="admin" />}
-                />
-                <Route
-                    path="/admin/manage-playoffs/:leagueId"
-                    element={<ManagePlayoffs />}
-                />
+                {/* Login Route */}
+                <Route path="/admin" element={withRoleGuard(AdminDashboard, 'admin')()} />
+                <Route path="/admin/liveBroadcast" element={withRoleGuard(AdminLiveBroadcast, 'admin')()} />
+                <Route path="/admin/manage-teams" element={withRoleGuard(ManageTeams, 'admin')()} />
+                <Route path="/admin/manage-matches" element={withRoleGuard(ManageMatches, 'admin')()} />
+                <Route path="/admin/manage-news" element={withRoleGuard(ManageNews, 'admin')()} />
+                <Route path="/admin/manage-league" element={withRoleGuard(ManageLeague, 'admin')()} />
+                <Route path="/admin/manage-playoffs/:leagueId" element={withRoleGuard(ManagePlayoffs, 'admin')()} />
+                <Route path="/admin/manage-accounts" element={withRoleGuard(ManageAccounts, 'admin')()} />
 
             </Routes>
 

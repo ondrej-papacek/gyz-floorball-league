@@ -1,14 +1,43 @@
-﻿.admin-controls button {
-    background-color: #d9a326;
+﻿.admin-dashboard {
+    padding: 2rem;
+    background-color: #333;
     color: #fff;
-    border: none;
-    padding: 0.5rem 1rem;
-    border-radius: 4px;
-    cursor: pointer;
-    margin: 0.5rem;
-    transition: background-color 0.3s ease;
+    text-align: center;
+    min-height: 70vh;
 }
 
-.admin-controls button:hover {
-    background-color: #b8860b;
+.admin-title {
+    font-size: 2rem;
+    color: #d9a326;
+    margin-bottom: 1rem;
+}
+
+.admin-subtitle {
+    font-size: 1rem;
+    color: #ccc;
+    margin-bottom: 2rem;
+}
+
+.admin-links {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 20px;
+}
+
+.admin-links button {
+    background-color: #d9a326;
+    color: white;
+    border: none;
+    padding: 12px 20px;
+    font-weight: bold;
+    font-size: 1rem;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: transform 0.2s ease, background-color 0.3s ease;
+}
+
+.admin-links button:hover {
+    background-color: #e09f1f;
+    transform: scale(1.05);
 }

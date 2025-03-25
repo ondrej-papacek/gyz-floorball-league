@@ -1,6 +1,7 @@
-﻿const db = require('../firebase');
+﻿const admin = require('../firebase');
+const db = admin.firestore();
 
-// Fetch goal scorers from Firestore
+// Fetch goalscorers from Firestore
 exports.getGoalScorers = async (req, res, next) => {
     try {
         const { year, division } = req.params;
@@ -16,7 +17,7 @@ exports.getGoalScorers = async (req, res, next) => {
     }
 };
 
-// Add a new goal scorer
+// Add a new goalscorer
 exports.addGoalScorer = async (req, res, next) => {
     try {
         const { year, division } = req.params;
@@ -30,7 +31,7 @@ exports.addGoalScorer = async (req, res, next) => {
     }
 };
 
-// Update goal scorer's goal count
+// Update goalscorer's goal count
 exports.updateGoalScorer = async (req, res, next) => {
     try {
         const { year, division, goalScorerId } = req.params;
@@ -57,7 +58,7 @@ exports.deleteGoalScorer = async (req, res, next) => {
     }
 };
 
-// Automatically update goal scorers when a match is completed
+// Automatically update goalscorers when a match is completed
 exports.updateGoalScorersAfterMatch = async (year, division, scorerA, scorerB, teamA, teamB) => {
     try {
         const goalScorersRef = db.collection('leagues').doc(`${year}_${division}`).collection('goalScorers');

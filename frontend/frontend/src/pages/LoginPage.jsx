@@ -9,6 +9,8 @@ const LoginPage = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
+    const [showPassword, setShowPassword] = useState(false);
+    const [rememberMe, setRememberMe] = useState(false);
     const navigate = useNavigate();
 
     const handleLogin = async (e) => {
@@ -16,26 +18,32 @@ const LoginPage = () => {
         setError('');
 
         try {
-            // Sign in with Firebase Authentication
             const userCredential = await signInWithEmailAndPassword(auth, email, password);
             const user = userCredential.user;
 
-            // Fetch role from Firestore
+            if (rememberMe) {
+                localStorage.setItem('uid', user.uid);
+                localStorage.setItem('role', 'loading');
+            } else {
+                sessionStorage.setItem('uid', user.uid);
+                sessionStorage.setItem('role', 'loading');
+            }
+
             const userDocRef = doc(db, 'users', user.uid);
             const userDoc = await getDoc(userDocRef);
 
             if (userDoc.exists()) {
-                const userData = userDoc.data();
-                const role = userData.role;
+                const { role } = userDoc.data();
 
-                // Redirect based on role
-                if (role === 'admin') {
-                    navigate('/admin');
-                } else if (role === 'helper') {
-                    navigate('/liveBroadcast');
+                if (rememberMe) {
+                    localStorage.setItem('role', role);
                 } else {
-                    setError('Vaše role není platná. Kontaktujte administrátora.');
+                    sessionStorage.setItem('role', role);
                 }
+
+                if (role === 'admin') navigate('/admin');
+                else if (role === 'helper') navigate('/liveBroadcast');
+                else setError('Vaše role není platná. Kontaktujte administrátora.');
             } else {
                 setError('Uživatel nebyl nalezen v databázi.');
             }
@@ -63,15 +71,36 @@ const LoginPage = () => {
                     </div>
                     <div className="form-group">
                         <label htmlFor="password" className="form-label">Heslo:</label>
-                        <input
-                            type="password"
-                            id="password"
-                            className="login-input"
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
-                            required
-                        />
+                        <div className="password-wrapper">
+                            <input
+                                type={showPassword ? 'text' : 'password'}
+                                id="password"
+                                className="login-input"
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)}
+                                required
+                            />
+                            <button
+                                type="button"
+                                className="toggle-password"
+                                onClick={() => setShowPassword(!showPassword)}
+                            >
+                                {showPassword ? '🙈' : '👁️'}
+                            </button>
+                        </div>
                     </div>
+
+                    <div className="form-group remember-row">
+                        <label>
+                            <input
+                                type="checkbox"
+                                checked={rememberMe}
+                                onChange={(e) => setRememberMe(e.target.checked)}
+                            />
+                            Zapamatovat si mě
+                        </label>
+                    </div>
+
                     {error && <p className="login-error">{error}</p>}
                     <button type="submit" className="login-button">Přihlásit se</button>
                 </form>

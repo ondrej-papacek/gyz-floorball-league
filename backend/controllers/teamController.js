@@ -1,4 +1,5 @@
-﻿const db = require('../firebase');
+﻿const admin = require('../firebase');
+const db = admin.firestore();
 
 exports.getTeams = async (req, res, next) => {
     try {

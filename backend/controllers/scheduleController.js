@@ -1,4 +1,5 @@
-﻿const db = require('../firebase');
+﻿const admin = require('../firebase');
+const db = admin.firestore();
 const { Timestamp } = require('firebase-admin/firestore');
 const generateBergerTable = require('../utils/bergerTable');
 

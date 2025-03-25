@@ -1,4 +1,5 @@
-﻿const db = require('../firebase');
+﻿const admin = require('../firebase');
+const db = admin.firestore();
 
 // Fetch all news articles, sorted by date
 exports.getNews = async (req, res, next) => {
