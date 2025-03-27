@@ -10,7 +10,6 @@ const AdminDashboard = () => {
 
     return (
         <>
-            <HeroSection />
             <AdminNavbar />
             <div className="admin-dashboard">
                 <h1 className="admin-title">Administrativní panel</h1>
@@ -25,7 +24,6 @@ const AdminDashboard = () => {
                     <button onClick={() => navigate('/admin/manage-accounts')}>Správa účtů</button>
                 </div>
             </div>
-            <Footer />
         </>
     );
 };
