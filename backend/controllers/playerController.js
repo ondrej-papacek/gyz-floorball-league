@@ -14,10 +14,10 @@ exports.getPlayers = async (req, res, next) => {
 
 exports.addPlayer = async (req, res, next) => {
     try {
-        const { year, division, teamId } = req.params;
+        const { year, division, teamId, playerId } = req.params;
         const playerData = req.body;
-        const playerRef = await db.collection('leagues').doc(`${year}_${division}`).collection('teams').doc(teamId).collection('players').add(playerData);
-        res.status(201).json({ id: playerRef.id, ...playerData });
+        await db.collection('leagues').doc(`${year}_${division}`).collection('teams').doc(teamId).collection('players').doc(playerId).set(playerData);
+        res.status(201).json({ id: playerId, ...playerData });
     } catch (error) {
         next(new Error('Nepodařilo se přidat hráče.'));
     }

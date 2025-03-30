@@ -248,3 +248,106 @@ exports.startLiveMatch = async (req, res, next) => {
         next(new Error("Failed to start live match."));
     }
 };
+
+exports.updateMatch = async (req, res, next) => {
+    try {
+        const { year, division, matchId } = req.params;
+        const data = req.body;
+        if (data.date) {
+            data.date = Timestamp.fromDate(new Date(data.date));
+        }
+        await db.collection('leagues')
+            .doc(`${year}_${division}`)
+            .collection('matches')
+            .doc(matchId)
+            .update(data);
+        res.status(200).json({ message: 'Match updated' });
+    } catch (error) {
+        next(new Error('Failed to update match'));
+    }
+};
+
+exports.deleteMatch = async (req, res, next) => {
+    try {
+        const { year, division, matchId } = req.params;
+        await db.collection('leagues')
+            .doc(`${year}_${division}`)
+            .collection('matches')
+            .doc(matchId)
+            .delete();
+        res.status(200).json({ message: 'Match deleted' });
+    } catch (error) {
+        next(new Error('Failed to delete match'));
+    }
+};
+
+exports.cancelRound = async (req, res, next) => {
+    try {
+        const { year, division, round } = req.params;
+        const matchesRef = db.collection('leagues')
+            .doc(`${year}_${division}`)
+            .collection('matches')
+            .where('round', '==', parseInt(round));
+
+        const snapshot = await matchesRef.get();
+        const batch = db.batch();
+
+        snapshot.forEach(doc => {
+            batch.update(doc.ref, { status: 'cancelled' });
+        });
+
+        await batch.commit();
+        res.status(200).json({ message: 'Round cancelled' });
+    } catch (error) {
+        next(new Error('Failed to cancel round'));
+    }
+};
+
+exports.updateRoundDate = async (req, res, next) => {
+    try {
+        const { year, division, round } = req.params;
+        const { date } = req.body;
+
+        const newDate = Timestamp.fromDate(new Date(date));
+
+        const matchesRef = db.collection('leagues')
+            .doc(`${year}_${division}`)
+            .collection('matches')
+            .where('round', '==', parseInt(round));
+
+        const snapshot = await matchesRef.get();
+        const batch = db.batch();
+
+        snapshot.forEach(doc => {
+            batch.update(doc.ref, { date: newDate });
+        });
+
+        await batch.commit();
+        res.status(200).json({ message: 'Round date updated' });
+    } catch (error) {
+        next(new Error('Failed to update round date'));
+    }
+};
+
+exports.deleteRound = async (req, res, next) => {
+    try {
+        const { year, division, round } = req.params;
+
+        const matchesRef = db.collection('leagues')
+            .doc(`${year}_${division}`)
+            .collection('matches')
+            .where('round', '==', parseInt(round));
+
+        const snapshot = await matchesRef.get();
+        const batch = db.batch();
+
+        snapshot.forEach(doc => {
+            batch.delete(doc.ref);
+        });
+
+        await batch.commit();
+        res.status(200).json({ message: 'Round deleted' });
+    } catch (error) {
+        next(new Error('Failed to delete round'));
+    }
+};

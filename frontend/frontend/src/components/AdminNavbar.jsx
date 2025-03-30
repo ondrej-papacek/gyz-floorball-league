@@ -24,13 +24,14 @@ function AdminNavbar() {
                 <li className={isActive('/admin') ? 'active' : ''}><Link to="/admin">Dashboard</Link></li>
                 <li className={isActive('/admin/manage-league') ? 'active' : ''}><Link to="/admin/manage-league">Liga</Link></li>
                 <li className={isActive('/admin/manage-teams') ? 'active' : ''}><Link to="/admin/manage-teams">Týmy</Link></li>
-                <li className={isActive('/admin/manage-matches') ? 'active' : ''}><Link to="/admin/manage-matches">Rozpis</Link></li>
+                <li className={isActive('/admin/manage-players') ? 'active' : ''}><Link to="/admin/manage-players">Hráči</Link></li>
+                <li className={isActive('/admin/manage-schedule') ? 'active' : ''}><Link to="/admin/manage-schedule">Rozpis zápasů</Link></li>
                 <li className={isActive('/admin/manage-playoffs') ? 'active' : ''}><Link to="/admin/manage-playoffs">Playoff</Link></li>
                 <li className={isActive('/admin/manage-news') ? 'active' : ''}><Link to="/admin/manage-news">Novinky</Link></li>
                 <li className={isActive('/admin/liveBroadcast') ? 'active' : ''}><Link to="/admin/liveBroadcast">Živý zápas</Link></li>
                 <li className={isActive('/admin/manage-accounts') ? 'active' : ''}><Link to="/admin/manage-accounts">Účty</Link></li>
                 <li>
-                    <button className="logout-button">Odhlásit se</button>
+                    <button className="logout-button" onClick={handleLogout}>Odhlásit se</button>
                 </li>
             </ul>
         </nav>

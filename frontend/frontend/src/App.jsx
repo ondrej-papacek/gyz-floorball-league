@@ -22,6 +22,8 @@ import ManageLeague from './administration/ManageLeague';
 import ManagePlayoffs from "./administration/ManagePlayoffs.jsx";
 import withRoleGuard from './guards/withRoleGuard';
 import ManageAccounts from "./administration/ManageAccounts.jsx";
+import ManagePlayers from "./administration/ManagePlayers.jsx";
+import ManageSchedule from './administration/ManageSchedule';
 
 function App() {
     return (
@@ -64,7 +66,8 @@ function App() {
                 <Route path="/admin/manage-league" element={withRoleGuard(ManageLeague, 'admin')()} />
                 <Route path="/admin/manage-playoffs/:leagueId" element={withRoleGuard(ManagePlayoffs, 'admin')()} />
                 <Route path="/admin/manage-accounts" element={withRoleGuard(ManageAccounts, 'admin')()} />
-
+                <Route path="/admin/manage-players" element={withRoleGuard(ManagePlayers, 'admin')()} />
+                <Route path="/admin/manage-schedule" element={withRoleGuard(ManageSchedule, 'admin')()} />
             </Routes>
 
             <Footer />

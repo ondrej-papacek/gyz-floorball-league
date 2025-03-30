@@ -15,7 +15,8 @@ const AdminDashboard = () => {
                 <div className="admin-links">
                     <button onClick={() => navigate('/admin/manage-league')}>Správa ligy</button>
                     <button onClick={() => navigate('/admin/manage-teams')}>Správa týmů</button>
-                    <button onClick={() => navigate('/admin/manage-matches')}>Správa rozpisu</button>
+                    <button onClick={() => navigate('/admin/manage-players')}>Správa hráčů</button>
+                    <button onClick={() => navigate('/admin/manage-schedule')}>Správa rozpisu zápasů</button>
                     <button onClick={() => navigate('/admin/manage-playoffs')}>Správa Playoff</button>
                     <button onClick={() => navigate('/admin/manage-news')}>Správa novinek</button>
                     <button onClick={() => navigate('/admin/liveBroadcast')}>Živý zápas</button>
