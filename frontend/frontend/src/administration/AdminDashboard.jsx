@@ -1,7 +1,5 @@
 ﻿import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import HeroSection from '../components/HeroSection';
-import Footer from '../components/Footer';
 import AdminNavbar from '../components/AdminNavbar';
 import './adminDashboard.css';
 

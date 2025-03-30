@@ -80,13 +80,9 @@ const LoginPage = () => {
                                 onChange={(e) => setPassword(e.target.value)}
                                 required
                             />
-                            <button
-                                type="button"
-                                className="toggle-password"
-                                onClick={() => setShowPassword(!showPassword)}
-                            >
-                                {showPassword ? '🙈' : '👁️'}
-                            </button>
+                            <span className="toggle-password" onClick={() => setShowPassword(!showPassword)}>
+                                <i className={showPassword ? 'bx bxs-hide' : 'bx bxs-show'}></i>
+                            </span>
                         </div>
                     </div>
 
