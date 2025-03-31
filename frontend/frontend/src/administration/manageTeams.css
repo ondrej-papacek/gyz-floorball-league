@@ -110,7 +110,7 @@
 
 .delete-btn:hover {
     background-color: #a61a1a !important;
-    color: white;
+    color: white !important;
 }
 
 .expanded-row td {
