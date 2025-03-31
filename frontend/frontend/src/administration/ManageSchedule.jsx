@@ -185,10 +185,10 @@ const ManageSchedule = () => {
                                                     <select value={match.status}
                                                             onChange={(e) =>
                                                                 handleMatchAction(match, 'setStatus', {status: e.target.value})}>
-                                                        <option value="upcoming">upcoming</option>
-                                                        <option value="live">live</option>
-                                                        <option value="finished">finished</option>
-                                                        <option value="cancelled">cancelled</option>
+                                                        <option value="upcoming">nadcházející</option>
+                                                        <option value="live">živě</option>
+                                                        <option value="finished">odehraný</option>
+                                                        <option value="cancelled">zrušený</option>
                                                     </select>
                                                 </div>
                                                 <div className="actions">

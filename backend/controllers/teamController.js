@@ -16,6 +16,27 @@ exports.getTeams = async (req, res, next) => {
     }
 };
 
+exports.getTeamMatches = async (req, res, next) => {
+    try {
+        const { year, division, teamId } = req.params;
+
+        const matchesSnapshot = await db
+            .collection('leagues')
+            .doc(`${year}_${division}`)
+            .collection('matches')
+            .where('status', '==', 'finished')
+            .get();
+
+        const teamMatches = matchesSnapshot.docs
+            .map(doc => ({ id: doc.id, ...doc.data() }))
+            .filter(match => match.teamA_id === teamId || match.teamB_id === teamId);
+
+        res.status(200).json(teamMatches);
+    } catch (error) {
+        next(new Error('Nepodařilo se načíst zápasy týmu.'));
+    }
+};
+
 exports.addTeam = async (req, res, next) => {
     try {
         const { year, division } = req.params;

@@ -1,0 +1,144 @@
+.manage-teams {
+    padding: 20px;
+    color: white;
+    font-family: Poppins, sans-serif;
+}
+
+.manage-teams h2 {
+    color: #d9a326;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.manage-teams select {
+    display: block;
+    margin: 0 auto 20px;
+    padding: 8px 12px;
+    border-radius: 6px;
+    background-color: #444;
+    color: white;
+    font-size: 1rem;
+    border: 1px solid #777;
+}
+
+.add-team {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+.add-team input {
+    padding: 8px 12px;
+    border-radius: 6px;
+    background-color: #333;
+    border: 1px solid #777;
+    color: white;
+}
+
+.add-team button {
+    padding: 8px 14px;
+    background-color: #d9a326;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.team-table table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: #2d2d2d;
+}
+
+.team-table th, .team-table td {
+    padding: 10px;
+    text-align: center;
+    border-bottom: 1px solid #444;
+    color: white;
+}
+
+.team-table th {
+    background-color: #1f1f1f;
+    color: #f0b323;
+}
+
+.team-name-cell {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.team-logo {
+    width: 28px;
+    height: 28px;
+    object-fit: contain;
+    border-radius: 4px;
+    background: #111;
+}
+
+.team-table input {
+    width: 60px;
+    padding: 4px;
+    background-color: #444;
+    color: white;
+    border: 1px solid #666;
+    border-radius: 4px;
+    text-align: center;
+}
+
+.team-table button {
+    margin: 0 2px;
+    background: #666;
+    color: white;
+    padding: 4px 6px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.team-table button:hover {
+    background-color: #d9a326;
+    color: black;
+}
+
+.expanded-row td {
+    background-color: #252525;
+    padding: 16px;
+    font-size: 0.95rem;
+    color: #ccc;
+}
+
+.match-details {
+    padding: 10px;
+    background-color: #2a2a2a;
+    border-radius: 6px;
+}
+
+.match-details h4 {
+    margin-bottom: 8px;
+    color: #f0b323;
+    font-size: 1rem;
+}
+
+.match-details ul {
+    list-style: none;
+    padding-left: 0;
+}
+
+.match-details li {
+    padding: 4px 0;
+    border-bottom: 1px solid #444;
+}
+
+.bulk-recalc {
+    background-color: #444;
+    font-size: 0.9rem;
+}
+
+.add-team button:last-child {
+    background-color: #444;
+    font-size: 0.85rem;
+}
+
