@@ -29,7 +29,7 @@ const ManageSchedule = () => {
 
     useEffect(() => {
         fetchSchedule();
-    }, [selectedYear]); // Re-fetch when year changes
+    }, [selectedYear]);
 
     const fetchSchedule = async () => {
         try {
