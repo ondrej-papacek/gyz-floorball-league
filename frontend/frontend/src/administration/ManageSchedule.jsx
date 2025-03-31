@@ -157,26 +157,34 @@ const ManageSchedule = () => {
                                 <div key={round.round} className="round-card">
                                     <div className="round-header">
                                         <h4>{`Kolo ${round.round} – ${round.date.toLocaleDateString("cs-CZ")}`}</h4>
-                                        <input type="date" onChange={(e) => handleRoundAction(round, 'updateDate', e.target.value)} />
-                                        <button onClick={() => handleRoundAction(round, 'cancel')}>Zrušit kolo</button>
-                                        <button onClick={() => handleRoundAction(round, 'delete')}>Smazat kolo</button>
+                                        <div className="round-controls">
+                                            <label>Změna data celého kola:</label>
+                                            <input type="date"
+                                                   onChange={(e) => handleRoundAction(round, 'updateDate', e.target.value)}/>
+                                        </div>
+                                        <div className="round-actions">
+                                            <button onClick={() => handleRoundAction(round, 'cancel')}>Zrušit kolo
+                                            </button>
+                                            <button onClick={() => handleRoundAction(round, 'delete')}>Smazat kolo
+                                            </button>
+                                        </div>
                                     </div>
                                     <div className="match-grid">
                                         {round.matches.map((match, index) => (
                                             <div className="match-card" key={index}>
+                                                <span className={`match-dot ${getStatusDotClass(match.status)}`}></span>
                                                 <div className="match-teams">
-                                                    <span className={getStatusDotClass(match.status)}></span>
                                                     <strong>{match.teamA_name}</strong>
                                                     <span className="vs-label">vs</span>
                                                     <strong>{match.teamB_name}</strong>
                                                 </div>
                                                 <input type="date" onChange={(e) =>
-                                                    handleMatchAction(match, 'updateDate', { date: e.target.value })} />
+                                                    handleMatchAction(match, 'updateDate', {date: e.target.value})}/>
                                                 <div className="match-status-select">
                                                     <label>Status:</label>
                                                     <select value={match.status}
                                                             onChange={(e) =>
-                                                                handleMatchAction(match, 'setStatus', { status: e.target.value })}>
+                                                                handleMatchAction(match, 'setStatus', {status: e.target.value})}>
                                                         <option value="upcoming">upcoming</option>
                                                         <option value="live">live</option>
                                                         <option value="finished">finished</option>
@@ -184,14 +192,16 @@ const ManageSchedule = () => {
                                                     </select>
                                                 </div>
                                                 <div className="actions">
-                                                    <button onClick={() => handleMatchAction(match, 'cancel')}>Zrušit</button>
+                                                    <button onClick={() => handleMatchAction(match, 'cancel')}>Zrušit
+                                                    </button>
                                                     <button onClick={() => handleMatchAction(match, 'defaultWin', {
                                                         status: 'finished', scoreA: 3, scoreB: 0
                                                     })}>Kontumační výhra {match.teamA_name}</button>
                                                     <button onClick={() => handleMatchAction(match, 'defaultWin', {
                                                         status: 'finished', scoreA: 0, scoreB: 3
                                                     })}>Kontumační výhra {match.teamB_name}</button>
-                                                    <button onClick={() => handleMatchAction(match, 'delete')}>Smazat</button>
+                                                    <button onClick={() => handleMatchAction(match, 'delete')}>Smazat
+                                                    </button>
                                                 </div>
                                             </div>
                                         ))}
