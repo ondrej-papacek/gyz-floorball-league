@@ -192,12 +192,12 @@
 }
 
 .match-status-select {
-    display: flex;
+    display: inline-flex;
     align-items: center;
-    gap: 10px;
-    margin-bottom: 10px;
-    font-size: 0.85rem;
     justify-content: center;
+    gap: 6px;
+    font-size: 0.85rem;
+    margin: 0 auto 10px;
 }
 
 .match-status-select label {
@@ -227,7 +227,7 @@
     border-radius: 6px;
     border: none;
     cursor: pointer;
-    background-color: #555;
+    background-color: #666;
     color: white;
     font-family: Poppins, sans-serif;
 }
@@ -235,6 +235,7 @@
 .actions button:hover {
     background-color: #f0b323;
     color: black;
+    border: none;
 }
 
 .error-msg {
