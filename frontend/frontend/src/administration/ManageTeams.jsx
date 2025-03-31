@@ -177,7 +177,7 @@ const ManageTeams = () => {
                                     <td><input type="number" value={team.points ?? 0} onChange={e => handleStatChange(team.id, 'points', e.target.value)} /></td>
                                     <td>
                                         <button onClick={() => handleSave(team)}>Uložit</button>
-                                        <button onClick={() => handleDelete(team.id)}>Odstranit</button>
+                                        <button className="delete-btn" onClick={() => handleDelete(team.id)}>Odstranit</button>
                                         <button onClick={() => recalculateTeam(team)}>Přepočítat</button>
                                         <button
                                             onClick={() => toggleExpand(team.id)}>{expanded.includes(team.id) ? '▲' : '▼'}</button>

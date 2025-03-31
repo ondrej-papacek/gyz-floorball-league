@@ -103,6 +103,16 @@
     color: black;
 }
 
+.delete-btn {
+    background-color: #d92d2d;
+    color: white;
+}
+
+.delete-btn:hover {
+    background-color: #a61a1a;
+    color: white;
+}
+
 .expanded-row td {
     background-color: #252525;
     padding: 16px;
