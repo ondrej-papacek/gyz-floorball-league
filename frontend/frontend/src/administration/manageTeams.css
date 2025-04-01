@@ -59,6 +59,10 @@
     color: white;
 }
 
+.team-table td {
+    vertical-align: middle;
+}
+
 .team-table th {
     background-color: #1f1f1f;
     color: #f0b323;
@@ -68,6 +72,7 @@
     display: flex;
     align-items: center;
     gap: 8px;
+    height: 100%;
 }
 
 .team-logo {
