@@ -59,15 +59,21 @@
     color: white;
 }
 
+.team-table td {
+    vertical-align: middle;
+}
+
 .team-table th {
     background-color: #1f1f1f;
     color: #f0b323;
 }
 
 .team-name-cell {
-    display: flex;
+    /*display: flex;*/
     align-items: center;
     gap: 8px;
+    height: 100%;
+    line-height: 2.32;
 }
 
 .team-logo {
