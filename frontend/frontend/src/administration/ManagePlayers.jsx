@@ -5,7 +5,7 @@ import {
     deletePlayer
 } from '../services/playerService';
 import { db } from '../services/firebase';
-import { collection, getDocs } from 'firebase/firestore';
+import { collection, getDocs, doc, deleteDoc } from 'firebase/firestore';
 import './managePlayers.css';
 import AdminNavbar from '../components/AdminNavbar';
 
@@ -20,14 +20,29 @@ const normalizeName = (name) => {
 };
 
 const ManagePlayers = () => {
+    const [leagues, setLeagues] = useState([]);
     const [teams, setTeams] = useState([]);
-    const [selectedLeague, setSelectedLeague] = useState('2025_lower');
+    const [selectedLeague, setSelectedLeague] = useState('');
     const [selectedTeamId, setSelectedTeamId] = useState('');
     const [players, setPlayers] = useState([]);
     const [newPlayerName, setNewPlayerName] = useState('');
     const [loading, setLoading] = useState(false);
 
+    const fetchLeagues = async () => {
+        const snapshot = await getDocs(collection(db, 'leagues'));
+        const data = snapshot.docs.map(doc => {
+            const d = doc.data();
+            return {
+                id: doc.id,
+                label: `${d.division === 'lower' ? 'Nižší' : 'Vyšší'} ${d.year}`
+            };
+        });
+        setLeagues(data);
+        if (data.length > 0) setSelectedLeague(data[0].id); // default to first
+    };
+
     const fetchTeams = async () => {
+        if (!selectedLeague) return;
         const [year, division] = selectedLeague.split('_');
         const teamsSnapshot = await getDocs(
             collection(db, 'leagues', `${year}_${division}`, 'teams')
@@ -49,7 +64,13 @@ const ManagePlayers = () => {
     };
 
     useEffect(() => {
+        fetchLeagues();
+    }, []);
+
+    useEffect(() => {
         fetchTeams();
+        setSelectedTeamId('');
+        setPlayers([]);
     }, [selectedLeague]);
 
     useEffect(() => {
@@ -81,10 +102,14 @@ const ManagePlayers = () => {
         };
 
         await addPlayer(year, division, selectedTeamId, playerId, playerData);
+
+        // ✅ Remove placeholder __init__ if it exists
+        const initRef = doc(db, 'leagues', `${year}_${division}`, 'teams', selectedTeamId, 'players', '__init__');
+        await deleteDoc(initRef).catch(() => {});
+
         setNewPlayerName('');
         fetchPlayers();
     };
-
 
     const handleDeletePlayer = async (id) => {
         const [year, division] = selectedLeague.split('_');
@@ -103,10 +128,11 @@ const ManagePlayers = () => {
                 <div className="select-controls">
                     <label>Vyberte ligu:</label>
                     <select value={selectedLeague} onChange={(e) => setSelectedLeague(e.target.value)}>
-                        <option value="2025_lower">Nižší 2025</option>
-                        <option value="2025_upper">Vyšší 2025</option>
-                        <option value="2026_lower">Nižší 2026</option>
-                        <option value="2026_upper">Vyšší 2026</option>
+                        {leagues.map((league) => (
+                            <option key={league.id} value={league.id}>
+                                {league.label}
+                            </option>
+                        ))}
                     </select>
 
                     <label>Vyberte tým:</label>

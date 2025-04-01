@@ -1,23 +1,134 @@
 ﻿.manage-playoffs-page {
     padding: 20px;
-    background-color: #333;
-    color: #fff;
-    border-radius: 8px;
+    color: white;
+    font-family: Poppins, sans-serif;
+}
+
+.manage-playoffs-page h2 {
+    color: #d9a326;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.playoff-controls {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+}
+
+.playoff-controls label {
+    font-weight: 500;
+}
+
+.playoff-controls select {
+    padding: 8px 12px;
+    border-radius: 6px;
+    background-color: #444;
+    color: white;
+    font-size: 1rem;
+    border: 1px solid #777;
+}
+
+.playoff-controls button {
+    padding: 8px 14px;
+    background-color: #d9a326;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.playoff-controls button:hover {
+    background-color: #b5841d;
 }
 
 .playoff-round {
-    background-color: #444;
-    padding: 15px;
-    border-radius: 6px;
-    margin-bottom: 10px;
+    background-color: #2d2d2d;
+    padding: 16px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    border: 1px solid #444;
 }
 
-.playoff-round h2 {
+.playoff-round h3 {
     color: #f0b323;
+    font-size: 1.1rem;
+    margin-bottom: 10px;
+    text-transform: uppercase;
 }
 
-.edit-score input {
-    width: 40px;
+.playoff-match-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 12px;
+    flex-wrap: wrap;
+}
+
+.playoff-match-row p {
+    margin: 0;
+    font-size: 1rem;
+}
+
+.playoff-match-row select,
+.playoff-match-row input {
+    padding: 6px 10px;
+    font-size: 0.95rem;
+    border-radius: 6px;
+    background-color: #333;
+    color: white;
+    border: 1px solid #666;
+}
+
+.playoff-match-row input[type="number"] {
+    width: 60px;
     text-align: center;
-    margin: 0 5px;
+}
+
+.playoff-match-row button {
+    padding: 6px 10px;
+    background-color: #666;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    font-weight: bold;
+    cursor: pointer;
+    font-size: 0.95rem;
+}
+
+.playoff-match-row button:hover {
+    background-color: #d9a326;
+    color: black;
+}
+
+.playoff-match-row button.save-btn {
+    background-color: #d9a326;
+    color: white;
+}
+
+.playoff-match-row button.save-btn:hover {
+    background-color: #b6841f;
+    color: black;
+}
+
+@media (max-width: 600px) {
+    .playoff-controls,
+    .playoff-match-row {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+    }
+
+    .playoff-match-row select,
+    .playoff-match-row input {
+        width: 100%;
+    }
+
+    .playoff-match-row button {
+        width: 100%;
+    }
 }

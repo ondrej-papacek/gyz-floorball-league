@@ -1,0 +1,36 @@
+﻿.playoff-bracket h2 {
+    color: #d9a326; /* keep */
+}
+
+.playoff-round-block h3 {
+    color: #d9a326;
+    font-size: 1.1rem;
+    margin-bottom: 10px;
+}
+
+.match-row {
+    background: #444;
+    border: 1px solid #555;
+    border-radius: 6px;
+    padding: 10px;
+    transition: background 0.2s ease;
+}
+
+.match-row:hover {
+    background: #555;
+}
+
+.team-name {
+    font-weight: 500;
+    color: #fff;
+}
+
+.vs {
+    color: #bbb;
+    font-size: 0.9rem;
+}
+
+.score {
+    color: #d9a326;
+    font-weight: bold;
+}

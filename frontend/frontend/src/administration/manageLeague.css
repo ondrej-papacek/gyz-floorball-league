@@ -1,0 +1,62 @@
+.manage-league-page {
+    padding: 30px 20px;
+    font-family: Poppins, sans-serif;
+    color: white;
+    background-color: #1f1f1f;
+    min-height: 100vh;
+}
+
+.manage-league-page h1 {
+    font-size: 2.5rem;
+    text-align: center;
+    color: #d9a326;
+    margin-bottom: 40px;
+}
+
+.league-list {
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.league-item {
+    background-color: #2d2d2d;
+    padding: 24px 28px;
+    border-radius: 12px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+}
+
+.league-item h2 {
+    font-size: 1.5rem;
+    color: #f0b323;
+    margin-bottom: 20px;
+}
+
+.league-item button {
+    background-color: #444;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    padding: 10px 16px;
+    margin: 6px 10px 6px 0;
+    cursor: pointer;
+    font-weight: 600;
+    transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.league-item button:hover {
+    background-color: #d9a326;
+    color: black;
+}
+
+.league-item button:last-child {
+    background-color: #d92d2d;
+    color: white;
+}
+
+.league-item button:last-child:hover {
+    background-color: #a61a1a;
+    color: white;
+}

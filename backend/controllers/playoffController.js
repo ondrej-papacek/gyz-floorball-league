@@ -44,12 +44,17 @@ exports.updatePlayoffRound = async (req, res, next) => {
         const { year, division, round } = req.params;
         const matches = req.body.matches;
 
+        if (!Array.isArray(matches)) {
+            return res.status(400).json({ error: 'Chybný formát zápasů.' });
+        }
+
         const roundRef = db
             .collection('leagues')
             .doc(`${year}_${division}`)
             .collection('playoff')
             .doc('rounds');
-        await roundRef.update({ [round]: matches });
+
+        await roundRef.set({ [round]: matches }, { merge: true });
 
         res.status(200).json({ message: `Kolo ${round} bylo úspěšně aktualizováno.` });
     } catch (error) {
@@ -66,7 +71,7 @@ exports.deletePlayoffRound = async (req, res, next) => {
             .doc(`${year}_${division}`)
             .collection('playoff')
             .doc('rounds');
-        await roundRef.update({ [round]: db.FieldValue.delete() });
+        await roundRef.set({ [round]: admin.firestore.FieldValue.delete() }, { merge: true });
 
         res.status(200).json({ message: `Kolo ${round} bylo úspěšně smazáno z playoff.` });
     } catch (error) {

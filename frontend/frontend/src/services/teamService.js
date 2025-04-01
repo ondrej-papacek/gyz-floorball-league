@@ -1,4 +1,6 @@
 ﻿import axios from 'axios';
+import { doc, setDoc } from 'firebase/firestore';
+import { db } from './firebase';
 
 const BASE_URL = `${import.meta.env.VITE_API_URL}/api/teams`;
 
@@ -8,7 +10,16 @@ export const fetchTeams = async (year, division) => {
 };
 
 export const addTeam = async (year, division, data) => {
+    // 1. Call your API
     await axios.post(`${BASE_URL}/${year}/${division}/teams`, data);
+
+    // 2. Prepare Firestore enhancement
+    const leagueId = `${year}_${division}`;
+    const teamId = data.name.toLowerCase().replace(/\s+/g, '_');
+
+    // 3. Add players/__init__ to team
+    const playersInit = doc(db, `leagues/${leagueId}/teams/${teamId}/players/__init__`);
+    await setDoc(playersInit, {});
 };
 
 export const deleteTeam = async (year, division, id) => {

@@ -1,4 +1,3 @@
-// src/pages/ManageTeams.jsx
 import React, { useState, useEffect } from 'react';
 import './manageTeams.css';
 import AdminNavbar from '../components/AdminNavbar';
@@ -9,44 +8,68 @@ import {
     updateTeam,
     fetchMatchesForTeam
 } from '../services/teamService';
-
-const divisions = [
-    { label: 'Nižší 2025', year: '2025', division: 'lower' },
-    { label: 'Vyšší 2025', year: '2025', division: 'upper' },
-    { label: 'Nižší 2026', year: '2026', division: 'lower' },
-    { label: 'Vyšší 2026', year: '2026', division: 'upper' },
-];
+import { deleteDoc, doc, getDocs, collection } from 'firebase/firestore';
+import { db } from '../services/firebase';
 
 const ManageTeams = () => {
-    const [selected, setSelected] = useState(divisions[0]);
+    const [leagues, setLeagues] = useState([]);
+    const [selectedLeagueId, setSelectedLeagueId] = useState('');
     const [teams, setTeams] = useState([]);
     const [newTeamName, setNewTeamName] = useState('');
     const [expanded, setExpanded] = useState([]);
 
-    useEffect(() => {
-        loadTeams();
-    }, [selected]);
+    const fetchLeagues = async () => {
+        const snapshot = await getDocs(collection(db, 'leagues'));
+        const data = snapshot.docs.map(doc => {
+            const d = doc.data();
+            return {
+                id: doc.id,
+                label: `${d.division === 'lower' ? 'Nižší' : 'Vyšší'} ${d.year}`
+            };
+        });
+        setLeagues(data);
+        if (data.length > 0) setSelectedLeagueId(data[0].id); // Default to first
+    };
 
     const loadTeams = async () => {
-        const data = await fetchTeams(selected.year, selected.division);
-        setTeams(data);
+        if (!selectedLeagueId) return;
+        const [year, division] = selectedLeagueId.split('_');
+        const data = await fetchTeams(year, division);
+        const filtered = data.filter(t => t.id !== '__init__');
+        setTeams(filtered);
         setExpanded([]);
     };
 
+    useEffect(() => {
+        fetchLeagues();
+    }, []);
+
+    useEffect(() => {
+        loadTeams();
+    }, [selectedLeagueId]);
+
     const handleAdd = async () => {
         if (!newTeamName.trim()) return;
+        const [year, division] = selectedLeagueId.split('_');
+
         const newTeam = {
             name: newTeamName.trim(),
             wins: 0, draws: 0, losses: 0,
             matchesPlayed: 0, goalsScored: 0, goalsConceded: 0, points: 0
         };
-        await addTeam(selected.year, selected.division, newTeam);
+
+        await addTeam(year, division, newTeam);
+
+        const initDocRef = doc(db, `leagues/${selectedLeagueId}/teams/__init__`);
+        await deleteDoc(initDocRef).catch(() => {});
+
         setNewTeamName('');
         loadTeams();
     };
 
     const handleDelete = async (id) => {
-        await deleteTeam(selected.year, selected.division, id);
+        const [year, division] = selectedLeagueId.split('_');
+        await deleteTeam(year, division, id);
         loadTeams();
     };
 
@@ -59,15 +82,17 @@ const ManageTeams = () => {
     };
 
     const handleSave = async (team) => {
-        await updateTeam(selected.year, selected.division, team.id, team);
+        const [year, division] = selectedLeagueId.split('_');
+        await updateTeam(year, division, team.id, team);
         loadTeams();
     };
 
     const toggleExpand = async (id) => {
+        const [year, division] = selectedLeagueId.split('_');
         if (expanded.includes(id)) {
             setExpanded(expanded.filter(e => e !== id));
         } else {
-            const matches = await fetchMatchesForTeam(selected.year, selected.division, id);
+            const matches = await fetchMatchesForTeam(year, division, id);
             setTeams(prev =>
                 prev.map(team =>
                     team.id === id ? { ...team, matches } : team
@@ -78,7 +103,8 @@ const ManageTeams = () => {
     };
 
     const recalculateTeam = async (team) => {
-        const matches = await fetchMatchesForTeam(selected.year, selected.division, team.id);
+        const [year, division] = selectedLeagueId.split('_');
+        const matches = await fetchMatchesForTeam(year, division, team.id);
         let wins = 0, draws = 0, losses = 0, scored = 0, conceded = 0, points = 0;
         matches.forEach(match => {
             const isA = match.teamA_id === team.id;
@@ -100,7 +126,7 @@ const ManageTeams = () => {
             matchesPlayed: matches.length,
             points
         };
-        await updateTeam(selected.year, selected.division, team.id, updated);
+        await updateTeam(year, division, team.id, updated);
         loadTeams();
     };
 
@@ -117,15 +143,12 @@ const ManageTeams = () => {
                 <h2>Správa týmů</h2>
 
                 <select
-                    value={`${selected.year}_${selected.division}`}
-                    onChange={(e) => {
-                        const [year, division] = e.target.value.split('_');
-                        setSelected({ year, division });
-                    }}
+                    value={selectedLeagueId}
+                    onChange={(e) => setSelectedLeagueId(e.target.value)}
                 >
-                    {divisions.map((d, i) => (
-                        <option key={i} value={`${d.year}_${d.division}`}>
-                            {d.label}
+                    {leagues.map((l, i) => (
+                        <option key={i} value={l.id}>
+                            {l.label}
                         </option>
                     ))}
                 </select>
@@ -141,7 +164,7 @@ const ManageTeams = () => {
                 </div>
 
                 <div className="team-table">
-                <table>
+                    <table>
                         <thead>
                         <tr>
                             <th>Název</th>
@@ -179,8 +202,7 @@ const ManageTeams = () => {
                                         <button onClick={() => handleSave(team)}>Uložit</button>
                                         <button className="delete-btn" onClick={() => handleDelete(team.id)}>Odstranit</button>
                                         <button onClick={() => recalculateTeam(team)}>Přepočítat</button>
-                                        <button
-                                            onClick={() => toggleExpand(team.id)}>{expanded.includes(team.id) ? '▲' : '▼'}</button>
+                                        <button onClick={() => toggleExpand(team.id)}>{expanded.includes(team.id) ? '▲' : '▼'}</button>
                                     </td>
                                 </tr>
                                 {expanded.includes(team.id) && (

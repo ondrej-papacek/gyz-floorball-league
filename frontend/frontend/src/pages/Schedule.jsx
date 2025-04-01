@@ -2,98 +2,143 @@
 import { db } from '../services/firebase';
 import { collection, getDocs, query, orderBy } from 'firebase/firestore';
 import '../pages/schedule.css';
+import PlayoffView from './PlayoffView';
 
 function Schedule() {
     const [mergedMatches, setMergedMatches] = useState([]);
+    const [leagues, setLeagues] = useState([]);
+    const [selectedOption, setSelectedOption] = useState('');
+    const [isPlayoff, setIsPlayoff] = useState(false);
+    const [selectedYear, setSelectedYear] = useState('2025');
 
     useEffect(() => {
-        const fetchSchedule = async () => {
-            try {
-                const lowerQuery = query(
-                    collection(db, "leagues/2025_lower/matches"),
-                    orderBy("round")
-                );
-                const lowerSnapshot = await getDocs(lowerQuery);
-                const lowerData = lowerSnapshot.docs.map((doc) => ({
-                    id: doc.id,
-                    ...doc.data(),
-                    division: "lower",
-                }));
+        const fetchLeagues = async () => {
+            const snapshot = await getDocs(collection(db, 'leagues'));
+            const ids = snapshot.docs.map(doc => doc.id);
+            const years = Array.from(new Set(ids.map(id => id.split('_')[0])));
+            setLeagues(years.sort());
+            setSelectedOption(`Základní rozpis ${years[0]}`);
+        };
+        fetchLeagues();
+    }, []);
 
-                const upperQuery = query(
-                    collection(db, "leagues/2025_upper/matches"),
-                    orderBy("round")
-                );
-                const upperSnapshot = await getDocs(upperQuery);
-                const upperData = upperSnapshot.docs.map((doc) => ({
-                    id: doc.id,
-                    ...doc.data(),
-                    division: "upper",
-                }));
+    useEffect(() => {
+        if (!selectedOption || !selectedOption.includes('Základní')) return;
+        const year = selectedOption.split(' ')[2];
+        setSelectedYear(year);
+        setIsPlayoff(false);
+        fetchSchedule(year);
+    }, [selectedOption]);
 
-                const scheduleStartDate = new Date(2025, 2, 21);
-                const mergedRounds = [];
-                let lowerIndex = 0, upperIndex = 0;
+    const fetchSchedule = async (year) => {
+        try {
+            const lowerQuery = query(
+                collection(db, `leagues/${year}_lower/matches`),
+                orderBy("round")
+            );
+            const lowerSnapshot = await getDocs(lowerQuery);
+            const lowerData = lowerSnapshot.docs.map((doc) => ({
+                id: doc.id,
+                ...doc.data(),
+                division: "lower",
+            }));
 
-                while (lowerIndex < lowerData.length || upperIndex < upperData.length) {
-                    const roundDate = new Date(scheduleStartDate);
-                    roundDate.setDate(scheduleStartDate.getDate() + mergedRounds.length * 7);
+            const upperQuery = query(
+                collection(db, `leagues/${year}_upper/matches`),
+                orderBy("round")
+            );
+            const upperSnapshot = await getDocs(upperQuery);
+            const upperData = upperSnapshot.docs.map((doc) => ({
+                id: doc.id,
+                ...doc.data(),
+                division: "upper",
+            }));
 
-                    const roundMatches = [];
+            const scheduleStartDate = new Date(parseInt(year), 2, 21);
+            const mergedRounds = [];
+            let lowerIndex = 0, upperIndex = 0;
 
-                    if (lowerIndex < lowerData.length) {
-                        roundMatches.push({
-                            ...lowerData[lowerIndex],
-                            type: "lower",
-                        });
-                        lowerIndex++;
-                    }
+            while (lowerIndex < lowerData.length || upperIndex < upperData.length) {
+                const roundDate = new Date(scheduleStartDate);
+                roundDate.setDate(scheduleStartDate.getDate() + mergedRounds.length * 7);
 
-                    if (upperIndex < upperData.length) {
-                        roundMatches.push({
-                            ...upperData[upperIndex],
-                            type: "upper",
-                        });
-                        upperIndex++;
-                    }
+                const roundMatches = [];
 
-                    mergedRounds.push({
-                        round: mergedRounds.length + 1,
-                        date: roundDate,
-                        matches: roundMatches,
+                if (lowerIndex < lowerData.length) {
+                    roundMatches.push({
+                        ...lowerData[lowerIndex],
+                        type: "lower",
                     });
+                    lowerIndex++;
                 }
 
-                setMergedMatches(mergedRounds);
-            } catch (error) {
-                console.error("Error fetching schedule:", error);
-            }
-        };
+                if (upperIndex < upperData.length) {
+                    roundMatches.push({
+                        ...upperData[upperIndex],
+                        type: "upper",
+                    });
+                    upperIndex++;
+                }
 
-        fetchSchedule();
-    }, []);
+                mergedRounds.push({
+                    round: mergedRounds.length + 1,
+                    date: roundDate,
+                    matches: roundMatches,
+                });
+            }
+
+            setMergedMatches(mergedRounds);
+        } catch (error) {
+            console.error("Error fetching schedule:", error);
+        }
+    };
+
+    const handleChange = (e) => {
+        const val = e.target.value;
+        setSelectedOption(val);
+        const isPlayoffView = val.includes('Playoff');
+        setIsPlayoff(isPlayoffView);
+        const year = val.split(' ')[1];
+        setSelectedYear(year);
+    };
 
     return (
         <div className="schedule-page">
             <h2 className="schedule-title">Rozpis zápasů</h2>
-            <div className="grid-of-rounds">
-                {mergedMatches.map((roundData) => (
-                    <div key={roundData.round} className="round-card">
-                        <h4 className="round-title">{`Kolo ${roundData.round} – ${roundData.date.toLocaleDateString("cs-CZ")}`}</h4>
-                        <div className="match-grid">
-                            {roundData.matches.map((match, index) => (
-                                <div className="match-card" key={index}>
-                                    <div className="match-teams">
-                                        <strong>{match.teamA_name}</strong>
-                                        <span className="vs-label">vs</span>
-                                        <strong>{match.teamB_name}</strong>
+
+            {leagues.length > 0 && (
+                <select value={selectedOption} onChange={handleChange} className="schedule-selector">
+                    {leagues.map(year => (
+                        <React.Fragment key={year}>
+                            <option value={`Základní rozpis ${year}`}>Základní rozpis {year}</option>
+                            <option value={`Playoff ${year}`}>Playoff {year}</option>
+                        </React.Fragment>
+                    ))}
+                </select>
+            )}
+
+            {isPlayoff ? (
+                <PlayoffView year={selectedYear} />
+            ) : (
+                <div className="grid-of-rounds">
+                    {mergedMatches.map((roundData) => (
+                        <div key={roundData.round} className="round-card">
+                            <h4 className="round-title">{`Kolo ${roundData.round} – ${roundData.date.toLocaleDateString("cs-CZ")}`}</h4>
+                            <div className="match-grid">
+                                {roundData.matches.map((match, index) => (
+                                    <div className="match-card" key={index}>
+                                        <div className="match-teams">
+                                            <strong>{match.teamA_name}</strong>
+                                            <span className="vs-label">vs</span>
+                                            <strong>{match.teamB_name}</strong>
+                                        </div>
                                     </div>
-                                </div>
-                            ))}
+                                ))}
+                            </div>
                         </div>
-                    </div>
-                ))}
-            </div>
+                    ))}
+                </div>
+            )}
         </div>
     );
 }

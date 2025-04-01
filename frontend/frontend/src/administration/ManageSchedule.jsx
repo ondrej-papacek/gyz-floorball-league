@@ -1,7 +1,7 @@
 ﻿import React, { useEffect, useState } from 'react';
 import AdminNavbar from '../components/AdminNavbar';
-import { generateSchedule } from '../services/scheduleService';
 import {
+    generateSchedule,
     fetchMatches,
     updateMatch,
     deleteMatch,
@@ -9,12 +9,34 @@ import {
     cancelRound,
     deleteRound
 } from '../services/scheduleService';
+import { collection, getDocs } from 'firebase/firestore';
+import { db } from '../services/firebase';
 import './manageSchedule.css';
 
 const ManageSchedule = () => {
     const [mergedMatches, setMergedMatches] = useState([]);
     const [error, setError] = useState('');
-    const [selectedYear, setSelectedYear] = useState('2025'); // Make dynamic
+    const [selectedYear, setSelectedYear] = useState('');
+    const [availableYears, setAvailableYears] = useState([]);
+
+    useEffect(() => {
+        const fetchYears = async () => {
+            const snapshot = await getDocs(collection(db, 'leagues'));
+            const years = new Set();
+            snapshot.forEach(doc => {
+                const data = doc.data();
+                if (data.year) years.add(data.year.toString());
+            });
+            const sorted = Array.from(years).sort();
+            setAvailableYears(sorted);
+            if (sorted.length > 0) setSelectedYear(sorted[0]);
+        };
+        fetchYears();
+    }, []);
+
+    useEffect(() => {
+        if (selectedYear) fetchSchedule();
+    }, [selectedYear]);
 
     const handleGenerateSchedule = async (division) => {
         try {
@@ -26,10 +48,6 @@ const ManageSchedule = () => {
             alert('Chyba při generování rozpisu.');
         }
     };
-
-    useEffect(() => {
-        fetchSchedule();
-    }, [selectedYear]);
 
     const fetchSchedule = async () => {
         try {
@@ -123,9 +141,9 @@ const ManageSchedule = () => {
                 <h2>Správa rozpisu zápasů</h2>
 
                 <select value={selectedYear} onChange={(e) => setSelectedYear(e.target.value)}>
-                    <option value="2025">2025</option>
-                    <option value="2026">2026</option>
-                    <option value="2027">2027</option>
+                    {availableYears.map((year) => (
+                        <option key={year} value={year}>{year}</option>
+                    ))}
                 </select>
 
                 {error && (
@@ -163,10 +181,8 @@ const ManageSchedule = () => {
                                                    onChange={(e) => handleRoundAction(round, 'updateDate', e.target.value)}/>
                                         </div>
                                         <div className="round-actions">
-                                            <button onClick={() => handleRoundAction(round, 'cancel')}>Zrušit kolo
-                                            </button>
-                                            <button onClick={() => handleRoundAction(round, 'delete')}>Smazat kolo
-                                            </button>
+                                            <button onClick={() => handleRoundAction(round, 'cancel')}>Zrušit kolo</button>
+                                            <button onClick={() => handleRoundAction(round, 'delete')}>Smazat kolo</button>
                                         </div>
                                     </div>
                                     <div className="match-grid">
@@ -192,16 +208,14 @@ const ManageSchedule = () => {
                                                     </select>
                                                 </div>
                                                 <div className="actions">
-                                                    <button onClick={() => handleMatchAction(match, 'cancel')}>Zrušit
-                                                    </button>
+                                                    <button onClick={() => handleMatchAction(match, 'cancel')}>Zrušit</button>
                                                     <button onClick={() => handleMatchAction(match, 'defaultWin', {
                                                         status: 'finished', scoreA: 3, scoreB: 0
                                                     })}>Kontumační výhra {match.teamA_name}</button>
                                                     <button onClick={() => handleMatchAction(match, 'defaultWin', {
                                                         status: 'finished', scoreA: 0, scoreB: 3
                                                     })}>Kontumační výhra {match.teamB_name}</button>
-                                                    <button onClick={() => handleMatchAction(match, 'delete')}>Smazat
-                                                    </button>
+                                                    <button onClick={() => handleMatchAction(match, 'delete')}>Smazat</button>
                                                 </div>
                                             </div>
                                         ))}
