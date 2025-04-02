@@ -64,7 +64,7 @@ function App() {
                 <Route path="/admin/manage-matches" element={withRoleGuard(ManageMatches, 'admin')()} />
                 <Route path="/admin/manage-news" element={withRoleGuard(ManageNews, 'admin')()} />
                 <Route path="/admin/manage-league" element={withRoleGuard(ManageLeague, 'admin')()} />
-                <Route path="/admin/manage-playoffs/:leagueId" element={withRoleGuard(ManagePlayoffs, 'admin')()} />
+                <Route path="/admin/manage-playoffs/" element={withRoleGuard(ManagePlayoffs, 'admin')()} />
                 <Route path="/admin/manage-accounts" element={withRoleGuard(ManageAccounts, 'admin')()} />
                 <Route path="/admin/manage-players" element={withRoleGuard(ManagePlayers, 'admin')()} />
                 <Route path="/admin/manage-schedule" element={withRoleGuard(ManageSchedule, 'admin')()} />

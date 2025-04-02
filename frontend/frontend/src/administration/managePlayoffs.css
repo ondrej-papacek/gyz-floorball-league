@@ -115,6 +115,67 @@
     color: black;
 }
 
+.round-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 14px;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.delete-round-button {
+    background-color: #922c2c;
+    color: white;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-weight: bold;
+    cursor: pointer;
+    font-size: 0.9rem;
+}
+
+.delete-round-button:hover {
+    background-color: #b33a3a;
+    color: #fff;
+}
+
+.new-round-form {
+    background-color: #1e1e1e;
+    padding: 16px;
+    border-radius: 8px;
+    border: 1px solid #555;
+    margin-top: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.new-round-form input[type="text"] {
+    padding: 10px 12px;
+    border-radius: 6px;
+    border: 1px solid #666;
+    background-color: #333;
+    color: white;
+    font-size: 1rem;
+}
+
+.new-round-form button {
+    padding: 10px 14px;
+    background-color: #d9a326;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-weight: bold;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: background-color 0.2s ease;
+}
+
+.new-round-form button:hover {
+    background-color: #b5841d;
+}
+
 @media (max-width: 600px) {
     .playoff-controls,
     .playoff-match-row {
@@ -131,4 +192,16 @@
     .playoff-match-row button {
         width: 100%;
     }
+    .new-round-form {
+        padding: 12px;
+    }
+
+    .new-round-form button {
+        width: 100%;
+    }
+
+    .new-round-form input[type="text"] {
+        width: 100%;
+    }
 }
+

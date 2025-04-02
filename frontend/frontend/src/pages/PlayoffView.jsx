@@ -3,7 +3,7 @@ import { getPlayoffRounds } from '../services/playoffService';
 import PlayoffBracket from '../components/PlayoffBracket';
 import './playoffView.css';
 
-const PlayoffView = ({ selectedYear }) => {
+const PlayoffView = ({ year }) => {
     const [lowerRounds, setLowerRounds] = useState([]);
     const [upperRounds, setUpperRounds] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -14,8 +14,8 @@ const PlayoffView = ({ selectedYear }) => {
             try {
                 setLoading(true);
                 const [lower, upper] = await Promise.all([
-                    getPlayoffRounds(selectedYear, 'lower'),
-                    getPlayoffRounds(selectedYear, 'upper'),
+                    getPlayoffRounds(year, 'lower'),
+                    getPlayoffRounds(year, 'upper'),
                 ]);
                 setLowerRounds(Object.entries(lower).map(([round, matches]) => ({ round, matches })));
                 setUpperRounds(Object.entries(upper).map(([round, matches]) => ({ round, matches })));
@@ -29,14 +29,14 @@ const PlayoffView = ({ selectedYear }) => {
         };
 
         fetchPlayoffs();
-    }, [selectedYear]);
+    }, [year]);
 
     if (loading) return <div className="playoff-view-page"><p>Načítání...</p></div>;
     if (error) return <div className="playoff-view-page error">{error}</div>;
 
     return (
         <div className="playoff-view-page">
-            <h2 className="playoff-title">🏆 Playoff {selectedYear}</h2>
+            <h2 className="playoff-title">Playoff {year}</h2>
 
             <div className="bracket-section">
                 <h3 className="division-title">Nižší gymnázium</h3>
