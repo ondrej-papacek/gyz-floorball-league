@@ -16,3 +16,8 @@ export const deletePlayer = async (year, division, teamId, playerId) => {
     const res = await axios.delete(`${API_BASE}/${year}/${division}/teams/${teamId}/players/${playerId}`);
     return res.data;
 };
+
+export const updatePlayer = async (year, division, teamId, playerId, playerData) => {
+    const res = await axios.put(`${API_BASE}/${year}/${division}/teams/${teamId}/players/${playerId}`, playerData);
+    return res.data;
+};

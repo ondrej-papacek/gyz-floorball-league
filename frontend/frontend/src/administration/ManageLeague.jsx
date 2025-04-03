@@ -59,7 +59,7 @@ const ManageLeague = () => {
         <>
             <AdminNavbar />
             <div className="manage-league-page">
-                <h1>Správa Lig</h1>
+                <h1>Správa Ligy</h1>
 
                 <div className="add-league-form">
                     <input

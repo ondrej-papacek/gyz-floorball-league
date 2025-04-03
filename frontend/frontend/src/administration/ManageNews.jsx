@@ -1,152 +1,152 @@
 import React, { useState, useEffect } from 'react';
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
 import { db } from '../services/firebase';
-import { collection, getDocs, addDoc, updateDoc, deleteDoc, doc } from 'firebase/firestore';
+import {
+    collection,
+    getDocs,
+    addDoc,
+    updateDoc,
+    deleteDoc,
+    doc
+} from 'firebase/firestore';
 import { uploadImageToCloudinary } from '../services/cloudinaryService';
 import './manageNews.css';
 
 const ManageNews = () => {
     const [news, setNews] = useState([]);
-    const [newArticle, setNewArticle] = useState({
+    const [form, setForm] = useState({
         title: '',
         shortDescription: '',
         longDescription: '',
-        image: ''
+        image: '',
+        date: new Date()
     });
-    const [editingArticle, setEditingArticle] = useState(null);
+    const [editingId, setEditingId] = useState(null);
+    const [imagePreview, setImagePreview] = useState('');
 
-    // Fetch all news articles
     useEffect(() => {
         const fetchNews = async () => {
             const newsRef = collection(db, 'news');
             const snapshot = await getDocs(newsRef);
-            const newsData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-            setNews(newsData);
+            const data = snapshot.docs.map(doc => ({
+                id: doc.id,
+                ...doc.data()
+            }));
+            setNews(data.sort((a, b) => new Date(b.date) - new Date(a.date)));
         };
-
         fetchNews();
     }, []);
 
-    // Handle input changes
-    const handleInputChange = (e) => {
+    const handleChange = (e) => {
         const { name, value } = e.target;
-        setNewArticle(prev => ({ ...prev, [name]: value }));
+        setForm(prev => ({ ...prev, [name]: value }));
     };
 
-    // Handle image upload
+    const handleDateChange = (date) => {
+        setForm(prev => ({ ...prev, date }));
+    };
+
     const handleImageUpload = async (e) => {
         const file = e.target.files[0];
         if (file) {
-            const imageUrl = await uploadImageToCloudinary(file);
-            setNewArticle(prev => ({ ...prev, image: imageUrl }));
+            const url = await uploadImageToCloudinary(file);
+            setForm(prev => ({ ...prev, image: url }));
+            setImagePreview(URL.createObjectURL(file));
         }
     };
 
-    // Add new article
-    const handleAddNews = async () => {
-        if (!newArticle.title || !newArticle.shortDescription || !newArticle.longDescription || !newArticle.image) {
-            alert("Vyplňte všechna pole a nahrajte obrázek.");
-            return;
-        }
-
-        const newsRef = collection(db, 'news');
-        const docRef = await addDoc(newsRef, {
-            ...newArticle,
-            date: new Date().toISOString(),
+    const resetForm = () => {
+        setForm({
+            title: '',
+            shortDescription: '',
+            longDescription: '',
+            image: '',
+            date: new Date()
         });
-
-        setNews([{ id: docRef.id, ...newArticle, date: new Date().toISOString() }, ...news]);
-        setNewArticle({ title: '', shortDescription: '', longDescription: '', image: '' });
-        alert("Novinka byla přidána.");
+        setEditingId(null);
+        setImagePreview('');
     };
 
-    // Edit news article
-    const handleEditNews = async () => {
-        if (!editingArticle) return;
+    const handleSubmit = async () => {
+        const payload = {
+            ...form,
+            date: new Date(form.date).toISOString()
+        };
 
-        const newsRef = doc(db, 'news', editingArticle.id);
-        await updateDoc(newsRef, editingArticle);
-
-        setNews(news.map(n => (n.id === editingArticle.id ? editingArticle : n)));
-        setEditingArticle(null);
-        alert("Novinka byla aktualizována.");
-    };
-
-    // Delete news article
-    const handleDeleteNews = async (id) => {
-        if (window.confirm("Opravdu chcete tuto novinku smazat?")) {
-            const newsRef = doc(db, 'news', id);
-            await deleteDoc(newsRef);
-            setNews(news.filter(n => n.id !== id));
-            alert("Novinka byla smazána.");
+        if (editingId) {
+            await updateDoc(doc(db, 'news', editingId), payload);
+            setNews(prev => prev.map(n => n.id === editingId ? { id: editingId, ...payload } : n));
+        } else {
+            const docRef = await addDoc(collection(db, 'news'), payload);
+            setNews(prev => [{ id: docRef.id, ...payload }, ...prev]);
         }
+
+        resetForm();
+        alert(editingId ? "Novinka upravena." : "Novinka přidána.");
+    };
+
+    const handleEdit = (article) => {
+        setEditingId(article.id);
+        setForm({
+            ...article,
+            date: article.date ? new Date(article.date) : new Date()
+        });
+        setImagePreview(article.image);
+    };
+
+    const handleDelete = async (id) => {
+        if (!window.confirm("Opravdu chcete smazat tuto novinku?")) return;
+        await deleteDoc(doc(db, 'news', id));
+        setNews(prev => prev.filter(n => n.id !== id));
     };
 
     return (
         <div className="manage-news-page">
             <h1>Správa Novinek</h1>
 
-            {/* ADD NEWS FORM */}
             <div className="news-form">
-                <h2>Přidat novinku</h2>
                 <input
-                    type="text"
                     name="title"
                     placeholder="Nadpis"
-                    value={newArticle.title}
-                    onChange={handleInputChange}
+                    value={form.title}
+                    onChange={handleChange}
+                />
+                <DatePicker
+                    selected={form.date}
+                    onChange={handleDateChange}
+                    dateFormat="dd. MMMM yyyy"
+                    className="datepicker"
                 />
                 <input
-                    type="text"
                     name="shortDescription"
                     placeholder="Krátký popis"
-                    value={newArticle.shortDescription}
-                    onChange={handleInputChange}
+                    value={form.shortDescription}
+                    onChange={handleChange}
                 />
                 <textarea
                     name="longDescription"
                     placeholder="Dlouhý popis"
-                    value={newArticle.longDescription}
-                    onChange={handleInputChange}
+                    value={form.longDescription}
+                    onChange={handleChange}
                 />
                 <input type="file" onChange={handleImageUpload} />
-                {newArticle.image && <img src={newArticle.image} alt="Preview" className="news-preview-image" />}
-                <button onClick={handleAddNews}>Přidat Novinku</button>
+                {imagePreview && <img src={imagePreview} alt="Preview" className="news-preview-image" />}
+                <button onClick={handleSubmit}>
+                    {editingId ? 'Uložit změny' : 'Přidat Novinku'}
+                </button>
+                {editingId && <button onClick={resetForm}>Zrušit úpravy</button>}
             </div>
 
-            {/* EDITING FORM */}
-            {editingArticle && (
-                <div className="news-form">
-                    <h2>Upravit novinku</h2>
-                    <input
-                        type="text"
-                        value={editingArticle.title}
-                        onChange={(e) => setEditingArticle(prev => ({ ...prev, title: e.target.value }))}
-                    />
-                    <input
-                        type="text"
-                        value={editingArticle.shortDescription}
-                        onChange={(e) => setEditingArticle(prev => ({ ...prev, shortDescription: e.target.value }))}
-                    />
-                    <textarea
-                        value={editingArticle.longDescription}
-                        onChange={(e) => setEditingArticle(prev => ({ ...prev, longDescription: e.target.value }))}
-                    />
-                    <button onClick={handleEditNews}>Uložit změny</button>
-                    <button onClick={() => setEditingArticle(null)}>Zrušit</button>
-                </div>
-            )}
-
-            {/* NEWS LIST */}
             <div className="news-list">
-                <h2>Seznam novinek</h2>
                 {news.map(article => (
                     <div key={article.id} className="news-item">
-                        <img src={article.image} alt={article.title} className="news-item-image" />
+                        <img src={article.image} alt={article.title} />
                         <div className="news-content">
                             <h3>{article.title}</h3>
                             <p>{article.shortDescription}</p>
-                            <button onClick={() => setEditingArticle(article)}>Upravit</button>
-                            <button onClick={() => handleDeleteNews(article.id)}>Smazat</button>
+                            <button onClick={() => handleEdit(article)}>Upravit</button>
+                            <button onClick={() => handleDelete(article.id)}>Smazat</button>
                         </div>
                     </div>
                 ))}

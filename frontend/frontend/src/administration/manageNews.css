@@ -1,54 +1,101 @@
 .manage-news-page {
-    padding: 20px;
-    background-color: #333;
-    color: #fff;
-    border-radius: 8px;
+    padding: 30px;
+    font-family: Poppins, sans-serif;
+    background-color: #1f1f1f;
+    color: white;
+    min-height: 100vh;
 }
 
 .news-form {
-    background-color: #444;
-    padding: 15px;
-    border-radius: 6px;
-    margin-bottom: 10px;
+    background: #2d2d2d;
+    padding: 20px;
+    border-radius: 12px;
     display: flex;
     flex-direction: column;
+    gap: 12px;
+    max-width: 600px;
+    margin-bottom: 40px;
 }
 
 .news-form input,
-.news-form textarea {
-    width: 100%;
+.news-form textarea,
+.news-form .datepicker {
+    background: #444;
+    color: white;
+    border: none;
     padding: 10px;
-    margin-bottom: 10px;
-    border-radius: 4px;
+    font-size: 16px;
+    border-radius: 6px;
+}
+
+.news-form textarea {
+    min-height: 100px;
+    resize: vertical;
 }
 
 .news-form button {
-    padding: 10px;
     background-color: #f0b323;
     border: none;
-    color: black;
+    color: #000;
+    padding: 10px;
+    font-weight: bold;
     cursor: pointer;
+    border-radius: 6px;
+}
+
+.news-form button:hover {
+    background-color: #d99b1e;
+}
+
+.news-preview-image {
+    max-width: 100%;
+    height: auto;
+    border-radius: 8px;
 }
 
 .news-list {
-    margin-top: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
 }
 
 .news-item {
-    background-color: #555;
-    padding: 10px;
-    border-radius: 6px;
-    margin-bottom: 10px;
+    background: #3b3b3b;
     display: flex;
+    gap: 20px;
+    padding: 15px;
+    border-radius: 10px;
+    align-items: center;
 }
 
 .news-item img {
-    width: 80px;
-    height: 80px;
-    border-radius: 4px;
-    margin-right: 10px;
+    width: 100px;
+    height: 100px;
+    object-fit: cover;
+    border-radius: 6px;
 }
 
-.news-item button {
-    margin-right: 5px;
+.news-content h3 {
+    margin: 0;
+    font-size: 1.2rem;
+}
+
+.news-content p {
+    font-size: 0.95rem;
+    color: #ddd;
+    margin: 6px 0;
+}
+
+.news-content button {
+    background-color: #444;
+    color: white;
+    border: none;
+    padding: 6px 12px;
+    margin-right: 10px;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.news-content button:hover {
+    background-color: #d92d2d;
 }

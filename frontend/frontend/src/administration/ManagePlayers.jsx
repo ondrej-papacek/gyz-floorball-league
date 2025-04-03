@@ -2,7 +2,8 @@
 import {
     getPlayers,
     addPlayer,
-    deletePlayer
+    deletePlayer,
+    updatePlayer
 } from '../services/playerService';
 import { db } from '../services/firebase';
 import { collection, getDocs, doc, deleteDoc } from 'firebase/firestore';
@@ -27,6 +28,8 @@ const ManagePlayers = () => {
     const [players, setPlayers] = useState([]);
     const [newPlayerName, setNewPlayerName] = useState('');
     const [loading, setLoading] = useState(false);
+    const [editing, setEditing] = useState(null);
+    const [editFields, setEditFields] = useState({ name: '', goals: 0 });
 
     const fetchLeagues = async () => {
         const snapshot = await getDocs(collection(db, 'leagues'));
@@ -38,7 +41,7 @@ const ManagePlayers = () => {
             };
         });
         setLeagues(data);
-        if (data.length > 0) setSelectedLeague(data[0].id); // default to first
+        if (data.length > 0) setSelectedLeague(data[0].id);
     };
 
     const fetchTeams = async () => {
@@ -63,50 +66,25 @@ const ManagePlayers = () => {
         setLoading(false);
     };
 
-    useEffect(() => {
-        fetchLeagues();
-    }, []);
-
+    useEffect(() => { fetchLeagues(); }, []);
     useEffect(() => {
         fetchTeams();
         setSelectedTeamId('');
         setPlayers([]);
     }, [selectedLeague]);
-
-    useEffect(() => {
-        if (selectedTeamId) {
-            fetchPlayers();
-        }
-    }, [selectedTeamId]);
+    useEffect(() => { if (selectedTeamId) fetchPlayers(); }, [selectedTeamId]);
 
     const handleAddPlayer = async () => {
         const name = newPlayerName.trim();
-        if (!name) {
-            alert("Jméno hráče nesmí být prázdné.");
-            return;
-        }
-
+        if (!name) return alert("Jméno hráče nesmí být prázdné.");
         const playerId = normalizeName(name);
-
         if (players.some(player => player.id === playerId)) {
-            alert("Hráč se stejným ID již existuje v tomto týmu.");
-            return;
+            return alert("Hráč se stejným ID již existuje.");
         }
-
         const [year, division] = selectedLeague.split('_');
-        const playerData = {
-            name,
-            id: playerId,
-            goals: 0,
-            team_id: selectedTeamId
-        };
-
+        const playerData = { name, id: playerId, goals: 0, team_id: selectedTeamId };
         await addPlayer(year, division, selectedTeamId, playerId, playerData);
-
-        // ✅ Remove placeholder __init__ if it exists
-        const initRef = doc(db, 'leagues', `${year}_${division}`, 'teams', selectedTeamId, 'players', '__init__');
-        await deleteDoc(initRef).catch(() => {});
-
+        await deleteDoc(doc(db, 'leagues', `${year}_${division}`, 'teams', selectedTeamId, 'players', '__init__')).catch(() => {});
         setNewPlayerName('');
         fetchPlayers();
     };
@@ -119,6 +97,22 @@ const ManagePlayers = () => {
         }
     };
 
+    const handleEditClick = (player) => {
+        setEditing(player.id);
+        setEditFields({ name: player.name, goals: player.goals });
+    };
+
+    const handleSaveEdit = async (player) => {
+        const [year, division] = selectedLeague.split('_');
+        await updatePlayer(year, division, selectedTeamId, player.id, {
+            ...player,
+            name: editFields.name,
+            goals: Number(editFields.goals) || 0
+        });
+        setEditing(null);
+        fetchPlayers();
+    };
+
     return (
         <>
             <AdminNavbar />
@@ -129,9 +123,7 @@ const ManagePlayers = () => {
                     <label>Vyberte ligu:</label>
                     <select value={selectedLeague} onChange={(e) => setSelectedLeague(e.target.value)}>
                         {leagues.map((league) => (
-                            <option key={league.id} value={league.id}>
-                                {league.label}
-                            </option>
+                            <option key={league.id} value={league.id}>{league.label}</option>
                         ))}
                     </select>
 
@@ -170,10 +162,30 @@ const ManagePlayers = () => {
                                 <tbody>
                                 {players.map(player => (
                                     <tr key={player.id}>
-                                        <td>{player.name}</td>
-                                        <td>{player.goals}</td>
                                         <td>
-                                            <button onClick={() => handleDeletePlayer(player.id)}>🗑️</button>
+                                            {editing === player.id ? (
+                                                <input
+                                                    value={editFields.name}
+                                                    onChange={(e) => setEditFields(prev => ({ ...prev, name: e.target.value }))}
+                                                />
+                                            ) : player.name}
+                                        </td>
+                                        <td>
+                                            {editing === player.id ? (
+                                                <input
+                                                    type="number"
+                                                    value={editFields.goals}
+                                                    onChange={(e) => setEditFields(prev => ({ ...prev, goals: e.target.value }))}
+                                                />
+                                            ) : player.goals}
+                                        </td>
+                                        <td>
+                                            {editing === player.id ? (
+                                                <button className={"save-btn"} onClick={() => handleSaveEdit(player)}>💾</button>
+                                            ) : (
+                                                <button className={"edit-btn"} onClick={() => handleEditClick(player)}>✏️</button>
+                                            )}
+                                            <button className={"delete-btn"} onClick={() => handleDeletePlayer(player.id)}>🗑️</button>
                                         </td>
                                     </tr>
                                 ))}
