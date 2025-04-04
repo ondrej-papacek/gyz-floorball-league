@@ -61,17 +61,22 @@
     text-transform: uppercase;
 }
 
+input {
+    margin-bottom: 8px;
+    padding: 6px 10px;
+    font-size: 0.95rem;
+    border-radius: 6px;
+    background-color: #333;
+    color: white;
+    border: 1px solid #666;
+}
+
 .playoff-match-row {
     display: flex;
     align-items: center;
     gap: 10px;
     margin-bottom: 12px;
     flex-wrap: wrap;
-}
-
-.playoff-match-row p {
-    margin: 0;
-    font-size: 1rem;
 }
 
 .playoff-match-row select,
@@ -124,6 +129,38 @@
     flex-wrap: wrap;
 }
 
+.add-btn {
+    background-color: #d9a326;
+    margin-right: 12px;
+    color: white;
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-weight: bold;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: background-color 0.2s ease;
+}
+
+.add-btn:hover {
+    background-color: #b5841d;
+}
+
+.save-btn {
+    background-color: #d9a326;
+    color: white;
+    padding: 6px 12px;
+    border: none;
+    border-radius: 6px;
+    font-weight: bold;
+    cursor: pointer;
+    font-size: 0.9rem;
+}
+
+.save-btn:hover {
+    background-color: #b5841d;
+    color: black;
+}
+
 .delete-round-button {
     background-color: #922c2c;
     color: white;
@@ -137,43 +174,6 @@
 
 .delete-round-button:hover {
     background-color: #b33a3a;
-    color: #fff;
-}
-
-.new-round-form {
-    background-color: #1e1e1e;
-    padding: 16px;
-    border-radius: 8px;
-    border: 1px solid #555;
-    margin-top: 24px;
-    display: flex;
-    flex-direction: column;
-    gap: 14px;
-}
-
-.new-round-form input[type="text"] {
-    padding: 10px 12px;
-    border-radius: 6px;
-    border: 1px solid #666;
-    background-color: #333;
-    color: white;
-    font-size: 1rem;
-}
-
-.new-round-form button {
-    padding: 10px 14px;
-    background-color: #d9a326;
-    color: white;
-    border: none;
-    border-radius: 6px;
-    font-weight: bold;
-    cursor: pointer;
-    font-size: 1rem;
-    transition: background-color 0.2s ease;
-}
-
-.new-round-form button:hover {
-    background-color: #b5841d;
 }
 
 @media (max-width: 600px) {
@@ -185,23 +185,10 @@
     }
 
     .playoff-match-row select,
-    .playoff-match-row input {
-        width: 100%;
-    }
-
-    .playoff-match-row button {
-        width: 100%;
-    }
-    .new-round-form {
-        padding: 12px;
-    }
-
-    .new-round-form button {
-        width: 100%;
-    }
-
-    .new-round-form input[type="text"] {
+    .playoff-match-row input,
+    .playoff-match-row button,
+    .add-btn,
+    .save-btn {
         width: 100%;
     }
 }
-

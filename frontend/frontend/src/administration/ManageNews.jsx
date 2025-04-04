@@ -12,6 +12,7 @@ import {
 } from 'firebase/firestore';
 import { uploadImageToCloudinary } from '../services/cloudinaryService';
 import './manageNews.css';
+import AdminNavbar from "../components/AdminNavbar.jsx";
 
 const ManageNews = () => {
     const [news, setNews] = useState([]);
@@ -102,56 +103,60 @@ const ManageNews = () => {
     };
 
     return (
-        <div className="manage-news-page">
-            <h1>Správa Novinek</h1>
+        <>
+            <AdminNavbar />
+            <div className="manage-news-page">
+                <h1>Správa Novinek</h1>
 
-            <div className="news-form">
-                <input
-                    name="title"
-                    placeholder="Nadpis"
-                    value={form.title}
-                    onChange={handleChange}
-                />
-                <DatePicker
-                    selected={form.date}
-                    onChange={handleDateChange}
-                    dateFormat="dd. MMMM yyyy"
-                    className="datepicker"
-                />
-                <input
-                    name="shortDescription"
-                    placeholder="Krátký popis"
-                    value={form.shortDescription}
-                    onChange={handleChange}
-                />
-                <textarea
-                    name="longDescription"
-                    placeholder="Dlouhý popis"
-                    value={form.longDescription}
-                    onChange={handleChange}
-                />
-                <input type="file" onChange={handleImageUpload} />
-                {imagePreview && <img src={imagePreview} alt="Preview" className="news-preview-image" />}
-                <button onClick={handleSubmit}>
-                    {editingId ? 'Uložit změny' : 'Přidat Novinku'}
-                </button>
-                {editingId && <button onClick={resetForm}>Zrušit úpravy</button>}
-            </div>
+                <div className="news-form">
+                    <input
+                        name="title"
+                        placeholder="Nadpis"
+                        value={form.title}
+                        onChange={handleChange}
+                    />
+                    <DatePicker
+                        selected={form.date}
+                        onChange={handleDateChange}
+                        dateFormat="dd. MMMM yyyy"
+                        className="datepicker"
+                        dropdownMode="select"
+                    />
+                    <input
+                        name="shortDescription"
+                        placeholder="Krátký popis"
+                        value={form.shortDescription}
+                        onChange={handleChange}
+                    />
+                    <textarea
+                        name="longDescription"
+                        placeholder="Dlouhý popis"
+                        value={form.longDescription}
+                        onChange={handleChange}
+                    />
+                    <input type="file" onChange={handleImageUpload} />
+                    {imagePreview && <img src={imagePreview} alt="Preview" className="news-preview-image" />}
+                    <button onClick={handleSubmit}>
+                        {editingId ? 'Uložit změny' : 'Přidat Novinku'}
+                    </button>
+                    {editingId && <button onClick={resetForm}>Zrušit úpravy</button>}
+                </div>
 
-            <div className="news-list">
-                {news.map(article => (
-                    <div key={article.id} className="news-item">
-                        <img src={article.image} alt={article.title} />
-                        <div className="news-content">
-                            <h3>{article.title}</h3>
-                            <p>{article.shortDescription}</p>
-                            <button onClick={() => handleEdit(article)}>Upravit</button>
-                            <button onClick={() => handleDelete(article.id)}>Smazat</button>
+                <div className="news-list">
+                    {news.map(article => (
+                        <div key={article.id} className="news-item">
+                            <img src={article.image} alt={article.title} />
+                            <div className="news-content">
+                                <h3>{article.title}</h3>
+                                <p>{article.shortDescription}</p>
+                                <button onClick={() => handleEdit(article)} className="edit-button">Upravit</button>
+                                <button onClick={() => handleDelete(article.id)} className="delete-button">Smazat</button>
+                            </div>
                         </div>
-                    </div>
-                ))}
+                    ))}
+                </div>
             </div>
-        </div>
+        </>
     );
 };
 

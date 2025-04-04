@@ -170,6 +170,7 @@ const ManagePlayoffs = () => {
                         <h3>Přidat nové kolo</h3>
                     </div>
                     <input
+
                         type="text"
                         placeholder="Název kola (např. semifinále)"
                         value={newRoundName}
@@ -198,8 +199,9 @@ const ManagePlayoffs = () => {
                             </select>
                         </div>
                     ))}
-                    <button onClick={addNewMatchRow}>+ Přidat zápas</button>
+                    <button className="add-btn" onClick={addNewMatchRow}>+ Přidat zápas</button>
                     <button className="save-btn" onClick={handleSaveNewRound}>💾 Uložit nové kolo</button>
+                    <button className="delete-round-button" onClick={handleDeleteRound}>🗑️ Smazat kolo</button>
                 </div>
             </div>
         </>

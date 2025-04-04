@@ -4,7 +4,7 @@
     border-radius: 12px;
     color: white;
     max-width: 900px;
-    margin: 0 auto;
+    margin: 60px auto;
     font-family: Poppins, sans-serif;
 }
 
@@ -27,6 +27,7 @@
 }
 
 .select-controls select {
+    width: fit-content;
     background-color: #555;
     color: white;
     padding: 8px;
@@ -90,6 +91,7 @@
     color: white;
     border: none;
     padding: 6px 10px;
+    margin-right: 10px;
     border-radius: 6px;
     cursor: pointer;
     font-size: 14px;
