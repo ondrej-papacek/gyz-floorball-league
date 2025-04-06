@@ -64,3 +64,11 @@
     text-decoration: none;
 }
 
+.news-loading,
+.news-error {
+    color: #ccc;
+    font-style: italic;
+    margin-top: 10px;
+}
+
+

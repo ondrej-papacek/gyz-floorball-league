@@ -1,18 +1,14 @@
 ﻿import React, { useState, useEffect } from 'react';
-import { db } from '../services/firebase';
-import { doc, onSnapshot } from 'firebase/firestore';
 import './liveBroadcast.css';
+import { subscribeToLiveBroadcast } from '../services/liveBroadcastService';
 
 function LiveBroadcast() {
     const [liveData, setLiveData] = useState(null);
     const [timeLeft, setTimeLeft] = useState(0);
 
     useEffect(() => {
-        const broadcastDoc = doc(db, 'liveBroadcast', 'currentMatch');
-        const unsubscribe = onSnapshot(broadcastDoc, (docSnapshot) => {
-            if (docSnapshot.exists()) {
-                const data = docSnapshot.data();
-
+        const unsubscribe = subscribeToLiveBroadcast((data) => {
+            if (data) {
                 const parsedTimeLeft = typeof data.timeLeft === "string"
                     ? parseInt(data.timeLeft, 10)
                     : data.timeLeft || 0;
@@ -45,12 +41,18 @@ function LiveBroadcast() {
             : "Unknown Date";
     };
 
+    const formatScorers = (scorers = []) => {
+        return scorers.length > 0
+            ? scorers.map(s => `${s.name} (${s.goals})`).join(", ")
+            : "No scorer details";
+    };
+
     const timeLeftFormatted = timeLeft > 0
         ? `${Math.floor(timeLeft / 60)}:${String(timeLeft % 60).padStart(2, '0')}`
         : "0:00";
 
     if (!liveData) {
-        return <p>Loading live match broadcast...</p>;
+        return <p>Načítání živého přenosu zápasu...</p>;
     }
 
     return (
@@ -64,7 +66,7 @@ function LiveBroadcast() {
                     <div className="team team-a">
                         <img src={`/team-logos/${liveData.teamA?.toLowerCase() || "unknown"}.png`} alt={`${liveData.teamA_name} Logo`} />
                         <span className="team-name">{liveData.teamA_name || "Neznámý tým A"}</span>
-                        <span className="scorers">{liveData.scorerA?.length ? liveData.scorerA.join(", ") : "No scorer details"}</span>
+                        <span className="scorers">{formatScorers(liveData.scorerA)}</span>
                     </div>
                     <div className="score-info">
                         <div className="score">{`${liveData.scoreA} - ${liveData.scoreB}`}</div>
@@ -76,7 +78,7 @@ function LiveBroadcast() {
                     <div className="team team-b">
                         <img src={`/team-logos/${liveData.teamB?.toLowerCase() || "unknown"}.png`} alt={`${liveData.teamB_name} Logo`} />
                         <span className="team-name">{liveData.teamB_name || "Neznámý tým B"}</span>
-                        <span className="scorers">{liveData.scorerB?.length ? liveData.scorerB.join(", ") : "No scorer details"}</span>
+                        <span className="scorers">{formatScorers(liveData.scorerB)}</span>
                     </div>
                 </div>
             </div>

@@ -6,29 +6,20 @@ exports.updateMatchLive = async (req, res, next) => {
         const { scoreA, scoreB, scorerA, scorerB, periodInfo, timeLeft } = req.body;
         const liveMatchRef = db.collection('liveBroadcast').doc('currentMatch');
 
-        let updateData = {
+        const updateData = {
             scoreA,
             scoreB,
             periodInfo,
-            timeLeft
+            timeLeft,
+            scorerA: Array.isArray(scorerA) ? scorerA : [],
+            scorerB: Array.isArray(scorerB) ? scorerB : [],
         };
 
-        if (Array.isArray(scorerA) && scorerA.length > 0) {
-            updateData.scorerA = admin.firestore.FieldValue.arrayUnion(...scorerA);
-        } else {
-            updateData.scorerA = [];
-        }
-
-        if (Array.isArray(scorerB) && scorerB.length > 0) {
-            updateData.scorerB = admin.firestore.FieldValue.arrayUnion(...scorerB);
-        } else {
-            updateData.scorerB = [];
-        }
-
-        await liveMatchRef.update(updateData);
+        await liveMatchRef.set(updateData, { merge: true });
 
         res.status(200).json({ message: 'Live match updated successfully.' });
     } catch (error) {
+        console.error(error);
         next(new Error('Failed to update live match.'));
     }
 };
@@ -58,15 +49,15 @@ exports.completeMatch = async (req, res, next) => {
         }
 
         const matchData = liveMatchSnapshot.data();
-        const { year, division, teamA, teamB, teamA_name, teamB_name, scoreA, scoreB, scorerA, scorerB } = matchData;
+        const { year, division, teamA, teamB, teamA_name, teamB_name, scoreA, scoreB, scorerA, scorerB, id } = matchData;
 
         const teamsRef = db.collection('leagues').doc(`${year}_${division}`).collection('teams');
         const matchesRef = db.collection('leagues').doc(`${year}_${division}`).collection('matches');
         const goalScorersRef = db.collection('leagues').doc(`${year}_${division}`).collection('goalScorers');
 
-        // 🔹 Update team stats
         const teamARef = teamsRef.doc(teamA);
         const teamBRef = teamsRef.doc(teamB);
+
         const teamASnapshot = await teamARef.get();
         const teamBSnapshot = await teamBRef.get();
 
@@ -74,8 +65,8 @@ exports.completeMatch = async (req, res, next) => {
             return res.status(404).json({ message: 'One or both teams not found.' });
         }
 
-        let teamAStats = teamASnapshot.data();
-        let teamBStats = teamBSnapshot.data();
+        const teamAStats = teamASnapshot.data();
+        const teamBStats = teamBSnapshot.data();
 
         teamAStats.matchesPlayed += 1;
         teamBStats.matchesPlayed += 1;
@@ -87,32 +78,34 @@ exports.completeMatch = async (req, res, next) => {
         await teamARef.update(teamAStats);
         await teamBRef.update(teamBStats);
 
-        await matchesRef.doc(matchData.id).update({ scoreA, scoreB, status: "completed" });
+        await matchesRef.doc(id).update({ scoreA, scoreB, status: 'completed' });
 
-        const updateGoalScorer = async (scorers, team) => {
+        const updateGoalScorer = async (scorers, teamName) => {
             if (!scorers || scorers.length === 0) return;
 
             for (const scorer of scorers) {
                 const { name, goals } = scorer;
-                const scorerQuery = await goalScorersRef.where("name", "==", name).limit(1).get();
+                const q = await goalScorersRef.where('name', '==', name).limit(1).get();
 
-                if (!scorerQuery.empty) {
-                    const scorerDoc = scorerQuery.docs[0];
-                    await goalScorersRef.doc(scorerDoc.id).update({
-                        goals: scorerDoc.data().goals + goals
+                if (!q.empty) {
+                    const docRef = q.docs[0].ref;
+                    await docRef.update({
+                        goals: admin.firestore.FieldValue.increment(goals),
                     });
                 } else {
-                    await goalScorersRef.add({ name, goals, team });
+                    await goalScorersRef.add({ name, goals, team: teamName });
                 }
             }
         };
 
         await updateGoalScorer(scorerA, teamA_name);
         await updateGoalScorer(scorerB, teamB_name);
+
         await liveMatchRef.delete();
 
         res.status(200).json({ message: 'Match completed and updated successfully.' });
     } catch (error) {
+        console.error(error);
         next(new Error('Failed to complete match.'));
     }
 };

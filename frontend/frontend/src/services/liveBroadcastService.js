@@ -1,22 +1,23 @@
-﻿import { db } from './firebase';
+﻿// liveBroadcastService.js
+import { db } from './firebase';
 import { doc, getDoc, setDoc, onSnapshot } from 'firebase/firestore';
 
-const liveBroadcastDoc = doc(db, 'liveBroadcast', 'current');
+const liveBroadcastDoc = doc(db, 'liveBroadcast', 'currentMatch');
 
-// Fetch live broadcast data (one-time fetch)
+// Fetch once (optional)
 export const fetchLiveBroadcast = async () => {
     const docSnap = await getDoc(liveBroadcastDoc);
     return docSnap.exists() ? docSnap.data() : null;
 };
 
-// Subscribe to live broadcast updates (real-time updates)
+// Real-time updates
 export const subscribeToLiveBroadcast = (callback) => {
     return onSnapshot(liveBroadcastDoc, (docSnap) => {
         callback(docSnap.exists() ? docSnap.data() : null);
     });
 };
 
-// Update live broadcast data (admin/helper)
+// Optional: Admin update (if needed from outside AdminLiveBroadcast.jsx)
 export const updateLiveBroadcast = async (data) => {
     await setDoc(liveBroadcastDoc, data, { merge: true });
 };

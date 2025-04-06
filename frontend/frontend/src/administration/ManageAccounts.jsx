@@ -9,6 +9,7 @@ import {
 } from 'firebase/firestore';
 import { auth, db } from '../services/firebase';
 import './manageAccounts.css';
+import AdminNavbar from "../components/AdminNavbar.jsx";
 
 const ManageAccounts = () => {
     const [users, setUsers] = useState([]);
@@ -73,78 +74,81 @@ const ManageAccounts = () => {
     };
 
     return (
-        <div className="manage-accounts">
-            <h2>Správa uživatelů</h2>
+        <>
+            <AdminNavbar />
+            <div className="manage-accounts">
+                <h2>Správa uživatelů</h2>
 
-            <form className="create-user-form" onSubmit={handleCreateUser}>
-                <h3>Přidat nový účet</h3>
-                <input
-                    type="email"
-                    placeholder="Email"
-                    value={newUser.email}
-                    onChange={(e) => setNewUser({ ...newUser, email: e.target.value })}
-                    required
-                />
-                <input
-                    type="password"
-                    placeholder="Heslo"
-                    value={newUser.password}
-                    onChange={(e) => setNewUser({ ...newUser, password: e.target.value })}
-                    required
-                />
-                <select
-                    value={newUser.role}
-                    onChange={(e) => setNewUser({ ...newUser, role: e.target.value })}
-                >
-                    <option value="admin">Admin</option>
-                    <option value="helper">Helper</option>
-                </select>
-                <button type="submit">+ Přidat účet</button>
-                {error && <p className="error-msg">{error}</p>}
-                {success && <p className="success-msg">{success}</p>}
-            </form>
+                <form className="create-user-form" onSubmit={handleCreateUser}>
+                    <h3>Přidat nový účet</h3>
+                    <input
+                        type="email"
+                        placeholder="Email"
+                        value={newUser.email}
+                        onChange={(e) => setNewUser({ ...newUser, email: e.target.value })}
+                        required
+                    />
+                    <input
+                        type="password"
+                        placeholder="Heslo"
+                        value={newUser.password}
+                        onChange={(e) => setNewUser({ ...newUser, password: e.target.value })}
+                        required
+                    />
+                    <select
+                        value={newUser.role}
+                        onChange={(e) => setNewUser({ ...newUser, role: e.target.value })}
+                    >
+                        <option value="admin">Admin</option>
+                        <option value="helper">Helper</option>
+                    </select>
+                    <button type="submit">+ Přidat účet</button>
+                    {error && <p className="error-msg">{error}</p>}
+                    {success && <p className="success-msg">{success}</p>}
+                </form>
 
-            <hr />
+                <hr />
 
-            {loading ? (
-                <p>Načítání uživatelů...</p>
-            ) : (
-                <table>
-                    <thead>
-                    <tr>
-                        <th>Email</th>
-                        <th>Role</th>
-                        <th>Akce</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    {users.map(user => (
-                        <tr key={user.id}>
-                            <td>{user.email}</td>
-                            <td>
-                                {user.id === currentUID ? (
-                                    <span>{user.role}</span>
-                                ) : (
-                                    <select
-                                        value={user.role}
-                                        onChange={(e) => handleRoleChange(user.id, e.target.value)}
-                                    >
-                                        <option value="admin">Admin</option>
-                                        <option value="helper">Helper</option>
-                                    </select>
-                                )}
-                            </td>
-                            <td>
-                                {user.id !== currentUID && (
-                                    <button onClick={() => handleDelete(user.id)}>🗑️</button>
-                                )}
-                            </td>
+                {loading ? (
+                    <p>Načítání uživatelů...</p>
+                ) : (
+                    <table>
+                        <thead>
+                        <tr>
+                            <th>Email</th>
+                            <th>Role</th>
+                            <th>Akce</th>
                         </tr>
-                    ))}
-                    </tbody>
-                </table>
-            )}
-        </div>
+                        </thead>
+                        <tbody>
+                        {users.map(user => (
+                            <tr key={user.id}>
+                                <td>{user.email}</td>
+                                <td>
+                                    {user.id === currentUID ? (
+                                        <span>{user.role}</span>
+                                    ) : (
+                                        <select
+                                            value={user.role}
+                                            onChange={(e) => handleRoleChange(user.id, e.target.value)}
+                                        >
+                                            <option value="admin">Admin</option>
+                                            <option value="helper">Helper</option>
+                                        </select>
+                                    )}
+                                </td>
+                                <td>
+                                    {user.id !== currentUID && (
+                                        <button onClick={() => handleDelete(user.id)}>🗑️</button>
+                                    )}
+                                </td>
+                            </tr>
+                        ))}
+                        </tbody>
+                    </table>
+                )}
+            </div>
+        </>
     );
 };
 

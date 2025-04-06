@@ -112,3 +112,31 @@
 .live-toggle-button:hover {
     background-color: #c9302c;
 }
+
+.scorer-form {
+    display: flex;
+    gap: 14px;
+    align-items: center;
+    margin: 20px 0;
+    flex-wrap: wrap;
+}
+
+.scorer-form select,
+.scorer-form input {
+    padding: 8px 12px;
+    background-color: #222;
+    color: white;
+    border: 1px solid #555;
+    border-radius: 6px;
+    font-size: 0.95rem;
+}
+
+.scorer-form button {
+    padding: 10px 14px;
+    background-color: #f0b323;
+    color: black;
+    border: none;
+    border-radius: 6px;
+    font-weight: bold;
+    cursor: pointer;
+}

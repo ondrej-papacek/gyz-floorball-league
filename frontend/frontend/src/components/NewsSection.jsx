@@ -5,23 +5,33 @@ import { Link } from 'react-router-dom';
 
 function NewsSection() {
     const [news, setNews] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState('');
 
     useEffect(() => {
-        (async () => {
+        const loadNews = async () => {
             try {
-                const latestNews = await fetchLatestNews();
-                setNews(latestNews);
-            } catch (error) {
-                console.error("Error loading latest news:", error);
+                const latest = await fetchLatestNews();
+                setNews(latest);
+            } catch (err) {
+                console.error("Chyba při načítání novinek:", err);
+                setError('Nepodařilo se načíst novinky.');
+            } finally {
+                setLoading(false);
             }
-        })();
+        };
+
+        loadNews();
     }, []);
+
+    if (loading) return <p className="news-loading">Načítání novinek...</p>;
+    if (error) return <p className="news-error">{error}</p>;
 
     return (
         <section className="news-section">
             <h2>Aktuální novinky</h2>
             {news.length === 0 ? (
-                <p>Nejsou dostupné žádné nové novinky</p>
+                <p>Nejsou dostupné žádné nové novinky.</p>
             ) : (
                 <ul className="news-list">
                     {news.map((article) => {

@@ -60,3 +60,47 @@
 .manage-accounts button:hover {
     background-color: #b03939;
 }
+
+.create-user-form {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.create-user-form input,
+.create-user-form select {
+    padding: 10px 14px;
+    background-color: #222;
+    color: white;
+    border: 1px solid #555;
+    border-radius: 6px;
+    font-size: 0.95rem;
+    flex: 1;
+}
+
+.create-user-form button {
+    background-color: #f0b323;
+    color: black;
+    border: none;
+    padding: 10px 14px;
+    border-radius: 6px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.create-user-form button:hover {
+    background-color: #e09f1f;
+}
+
+.error-msg {
+    color: #f44336;
+    margin-top: 10px;
+}
+
+.success-msg {
+    color: #4caf50;
+    margin-top: 10px;
+}

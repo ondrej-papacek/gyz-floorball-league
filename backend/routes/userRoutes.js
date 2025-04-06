@@ -7,7 +7,6 @@ const {
     deleteUser,
 } = require('../controllers/userController');
 
-// Endpointy pro správu uživatelů
 router.get('/', getUsers);
 router.post('/', addUser);
 router.put('/:id', updateUserRole);
