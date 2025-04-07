@@ -120,3 +120,18 @@ exports.clearLiveMatch = async (req, res, next) => {
         next(new Error('Failed to clear live match.'));
     }
 };
+
+exports.pushLiveBroadcast = async (req, res, next) => {
+    try {
+        const liveMatchRef = db.collection('liveBroadcast').doc('currentMatch');
+        const data = req.body;
+
+        await liveMatchRef.set(data, { merge: true });
+
+        res.status(200).json({ message: 'Live broadcast pushed successfully.' });
+    } catch (error) {
+        console.error('Error in pushLiveBroadcast:', error);
+        next(new Error('Failed to push live broadcast.'));
+    }
+};
+
