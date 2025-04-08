@@ -66,13 +66,25 @@ const ManagePlayers = () => {
         setLoading(false);
     };
 
-    useEffect(() => { fetchLeagues(); }, []);
     useEffect(() => {
-        fetchTeams();
-        setSelectedTeamId('');
-        setPlayers([]);
+        (async () => {
+            await fetchLeagues();
+        })();
+    }, []);
+
+    useEffect(() => {
+        (async () => {
+            await fetchTeams();
+            setSelectedTeamId('');
+            setPlayers([]);
+        })();
     }, [selectedLeague]);
-    useEffect(() => { if (selectedTeamId) fetchPlayers(); }, [selectedTeamId]);
+
+    useEffect(() => {
+        (async () => {
+            if (selectedTeamId) await fetchPlayers();
+        })();
+    }, [selectedTeamId]);
 
     const handleAddPlayer = async () => {
         const name = newPlayerName.trim();
@@ -84,16 +96,16 @@ const ManagePlayers = () => {
         const [year, division] = selectedLeague.split('_');
         const playerData = { name, id: playerId, goals: 0, team_id: selectedTeamId };
         await addPlayer(year, division, selectedTeamId, playerId, playerData);
-        await deleteDoc(doc(db, 'leagues', `${year}_${division}`, 'teams', selectedTeamId, 'players', '__init__')).catch(() => {});
+        await deleteDoc(doc(db, 'leagues', `${year}_${division}`, 'teams', selectedTeamId, 'players', 'placeholder')).catch(() => {});
         setNewPlayerName('');
-        fetchPlayers();
+        await fetchPlayers();
     };
 
     const handleDeletePlayer = async (id) => {
         const [year, division] = selectedLeague.split('_');
         if (window.confirm('Opravdu chcete odstranit tohoto hráče?')) {
             await deletePlayer(year, division, selectedTeamId, id);
-            fetchPlayers();
+            await fetchPlayers();
         }
     };
 
@@ -104,13 +116,14 @@ const ManagePlayers = () => {
 
     const handleSaveEdit = async (player) => {
         const [year, division] = selectedLeague.split('_');
-        await updatePlayer(year, division, selectedTeamId, player.id, {
-            ...player,
-            name: editFields.name,
-            goals: Number(editFields.goals) || 0
-        });
+        const updatedData = {
+            name: editFields.name.trim(),
+            goals: Number(editFields.goals) || 0,
+        };
+
+        await updatePlayer(year, division, selectedTeamId, player.id, updatedData);
         setEditing(null);
-        fetchPlayers();
+        await fetchPlayers();
     };
 
     return (

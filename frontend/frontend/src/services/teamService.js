@@ -10,15 +10,11 @@ export const fetchTeams = async (year, division) => {
 };
 
 export const addTeam = async (year, division, data) => {
-    // 1. Call your API
-    await axios.post(`${BASE_URL}/${year}/${division}/teams`, data);
-
-    // 2. Prepare Firestore enhancement
+    const res = await axios.post(`${BASE_URL}/${year}/${division}/teams`, data);
+    const team = res.data;
     const leagueId = `${year}_${division}`;
-    const teamId = data.name.toLowerCase().replace(/\s+/g, '_');
-
-    // 3. Add players/__init__ to team
-    const playersInit = doc(db, `leagues/${leagueId}/teams/${teamId}/players/__init__`);
+    const teamId = team.id;
+    const playersInit = doc(db, `leagues/${leagueId}/teams/${teamId}/players/placeholder`);
     await setDoc(playersInit, {});
 };
 
