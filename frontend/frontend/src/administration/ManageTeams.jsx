@@ -185,13 +185,14 @@ const ManageTeams = () => {
                                     <td className="team-name-cell">
                                         <img
                                             className="team-logo"
-                                            src={`/images/team-logos/${team.name.toLowerCase()}.png`}
-                                            alt={team.name}
+                                            src={`/images/team-logos/${team.name?.toLowerCase?.() || 'placeholder'}.png`}
+                                            alt={team.name || 'Tým'}
                                             onError={(e) => (e.target.style.display = 'none')}
                                         />
                                         {team.name}
                                     </td>
-                                    <td><input type="number" value={team.wins ?? 0} onChange={e => handleStatChange(team.id, 'wins', e.target.value)} /></td>
+                                    <td><input type="number" value={team.wins ?? 0}
+                                               onChange={e => handleStatChange(team.id, 'wins', e.target.value)}/></td>
                                     <td><input type="number" value={team.draws ?? 0} onChange={e => handleStatChange(team.id, 'draws', e.target.value)} /></td>
                                     <td><input type="number" value={team.losses ?? 0} onChange={e => handleStatChange(team.id, 'losses', e.target.value)} /></td>
                                     <td><input type="number" value={team.matchesPlayed ?? 0} onChange={e => handleStatChange(team.id, 'matchesPlayed', e.target.value)} /></td>
