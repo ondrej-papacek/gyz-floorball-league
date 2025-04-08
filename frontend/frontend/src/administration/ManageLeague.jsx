@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import './manageLeague.css';
 import AdminNavbar from "../components/AdminNavbar.jsx";
 import { db } from '../services/firebase';
-import { collection, doc, setDoc, getDocs } from 'firebase/firestore';
+import { deleteDoc, collection, doc, setDoc, getDocs } from 'firebase/firestore';
 import { useLeague } from '../services/leagueContext';
 
 const ManageLeague = () => {
@@ -43,14 +43,28 @@ const ManageLeague = () => {
         });
 
         await Promise.all([
-            setDoc(doc(db, `leagues/${leagueId}/teams`, '__init__'), {}),
-            setDoc(doc(db, `leagues/${leagueId}/matches`, '__init__'), {}),
-            setDoc(doc(db, `leagues/${leagueId}/playoff`, '__init__'), {})
+            setDoc(doc(db, `leagues/${leagueId}/teams`, 'placeholder'), {}),
+            setDoc(doc(db, `leagues/${leagueId}/matches`, 'placeholder'), {}),
+            setDoc(doc(db, `leagues/${leagueId}/playoff`, 'placeholder'), {})
         ]);
 
         setYear('');
         setDivision('lower');
         await fetchLeagues();
+    };
+
+    const handleDeleteLeague = async (id) => {
+        const confirmed = window.confirm("Opravdu chcete odstranit tuto ligu? Tento krok je nevratný.");
+        if (!confirmed) return;
+
+        try {
+            await deleteDoc(doc(db, 'leagues', id));
+            alert("Liga byla úspěšně odstraněna.");
+            await fetchLeagues();
+        } catch (error) {
+            console.error("Chyba při mazání ligy:", error);
+            alert("Nepodařilo se smazat ligu.");
+        }
     };
 
     const handleArchiveLeague = async (id) => {
@@ -88,19 +102,27 @@ const ManageLeague = () => {
                             <button onClick={() => {
                                 setSelectedLeague(league);
                                 navigate('/admin/manage-teams');
-                            }}>Správa Týmů</button>
+                            }}>Správa Týmů
+                            </button>
 
                             <button onClick={() => {
                                 setSelectedLeague(league);
                                 navigate('/admin/manage-matches');
-                            }}>Správa Zápasů</button>
+                            }}>Správa Zápasů
+                            </button>
 
                             <button onClick={() => {
                                 setSelectedLeague(league);
                                 navigate('/admin/manage-playoffs');
-                            }}>Správa Playoff</button>
+                            }}>Správa Playoff
+                            </button>
 
                             <button onClick={() => handleArchiveLeague(league.id)}>Archivovat Ligu</button>
+                            <button
+                                className="delete-league-btn"
+                                onClick={() => handleDeleteLeague(league.id)}
+                            >Odstranit Ligu
+                            </button>
                         </div>
                     ))}
                 </div>
