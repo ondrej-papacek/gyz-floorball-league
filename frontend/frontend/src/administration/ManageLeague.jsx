@@ -4,9 +4,11 @@ import './manageLeague.css';
 import AdminNavbar from "../components/AdminNavbar.jsx";
 import { db } from '../services/firebase';
 import { collection, doc, setDoc, getDocs } from 'firebase/firestore';
+import { useLeague } from '../services/leagueContext';
 
 const ManageLeague = () => {
     const navigate = useNavigate();
+    const { setSelectedLeague } = useLeague();
 
     const [year, setYear] = useState('');
     const [division, setDivision] = useState('lower');
@@ -22,7 +24,9 @@ const ManageLeague = () => {
     };
 
     useEffect(() => {
-        fetchLeagues();
+        (async () => {
+            await fetchLeagues();
+        })();
     }, []);
 
     const createLeague = async () => {
@@ -46,13 +50,13 @@ const ManageLeague = () => {
 
         setYear('');
         setDivision('lower');
-        fetchLeagues();
+        await fetchLeagues();
     };
 
     const handleArchiveLeague = async (id) => {
         const leagueRef = doc(db, 'leagues', id);
         await setDoc(leagueRef, { status: 'archived' }, { merge: true });
-        fetchLeagues();
+        await fetchLeagues();
     };
 
     return (
@@ -80,9 +84,22 @@ const ManageLeague = () => {
                         <div key={league.id} className="league-item">
                             <h2>{`${league.division === 'lower' ? 'Nižší' : 'Vyšší'} Gymnázium - ${league.year}`}</h2>
                             <p>Status: {league.status}</p>
-                            <button onClick={() => navigate(`/admin/manage-teams/${league.id}`)}>Správa Týmů</button>
-                            <button onClick={() => navigate(`/admin/manage-matches/${league.id}`)}>Správa Zápasů</button>
-                            <button onClick={() => navigate(`/admin/manage-playoffs/${league.id}`)}>Správa Playoff</button>
+
+                            <button onClick={() => {
+                                setSelectedLeague(league);
+                                navigate('/admin/manage-teams');
+                            }}>Správa Týmů</button>
+
+                            <button onClick={() => {
+                                setSelectedLeague(league);
+                                navigate('/admin/manage-matches');
+                            }}>Správa Zápasů</button>
+
+                            <button onClick={() => {
+                                setSelectedLeague(league);
+                                navigate('/admin/manage-playoffs');
+                            }}>Správa Playoff</button>
+
                             <button onClick={() => handleArchiveLeague(league.id)}>Archivovat Ligu</button>
                         </div>
                     ))}

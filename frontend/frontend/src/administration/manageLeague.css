@@ -25,6 +25,7 @@
 .add-league-form input,
 .add-league-form select {
     background-color: #333;
+    margin-bottom: 0;
     color: white;
     border: 1px solid #555;
     border-radius: 6px;
