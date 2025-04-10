@@ -64,13 +64,13 @@ const ManageTeams = () => {
         await deleteDoc(initDocRef).catch(() => {});
 
         setNewTeamName('');
-        loadTeams();
+        await loadTeams();
     };
 
     const handleDelete = async (id) => {
         const [year, division] = selectedLeagueId.split('_');
         await deleteTeam(year, division, id);
-        loadTeams();
+        await loadTeams();
     };
 
     const handleStatChange = (id, field, value) => {
@@ -84,7 +84,7 @@ const ManageTeams = () => {
     const handleSave = async (team) => {
         const [year, division] = selectedLeagueId.split('_');
         await updateTeam(year, division, team.id, team);
-        loadTeams();
+        await loadTeams();
     };
 
     const toggleExpand = async (id) => {
@@ -127,7 +127,7 @@ const ManageTeams = () => {
             points
         };
         await updateTeam(year, division, team.id, updated);
-        loadTeams();
+        await loadTeams();
     };
 
     const recalculateAll = async () => {
