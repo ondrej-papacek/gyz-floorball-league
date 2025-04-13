@@ -36,58 +36,35 @@ function Schedule() {
                 collection(db, `leagues/${year}_lower/matches`),
                 orderBy("round")
             );
-            const lowerSnapshot = await getDocs(lowerQuery);
-            const lowerData = lowerSnapshot.docs.map((doc) => ({
-                id: doc.id,
-                ...doc.data(),
-                division: "lower",
-            }));
-
             const upperQuery = query(
                 collection(db, `leagues/${year}_upper/matches`),
                 orderBy("round")
             );
-            const upperSnapshot = await getDocs(upperQuery);
-            const upperData = upperSnapshot.docs.map((doc) => ({
-                id: doc.id,
-                ...doc.data(),
-                division: "upper",
-            }));
 
-            const scheduleStartDate = new Date(parseInt(year), 2, 21);
-            const mergedRounds = [];
-            let lowerIndex = 0, upperIndex = 0;
+            const [lowerSnapshot, upperSnapshot] = await Promise.all([
+                getDocs(lowerQuery),
+                getDocs(upperQuery)
+            ]);
 
-            while (lowerIndex < lowerData.length || upperIndex < upperData.length) {
-                const roundDate = new Date(scheduleStartDate);
-                roundDate.setDate(scheduleStartDate.getDate() + mergedRounds.length * 7);
+            const lowerData = lowerSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data(), division: 'lower' }));
+            const upperData = upperSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data(), division: 'upper' }));
 
-                const roundMatches = [];
+            const grouped = {};
 
-                if (lowerIndex < lowerData.length) {
-                    roundMatches.push({
-                        ...lowerData[lowerIndex],
-                        type: "lower",
-                    });
-                    lowerIndex++;
+            [...lowerData, ...upperData].forEach((match) => {
+                const round = match.round;
+                if (!grouped[round]) {
+                    grouped[round] = {
+                        round,
+                        date: new Date(parseInt(year), 2, 21 + (round - 1) * 7),
+                        matches: [],
+                    };
                 }
+                grouped[round].matches.push(match);
+            });
 
-                if (upperIndex < upperData.length) {
-                    roundMatches.push({
-                        ...upperData[upperIndex],
-                        type: "upper",
-                    });
-                    upperIndex++;
-                }
-
-                mergedRounds.push({
-                    round: mergedRounds.length + 1,
-                    date: roundDate,
-                    matches: roundMatches,
-                });
-            }
-
-            setMergedMatches(mergedRounds);
+            const rounds = Object.values(grouped).sort((a, b) => a.round - b.round);
+            setMergedMatches(rounds);
         } catch (error) {
             console.error("Error fetching schedule:", error);
         }

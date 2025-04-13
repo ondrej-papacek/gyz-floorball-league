@@ -60,32 +60,22 @@ const ManageSchedule = () => {
                 return;
             }
 
-            const scheduleStartDate = new Date(parseInt(selectedYear), 2, 21);
-            const merged = [];
-            let lowerIndex = 0, upperIndex = 0;
+            const grouped = {};
+            const baseDate = new Date(parseInt(selectedYear), 2, 21);
 
-            while (lowerIndex < lower.length || upperIndex < upper.length) {
-                const roundDate = new Date(scheduleStartDate);
-                roundDate.setDate(scheduleStartDate.getDate() + merged.length * 7);
-
-                const matches = [];
-
-                if (lowerIndex < lower.length) {
-                    matches.push({ ...lower[lowerIndex], division: 'lower' });
-                    lowerIndex++;
+            [...lower, ...upper].forEach((match) => {
+                const round = match.round;
+                if (!grouped[round]) {
+                    grouped[round] = {
+                        round,
+                        date: new Date(baseDate.getTime() + (round - 1) * 7 * 24 * 60 * 60 * 1000),
+                        matches: [],
+                    };
                 }
-                if (upperIndex < upper.length) {
-                    matches.push({ ...upper[upperIndex], division: 'upper' });
-                    upperIndex++;
-                }
+                grouped[round].matches.push(match);
+            });
 
-                merged.push({
-                    round: merged.length + 1,
-                    date: roundDate,
-                    matches
-                });
-            }
-
+            const merged = Object.values(grouped).sort((a, b) => a.round - b.round);
             setMergedMatches(merged);
             setError('');
         } catch (err) {
