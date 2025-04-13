@@ -46,24 +46,32 @@ function Schedule() {
                 getDocs(upperQuery)
             ]);
 
-            const lowerData = lowerSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data(), division: 'lower' }));
-            const upperData = upperSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data(), division: 'upper' }));
+            const lowerData = lowerSnapshot.docs
+                .map(doc => ({ id: doc.id, ...doc.data(), division: 'lower' }))
+                .filter(match => match.id !== 'placeholder');
+            const upperData = upperSnapshot.docs
+                .map(doc => ({ id: doc.id, ...doc.data(), division: 'upper' }))
+                .filter(match => match.id !== 'placeholder');
 
-            const grouped = {};
+            const rounds = [];
+            const totalRounds = Math.max(lowerData.length, upperData.length);
+            const baseDate = new Date(parseInt(year), 2, 21); // March 21
 
-            [...lowerData, ...upperData].forEach((match) => {
-                const round = match.round;
-                if (!grouped[round]) {
-                    grouped[round] = {
-                        round,
-                        date: new Date(parseInt(year), 2, 21 + (round - 1) * 7),
-                        matches: [],
-                    };
-                }
-                grouped[round].matches.push(match);
-            });
+            for (let i = 0; i < totalRounds; i++) {
+                const matches = [];
+                if (i < lowerData.length) matches.push(lowerData[i]);
+                if (i < upperData.length) matches.push(upperData[i]);
 
-            const rounds = Object.values(grouped).sort((a, b) => a.round - b.round);
+                const date = new Date(baseDate);
+                date.setDate(baseDate.getDate() + i * 7);
+
+                rounds.push({
+                    round: i + 1,
+                    date,
+                    matches
+                });
+            }
+
             setMergedMatches(rounds);
         } catch (error) {
             console.error("Error fetching schedule:", error);
