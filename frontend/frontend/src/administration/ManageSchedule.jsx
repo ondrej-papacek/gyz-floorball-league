@@ -9,9 +9,37 @@ import {
     cancelRound,
     deleteRound
 } from '../services/scheduleService';
-import { collection, getDocs } from 'firebase/firestore';
+import { collection, getDocs, doc, setDoc } from 'firebase/firestore';
 import { db } from '../services/firebase';
 import './manageSchedule.css';
+
+const updateLiveBroadcast = async (match, selectedYear) => {
+    try {
+        const matchRefPath = `leagues/${selectedYear}_${match.division}/matches/${match.id}`;
+        const liveRef = doc(db, 'liveBroadcast', 'currentMatch');
+
+        await setDoc(liveRef, {
+            matchRefPath,
+            teamA: match.teamA,
+            teamB: match.teamB,
+            teamA_name: match.teamA_name,
+            teamB_name: match.teamB_name,
+            scoreA: 0,
+            scoreB: 0,
+            scorerA: [],
+            scorerB: [],
+            periodInfo: "1. POLOČAS",
+            timeLeft: 600,
+            status: "live",
+            date: match.date,
+            division: match.division,
+        });
+
+        console.log("Match set in liveBroadcast/currentMatch");
+    } catch (error) {
+        console.error("Failed to update live broadcast match:", error);
+    }
+};
 
 const ManageSchedule = () => {
     const [mergedMatches, setMergedMatches] = useState([]);
@@ -97,7 +125,14 @@ const ManageSchedule = () => {
             if (action === 'defaultWin') await updateMatch(selectedYear, division, id, payload);
             if (action === 'delete') await deleteMatch(selectedYear, division, id);
             if (action === 'updateDate') await updateMatch(selectedYear, division, id, { date: new Date(payload.date) });
-            if (action === 'setStatus') await updateMatch(selectedYear, division, id, { status: payload.status });
+            if (action === 'setStatus') {
+                await updateMatch(selectedYear, division, id, { status: payload.status });
+
+                if (payload.status === 'live') {
+                    await updateLiveBroadcast(match, selectedYear); // ← Inject live match
+                }
+            }
+
             fetchSchedule();
         } catch (err) {
             console.error(err);

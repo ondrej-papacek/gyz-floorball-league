@@ -1,7 +1,11 @@
 ﻿import React, { useState, useEffect, useRef } from 'react';
 import { db } from '../services/firebase';
 import {
-    collection, getDocs, doc, getDoc, setDoc
+    collection,
+    getDocs,
+    doc,
+    getDoc,
+    setDoc
 } from 'firebase/firestore';
 import './adminLiveBroadcast.css';
 import AdminNavbar from "../components/AdminNavbar";
@@ -15,26 +19,39 @@ const AdminLiveBroadcast = () => {
     const timerRef = useRef(null);
 
     const fetchLiveMatches = async () => {
-        const matchRef = collection(db, 'leagues/2025_lower/matches');
-        const snap = await getDocs(matchRef);
-        const data = snap.docs
-            .map(d => ({ id: d.id, ...d.data() }))
-            .filter(match => match.status === 'live');
-        setLiveMatches(data);
+        const divisions = ['lower', 'upper'];
+        let allMatches = [];
+
+        for (const div of divisions) {
+            const matchRef = collection(db, `leagues/2025_${div}/matches`);
+            const snap = await getDocs(matchRef);
+            const data = snap.docs.map(d => ({
+                id: d.id,
+                ...d.data(),
+                division: div
+            }));
+            allMatches = allMatches.concat(data.filter(m => m.status === 'live'));
+        }
+
+        setLiveMatches(allMatches);
     };
 
     const fetchAndPushMatch = async (matchId) => {
-        const docRef = doc(db, 'leagues/2025_lower/matches', matchId);
-        const snap = await getDoc(docRef);
-        const match = snap.data();
+        const match = liveMatches.find(m => m.id === matchId);
+        if (!match) return;
 
-        const teamARef = collection(db, `leagues/2025_lower/teams/${match.teamA}/players`);
-        const teamBRef = collection(db, `leagues/2025_lower/teams/${match.teamB}/players`);
+        const docRef = doc(db, `leagues/2025_${match.division}/matches`, matchId);
+        const snap = await getDoc(docRef);
+        const fullMatch = snap.data();
+
+        const teamARef = collection(db, `leagues/2025_${match.division}/teams/${fullMatch.teamA}/players`);
+        const teamBRef = collection(db, `leagues/2025_${match.division}/teams/${fullMatch.teamB}/players`);
+
         const teamAData = (await getDocs(teamARef)).docs.map(d => d.data());
         const teamBData = (await getDocs(teamBRef)).docs.map(d => d.data());
 
         const payload = {
-            ...match,
+            ...fullMatch,
             id: matchId,
             status: 'live',
             timeLeft: 600,
@@ -42,6 +59,8 @@ const AdminLiveBroadcast = () => {
             scorerA: [],
             scorerB: [],
             date: new Date(),
+            matchRefPath: `leagues/2025_${match.division}/matches/${matchId}`,
+            division: match.division
         };
 
         await setDoc(doc(db, 'liveBroadcast', 'currentMatch'), payload);
@@ -94,6 +113,13 @@ const AdminLiveBroadcast = () => {
         await fetch('/api/liveBroadcast/complete', { method: 'POST' });
         alert("Zápas ukončen.");
         setLiveData(null);
+        await fetchLiveMatches(); // Refresh match list
+    };
+
+    const handleResetMatch = async () => {
+        await setDoc(doc(db, 'liveBroadcast', 'currentMatch'), { id: 'placeholder' });
+        setLiveData(null);
+        await fetchLiveMatches(); // Refresh options
     };
 
     useEffect(() => {
@@ -119,7 +145,7 @@ const AdminLiveBroadcast = () => {
                     <option value="" disabled>Zvolte zápas...</option>
                     {liveMatches.map(m => (
                         <option key={m.id} value={m.id}>
-                            {m.teamA_name} vs {m.teamB_name}
+                            {m.teamA_name} vs {m.teamB_name} ({m.division})
                         </option>
                     ))}
                 </select>
@@ -193,6 +219,7 @@ const AdminLiveBroadcast = () => {
                         </div>
 
                         <button onClick={handleEndMatch} className="live-toggle-button">Ukončit zápas</button>
+                        <button onClick={handleResetMatch} className="reset-button">Reset Živý zápas</button>
                     </div>
                 )}
             </div>

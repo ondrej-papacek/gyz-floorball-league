@@ -51,8 +51,8 @@ function LiveBroadcast() {
         ? `${Math.floor(timeLeft / 60)}:${String(timeLeft % 60).padStart(2, '0')}`
         : "0:00";
 
-    if (!liveData) {
-        return <p>Načítání živého přenosu zápasu...</p>;
+    if (!liveData || liveData.id === "placeholder") {
+        return <p>Momentálně není žádný živý přenos.</p>;
     }
 
     return (

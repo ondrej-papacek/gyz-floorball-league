@@ -80,8 +80,8 @@ function LiveMatch() {
         ? `${Math.floor(timeLeft / 60)}:${String(timeLeft % 60).padStart(2, '0')}`
         : "0:00";
 
-    if (!matchData) {
-        return <p>Loading live match...</p>;
+    if (!matchData || matchData.id === "placeholder") {
+        return <p>Momentálně není žádný živý zápas.</p>;
     }
 
     return (
@@ -97,7 +97,7 @@ function LiveMatch() {
                              alt={`${matchData.teamA} Logo`}/>
                         <span className="team-name">{matchData.teamA_name}</span>
                         <span
-                            className="scorers">{matchData.scorerA?.length ? matchData.scorerA.join(", ") : "No scorer details"}</span>
+                            className="scorers">{matchData.scorerA?.length ? matchData.scorerA.join(", ") : "Žádné detaily o střelcích gólů"}</span>
                     </div>
                     <div className="score-info">
                         <div className="score">{`${matchData.scoreA} - ${matchData.scoreB}`}</div>
@@ -111,7 +111,7 @@ function LiveMatch() {
                              alt={`${matchData.teamB} Logo`}/>
                         <span className="team-name">{matchData.teamB_name}</span>
                         <span
-                            className="scorers">{matchData.scorerB?.length ? matchData.scorerB.join(", ") : "No scorer details"}</span>
+                            className="scorers">{matchData.scorerB?.length ? matchData.scorerB.join(", ") : "Žádné detaily o střelcích gólů"}</span>
                     </div>
                     </div>
                 </div>
