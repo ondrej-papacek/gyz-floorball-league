@@ -51,7 +51,7 @@ function LiveBroadcast() {
         ? `${Math.floor(timeLeft / 60)}:${String(timeLeft % 60).padStart(2, '0')}`
         : "0:00";
 
-    if (!liveData || liveData.id === "placeholder") {
+    if (!liveData || liveData.status === "placeholder") {
         return <p>Momentálně není žádný živý přenos.</p>;
     }
 

@@ -80,7 +80,7 @@ function LiveMatch() {
         ? `${Math.floor(timeLeft / 60)}:${String(timeLeft % 60).padStart(2, '0')}`
         : "0:00";
 
-    if (!matchData || matchData.id === "placeholder") {
+    if (!matchData || matchData.status === "placeholder") {
         return <p>Momentálně není žádný živý zápas.</p>;
     }
 
