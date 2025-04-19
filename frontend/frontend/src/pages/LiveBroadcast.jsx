@@ -51,8 +51,12 @@ function LiveBroadcast() {
         ? `${Math.floor(timeLeft / 60)}:${String(timeLeft % 60).padStart(2, '0')}`
         : "0:00";
 
-    if (!liveData || liveData.status === "placeholder") {
-        return <p>Momentálně není žádný živý přenos.</p>;
+    if (!matchData || matchData.status === "placeholder") {
+        return (
+            <div className="live-match-component-container">
+                <h2>Momentálně není žádný živý zápas</h2>
+            </div>
+        );
     }
 
     return (

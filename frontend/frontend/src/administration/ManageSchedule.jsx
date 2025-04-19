@@ -129,7 +129,7 @@ const ManageSchedule = () => {
                 await updateMatch(selectedYear, division, id, { status: payload.status });
 
                 if (payload.status === 'live') {
-                    await updateLiveBroadcast(match, selectedYear); // ← Inject live match
+                    await updateLiveBroadcast({ ...match, id }, selectedYear);
                 }
             }
 

@@ -113,13 +113,13 @@ const AdminLiveBroadcast = () => {
         await fetch('/api/liveBroadcast/complete', { method: 'POST' });
         alert("Zápas ukončen.");
         setLiveData(null);
-        await fetchLiveMatches(); // Refresh match list
+        await fetchLiveMatches();
     };
 
     const handleResetMatch = async () => {
         await setDoc(doc(db, 'liveBroadcast', 'currentMatch'), { id: 'placeholder' });
         setLiveData(null);
-        await fetchLiveMatches(); // Refresh options
+        await fetchLiveMatches();
     };
 
     useEffect(() => {

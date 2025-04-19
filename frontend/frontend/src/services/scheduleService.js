@@ -8,11 +8,11 @@ export const fetchMatches = async (year, division) => {
 };
 
 export const updateMatch = async (year, division, matchId, data) => {
-    return axios.put(`${API_BASE}/${year}/${division}/match/${matchId}`, data);
+    return axios.put(`${API_BASE}/${year}/${division}/matches/${matchId}`, data);
 };
 
 export const deleteMatch = async (year, division, matchId) => {
-    return axios.delete(`${API_BASE}/${year}/${division}/match/${matchId}`);
+    return axios.delete(`${API_BASE}/${year}/${division}/matches/${matchId}`);
 };
 
 export const cancelRound = async (year, division, round) => {
@@ -30,4 +30,3 @@ export const deleteRound = async (year, division, round) => {
 export const generateSchedule = async (year, division) => {
     return axios.post(`${API_BASE}/generate-schedule`, { year, division });
 };
-

@@ -81,7 +81,11 @@ function LiveMatch() {
         : "0:00";
 
     if (!matchData || matchData.status === "placeholder") {
-        return <p>Momentálně není žádný živý zápas.</p>;
+        return (
+            <div className="live-match-component-container">
+                <h2>Momentálně není žádný živý zápas</h2>
+            </div>
+        );
     }
 
     return (
