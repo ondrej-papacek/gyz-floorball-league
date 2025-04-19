@@ -108,7 +108,7 @@ function LiveMatch() {
                 <div className="scoreboard">
                     <div className="live-team team-a">
                         <img
-                            src={`/team-logos/${sanitizeTeamName(liveData.teamA)}.png`}
+                            src={`/team-logos/${sanitizeTeamName(liveData.teamA_name)}.png`}
                             alt={`Logo týmu ${liveData.teamA_name}`}
                         />
                         <span className="team-name">{liveData.teamA_name}</span>
@@ -123,7 +123,7 @@ function LiveMatch() {
                     </div>
                     <div className="live-team team-b">
                         <img
-                            src={`/team-logos/${sanitizeTeamName(liveData.teamB)}.png`}
+                            src={`/team-logos/${sanitizeTeamName(liveData.teamB_name)}.png`}
                             alt={`Logo týmu ${liveData.teamB_name}`}
                         />
                         <span className="team-name">{liveData.teamB_name}</span>

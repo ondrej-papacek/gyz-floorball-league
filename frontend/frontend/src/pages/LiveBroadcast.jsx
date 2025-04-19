@@ -70,7 +70,7 @@ function LiveBroadcast() {
                 <div className="scoreboard">
                     <div className="team team-a">
                         <img
-                            src={`/team-logos/${sanitizeTeamName(liveData.teamA)}.png`}
+                            src={`/team-logos/${sanitizeTeamName(liveData.teamA_name)}.png`}
                             alt={`Logo týmu ${liveData.teamA_name}`}
                         />
                         <span className="team-name">{liveData.teamA_name || "Neznámý tým A"}</span>
@@ -85,7 +85,7 @@ function LiveBroadcast() {
                     </div>
                     <div className="team team-b">
                         <img
-                            src={`/team-logos/${sanitizeTeamName(liveData.teamB)}.png`}
+                            src={`/team-logos/${sanitizeTeamName(liveData.teamB_name)}.png`}
                             alt={`Logo týmu ${liveData.teamB_name}`}
                         />
                         <span className="team-name">{liveData.teamB_name || "Neznámý tým B"}</span>

@@ -16,7 +16,8 @@ const AdminLiveBroadcast = () => {
     const [liveData, setLiveData] = useState(null);
     const [playersA, setPlayersA] = useState([]);
     const [playersB, setPlayersB] = useState([]);
-    const [scorer, setScorer] = useState({ team: '', name: '', goals: 1 });
+    const [scorerName, setScorerName] = useState('');
+    const [scorerTeam, setScorerTeam] = useState('');
     const timerRef = useRef(null);
 
     const fetchLiveMatches = async () => {
@@ -87,27 +88,23 @@ const AdminLiveBroadcast = () => {
                     }));
                 }, 1000);
             }
-        } else if (action === 'pause') {
+        } else {
             clearInterval(timerRef.current);
             timerRef.current = null;
-        } else if (action === 'reset') {
-            clearInterval(timerRef.current);
-            timerRef.current = null;
-            setLiveData(prev => ({ ...prev, timeLeft: 600 }));
+            if (action === 'reset') {
+                setLiveData(prev => ({ ...prev, timeLeft: 600 }));
+            }
         }
     };
 
-    const handleAddScorer = () => {
-        if (!scorer.name || !scorer.team) return;
-        const field = scorer.team === 'A' ? 'scorerA' : 'scorerB';
+    const handleAddScorer = (team) => {
+        if (!scorerName) return;
+        const field = team === 'A' ? 'scorerA' : 'scorerB';
         setLiveData(prev => ({
             ...prev,
-            [field]: [...(prev[field] || []), {
-                name: scorer.name,
-                goals: parseInt(scorer.goals, 10)
-            }]
+            [field]: [...(prev[field] || []), { name: scorerName, goals: 1 }]
         }));
-        setScorer({ team: '', name: '', goals: 1 });
+        setScorerName('');
     };
 
     const handleEndMatch = async () => {
@@ -141,8 +138,8 @@ const AdminLiveBroadcast = () => {
         <>
             <AdminNavbar />
             <div className="live-match-container">
-                <h2 style={{ color: '#f0b323' }}>Zvolit Živý Zápas</h2>
-                <select onChange={(e) => fetchAndPushMatch(e.target.value)} defaultValue="">
+                <h2>Zvolit Živý Zápas</h2>
+                <select className="match-select" onChange={(e) => fetchAndPushMatch(e.target.value)} defaultValue="">
                     <option value="" disabled>Zvolte zápas...</option>
                     {liveMatches.map(m => (
                         <option key={m.id} value={m.id}>
@@ -160,7 +157,7 @@ const AdminLiveBroadcast = () => {
                         <div className="scoreboard">
                             <div className="team team-a">
                                 <img
-                                    src={`/team-logos/${liveData.teamA}.png`}
+                                    src={`/team-logos/${sanitizeTeamName(liveData.teamA_name)}.png`}
                                     alt={`Logo týmu ${liveData.teamA_name}`}
                                 />
                                 <span className="team-name">{liveData.teamA_name}</span>
@@ -171,7 +168,17 @@ const AdminLiveBroadcast = () => {
                                     <button onClick={() => handleScore('scoreA', 1)}>+1</button>
                                     <button onClick={() => handleScore('scoreA', -1)}>-1</button>
                                 </div>
+                                <div className="scorer-form">
+                                    <select className="player-select" value={scorerName} onChange={(e) => setScorerName(e.target.value)}>
+                                        <option value="">Vyberte hráče</option>
+                                        {playersA.map(p => (
+                                            <option key={p.name} value={p.name}>{p.name}</option>
+                                        ))}
+                                    </select>
+                                    <button onClick={() => handleAddScorer('A')}>Přidat střelce</button>
+                                </div>
                             </div>
+
                             <div className="score-info">
                                 <div className="score">{liveData.scoreA} - {liveData.scoreB}</div>
                                 <div className="period-info">
@@ -187,12 +194,12 @@ const AdminLiveBroadcast = () => {
                                     </div>
                                 </div>
                             </div>
+
                             <div className="team team-b">
                                 <img
-                                    src={`/team-logos/${sanitizeTeamName(liveData.teamB)}.png`}
+                                    src={`/team-logos/${sanitizeTeamName(liveData.teamB_name)}.png`}
                                     alt={`Logo týmu ${liveData.teamB_name}`}
                                 />
-
                                 <span className="team-name">{liveData.teamB_name}</span>
                                 <span className="scorers">
                                     {(liveData.scorerB || []).map(s => `${s.name} (${s.goals})`).join(', ') || 'No scorer details'}
@@ -201,29 +208,16 @@ const AdminLiveBroadcast = () => {
                                     <button onClick={() => handleScore('scoreB', 1)}>+1</button>
                                     <button onClick={() => handleScore('scoreB', -1)}>-1</button>
                                 </div>
+                                <div className="scorer-form">
+                                    <select className="player-select" value={scorerName} onChange={(e) => setScorerName(e.target.value)}>
+                                        <option value="">Vyberte hráče</option>
+                                        {playersB.map(p => (
+                                            <option key={p.name} value={p.name}>{p.name}</option>
+                                        ))}
+                                    </select>
+                                    <button onClick={() => handleAddScorer('B')}>Přidat střelce</button>
+                                </div>
                             </div>
-                        </div>
-
-                        <h3>Přidat střelce</h3>
-                        <div className="scorer-form">
-                            <select value={scorer.name} onChange={(e) => setScorer({ ...scorer, name: e.target.value })}>
-                                <option value="">Vyberte hráče</option>
-                                {[...playersA, ...playersB].map(p => (
-                                    <option key={p.name} value={p.name}>{p.name}</option>
-                                ))}
-                            </select>
-                            <select value={scorer.team} onChange={(e) => setScorer({ ...scorer, team: e.target.value })}>
-                                <option value="">Tým</option>
-                                <option value="A">Tým A</option>
-                                <option value="B">Tým B</option>
-                            </select>
-                            <input
-                                type="number"
-                                min="1"
-                                value={scorer.goals}
-                                onChange={(e) => setScorer({ ...scorer, goals: e.target.value })}
-                            />
-                            <button onClick={handleAddScorer}>Přidat střelce</button>
                         </div>
 
                         <button onClick={handleEndMatch} className="live-toggle-button">Ukončit zápas</button>
