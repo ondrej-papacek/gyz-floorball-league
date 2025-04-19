@@ -9,6 +9,7 @@ import {
 } from 'firebase/firestore';
 import './adminLiveBroadcast.css';
 import AdminNavbar from "../components/AdminNavbar";
+import { sanitizeTeamName } from '../utils/teamUtils';
 
 const AdminLiveBroadcast = () => {
     const [liveMatches, setLiveMatches] = useState([]);
@@ -158,7 +159,10 @@ const AdminLiveBroadcast = () => {
                         </div>
                         <div className="scoreboard">
                             <div className="team team-a">
-                                <img src={`/team-logos/${liveData.teamA}.png`} />
+                                <img
+                                    src={`/team-logos/${sanitizeTeamName(liveData.teamA)}.png`}
+                                    alt={`Logo týmu ${liveData.teamA_name}`}
+                                />
                                 <span className="team-name">{liveData.teamA_name}</span>
                                 <span className="scorers">
                                     {(liveData.scorerA || []).map(s => `${s.name} (${s.goals})`).join(', ') || 'No scorer details'}
@@ -184,7 +188,11 @@ const AdminLiveBroadcast = () => {
                                 </div>
                             </div>
                             <div className="team team-b">
-                                <img src={`/team-logos/${liveData.teamB}.png`} />
+                                <img
+                                    src={`/team-logos/${sanitizeTeamName(liveData.teamB)}.png`}
+                                    alt={`Logo týmu ${liveData.teamB_name}`}
+                                />
+
                                 <span className="team-name">{liveData.teamB_name}</span>
                                 <span className="scorers">
                                     {(liveData.scorerB || []).map(s => `${s.name} (${s.goals})`).join(', ') || 'No scorer details'}

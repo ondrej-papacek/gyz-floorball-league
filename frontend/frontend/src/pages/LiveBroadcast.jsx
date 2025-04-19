@@ -1,6 +1,7 @@
 ﻿import React, { useState, useEffect } from 'react';
 import './liveBroadcast.css';
 import { subscribeToLiveBroadcast } from '../services/liveBroadcastService';
+import { sanitizeTeamName } from '../utils/teamUtils';
 
 function LiveBroadcast() {
     const [liveData, setLiveData] = useState(null);
@@ -51,10 +52,10 @@ function LiveBroadcast() {
         ? `${Math.floor(timeLeft / 60)}:${String(timeLeft % 60).padStart(2, '0')}`
         : "0:00";
 
-    if (!matchData || matchData.status === "placeholder") {
+    if (!liveData || liveData.id === "placeholder") {
         return (
-            <div className="live-match-component-container">
-                <h2>Momentálně není žádný živý zápas</h2>
+            <div className="live-match-container">
+                <h2>Momentálně není žádný živý přenos</h2>
             </div>
         );
     }
@@ -68,7 +69,10 @@ function LiveBroadcast() {
                 </div>
                 <div className="scoreboard">
                     <div className="team team-a">
-                        <img src={`/team-logos/${liveData.teamA?.toLowerCase() || "unknown"}.png`} alt={`${liveData.teamA_name} Logo`} />
+                        <img
+                            src={`/team-logos/${sanitizeTeamName(liveData.teamA)}.png`}
+                            alt={`Logo týmu ${liveData.teamA_name}`}
+                        />
                         <span className="team-name">{liveData.teamA_name || "Neznámý tým A"}</span>
                         <span className="scorers">{formatScorers(liveData.scorerA)}</span>
                     </div>
@@ -80,7 +84,10 @@ function LiveBroadcast() {
                         </div>
                     </div>
                     <div className="team team-b">
-                        <img src={`/team-logos/${liveData.teamB?.toLowerCase() || "unknown"}.png`} alt={`${liveData.teamB_name} Logo`} />
+                        <img
+                            src={`/team-logos/${sanitizeTeamName(liveData.teamB)}.png`}
+                            alt={`Logo týmu ${liveData.teamB_name}`}
+                        />
                         <span className="team-name">{liveData.teamB_name || "Neznámý tým B"}</span>
                         <span className="scorers">{formatScorers(liveData.scorerB)}</span>
                     </div>

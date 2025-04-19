@@ -2,13 +2,16 @@
 import { db } from '../services/firebase';
 import { doc, onSnapshot, getDoc, updateDoc } from 'firebase/firestore';
 import './liveMatch.css';
+import { sanitizeTeamName } from '../utils/teamUtils';
 
 const formatDate = (timestamp) => {
-    return timestamp?.seconds ? new Date(timestamp.seconds * 1000).toLocaleString() : "Unknown";
+    return timestamp?.seconds
+        ? new Date(timestamp.seconds * 1000).toLocaleString("cs-CZ")
+        : "Neznámé datum";
 };
 
 function LiveMatch() {
-    const [matchData, setMatchData] = useState(null);
+    const [liveData, setLiveData] = useState(null);
     const [timeLeft, setTimeLeft] = useState(0);
 
     useEffect(() => {
@@ -17,39 +20,37 @@ function LiveMatch() {
         const unsubscribe = onSnapshot(broadcastRef, async (docSnapshot) => {
             if (!docSnapshot.exists()) {
                 console.error("No live match found.");
-                setMatchData(null);
+                setLiveData(null);
                 return;
             }
 
-            const liveData = docSnapshot.data();
+            const broadcastData = docSnapshot.data();
 
-            if (!liveData.matchRefPath) {
-                console.error("matchRefPath is missing from liveBroadcast/currentMatch");
-                setMatchData(liveData);
+            if (!broadcastData.matchRefPath) {
+                console.error("matchRefPath missing in currentMatch.");
+                setLiveData(broadcastData);
                 return;
             }
 
             try {
-                const matchDocRef = doc(db, liveData.matchRefPath);
+                const matchDocRef = doc(db, broadcastData.matchRefPath);
                 const matchSnap = await getDoc(matchDocRef);
 
                 if (!matchSnap.exists()) {
-                    console.error("Match reference not found.");
-                    setMatchData(liveData);
+                    console.error("Referenced match not found.");
+                    setLiveData(broadcastData);
                     return;
                 }
 
-                const fullMatchData = { ...matchSnap.data(), ...liveData };
-                setMatchData(fullMatchData);
+                const fullMatchData = { ...matchSnap.data(), ...broadcastData };
+                setLiveData(fullMatchData);
 
-                if (typeof fullMatchData.timeLeft === "number") {
-                    setTimeLeft(fullMatchData.timeLeft);
-                } else {
-                    setTimeLeft(0);
-                }
-            } catch (error) {
-                console.error("Error loading matchRefPath:", error);
-                setMatchData(liveData);
+                setTimeLeft(
+                    typeof fullMatchData.timeLeft === "number" ? fullMatchData.timeLeft : 0
+                );
+            } catch (err) {
+                console.error("Failed to fetch full match data:", err);
+                setLiveData(broadcastData);
             }
         });
 
@@ -59,7 +60,7 @@ function LiveMatch() {
     useEffect(() => {
         let timer;
 
-        if (matchData?.status === "live" && timeLeft > 0) {
+        if (liveData?.status === "live" && timeLeft > 0) {
             timer = setInterval(async () => {
                 const newTime = timeLeft - 1;
                 setTimeLeft(newTime);
@@ -74,13 +75,13 @@ function LiveMatch() {
         }
 
         return () => clearInterval(timer);
-    }, [matchData, timeLeft]);
+    }, [liveData, timeLeft]);
 
     const timeLeftFormatted = timeLeft > 0
         ? `${Math.floor(timeLeft / 60)}:${String(timeLeft % 60).padStart(2, '0')}`
         : "0:00";
 
-    if (!matchData || matchData.status === "placeholder") {
+    if (!liveData || liveData.id === "placeholder") {
         return (
             <div className="live-match-component-container">
                 <h2>Momentálně není žádný živý zápas</h2>
@@ -88,38 +89,49 @@ function LiveMatch() {
         );
     }
 
+    const formatScorers = (scorers) => {
+        if (Array.isArray(scorers)) {
+            return scorers.map(s => `${s.name} (${s.goals})`).join(", ");
+        } else if (typeof scorers === 'string') {
+            return scorers;
+        }
+        return "Žádné detaily o střelcích gólů";
+    };
+
     return (
         <div className="live-match-component-container">
             <div className="live-match-background">
                 <h2>ŽIVÝ ZÁPAS</h2>
                 <div className="match-info">
-                    <span>{formatDate(matchData.date)}</span>
+                    <span>{formatDate(liveData.date)}</span>
                 </div>
                 <div className="scoreboard">
                     <div className="live-team team-a">
-                        <img src={`team-logos/${matchData.teamA?.toLowerCase() || "unknown"}.png`}
-                             alt={`${matchData.teamA} Logo`}/>
-                        <span className="team-name">{matchData.teamA_name}</span>
-                        <span
-                            className="scorers">{matchData.scorerA?.length ? matchData.scorerA.join(", ") : "Žádné detaily o střelcích gólů"}</span>
+                        <img
+                            src={`/team-logos/${sanitizeTeamName(liveData.teamA)}.png`}
+                            alt={`Logo týmu ${liveData.teamA_name}`}
+                        />
+                        <span className="team-name">{liveData.teamA_name}</span>
+                        <span className="scorers">{formatScorers(liveData.scorerA)}</span>
                     </div>
                     <div className="score-info">
-                        <div className="score">{`${matchData.scoreA} - ${matchData.scoreB}`}</div>
+                        <div className="score">{`${liveData.scoreA} - ${liveData.scoreB}`}</div>
                         <div className="period-info">
-                            <span>{matchData.periodInfo}</span>
+                            <span>{liveData.periodInfo}</span>
                             <span className="time-left">{timeLeftFormatted}</span>
                         </div>
                     </div>
                     <div className="live-team team-b">
-                        <img src={`/team-logos/${matchData.teamB?.toLowerCase() || "unknown"}.png`}
-                             alt={`${matchData.teamB} Logo`}/>
-                        <span className="team-name">{matchData.teamB_name}</span>
-                        <span
-                            className="scorers">{matchData.scorerB?.length ? matchData.scorerB.join(", ") : "Žádné detaily o střelcích gólů"}</span>
-                    </div>
+                        <img
+                            src={`/team-logos/${sanitizeTeamName(liveData.teamB)}.png`}
+                            alt={`Logo týmu ${liveData.teamB_name}`}
+                        />
+                        <span className="team-name">{liveData.teamB_name}</span>
+                        <span className="scorers">{formatScorers(liveData.scorerB)}</span>
                     </div>
                 </div>
             </div>
+        </div>
     );
 }
 

@@ -1,142 +1,189 @@
-﻿.admin-live-broadcast-page {
+﻿.live-match-container {
     width: 100%;
-    max-width: 1200px;
+    max-width: 1000px;
     margin: 0 auto;
     padding: 30px;
     background-color: #333;
     color: #ffffff;
     border-radius: 12px;
-    box-shadow: 0px 5px 12px rgba(0, 0, 0, 0.4);
+    box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.5);
     font-family: Arial, sans-serif;
 }
 
-.admin-live-broadcast-title {
+.live-match-container h2 {
     color: #f0b323;
+    text-align: center;
+    font-size: 2.2rem;
     margin-bottom: 20px;
-    font-size: 2rem;
+}
+
+select {
+    padding: 10px 14px;
+    border-radius: 6px;
+    font-size: 1rem;
+    margin: 10px auto;
+    display: block;
+    background-color: #222;
+    color: #fff;
+    border: 1px solid #f0b323;
+}
+
+.live-match-background {
+    background-color: #444;
+    padding: 25px;
+    border-radius: 10px;
+    margin-top: 25px;
+}
+
+.match-info {
+    text-align: center;
+    color: #bbb;
+    margin-bottom: 20px;
+    font-size: 1.1rem;
+}
+
+.scoreboard {
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.team {
+    flex: 1 1 40%;
     text-align: center;
 }
 
-/* Controls Section */
-.live-broadcast-controls {
+.team img {
+    width: 180px;
+    height: 180px;
+    object-fit: contain;
+    border-radius: 10px;
+    background-color: #222;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+    margin-bottom: 10px;
+}
+
+.team-name {
+    font-size: 1.4rem;
+    font-weight: bold;
+    color: #f0b323;
+    margin-bottom: 6px;
+}
+
+.scorers {
+    font-size: 0.95rem;
+    color: #ccc;
+    margin-bottom: 10px;
+    display: block;
+    min-height: 20px;
+}
+
+.team button {
+    margin: 5px;
+    padding: 8px 14px;
+    font-size: 1rem;
+    background-color: #f0b323;
+    color: black;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.score-info {
+    text-align: center;
+    font-size: 2.5rem;
+    font-weight: bold;
+    color: #f0b323;
+}
+
+.period-info {
+    margin-top: 12px;
+}
+
+.period-info input {
+    font-size: 1rem;
+    padding: 6px 10px;
+    border-radius: 6px;
+    border: 1px solid #f0b323;
+    margin-bottom: 10px;
+    background-color: #222;
+    color: #fff;
+}
+
+.time-left {
+    font-size: 1.1rem;
+    margin-bottom: 8px;
+    display: block;
+    color: #ccc;
+}
+
+.period-info button {
+    margin: 0 5px;
+    padding: 6px 12px;
+    font-size: 0.95rem;
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+    background-color: #f0b323;
+    color: black;
+}
+
+.scorer-form {
+    margin-top: 20px;
     display: flex;
     flex-wrap: wrap;
-    justify-content: space-between;
-    align-items: flex-start;
-    gap: 20px;
-    margin-top: 20px;
-}
-
-/* Team Control Styling */
-.team-control {
-    background-color: #444;
-    padding: 20px;
-    border-radius: 8px;
-    flex: 1 1 calc(45% - 20px);
-    display: flex;
-    flex-direction: column;
+    gap: 10px;
+    justify-content: center;
     align-items: center;
-    text-align: center;
 }
 
-.team-control h3 {
-    font-size: 1.6rem;
-    color: #f0b323;
-    margin-bottom: 10px;
-}
-
-.team-control p {
-    font-size: 1.2rem;
+.scorer-form select,
+.scorer-form input {
+    padding: 8px 12px;
+    border-radius: 6px;
+    border: 1px solid #555;
+    background-color: #222;
     color: #fff;
-    margin-bottom: 10px;
+    font-size: 0.95rem;
 }
 
-/* Score Buttons */
-.team-control button {
+.scorer-form button {
+    padding: 10px 16px;
+    font-size: 1rem;
     background-color: #f0b323;
-    color: #000;
+    color: black;
     border: none;
-    padding: 10px 20px;
-    margin: 5px;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.live-toggle-button,
+.reset-button {
+    display: inline-block;
+    margin: 20px 10px 0;
+    padding: 12px 22px;
     font-size: 1rem;
+    color: white;
+    border: none;
     border-radius: 6px;
     cursor: pointer;
     transition: background-color 0.3s ease;
 }
 
-.team-control button:hover {
-    background-color: #d48b0b;
-}
-
-/* Timer Control Styling */
-.timer-control {
-    background-color: #444;
-    padding: 20px;
-    border-radius: 8px;
-    flex: 1 1 calc(45% - 20px);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-}
-
-.timer-control input {
-    width: 80%;
-    padding: 10px;
-    margin-top: 10px;
-    font-size: 1rem;
-    color: #fff;
-    background-color: #333;
-    border: 1px solid #f0b323;
-    border-radius: 4px;
-}
-
-.timer-control input::placeholder {
-    color: #bbb;
-}
-
-/* Live Toggle Button */
 .live-toggle-button {
-    display: block;
-    margin: 20px auto;
-    padding: 15px 30px;
-    font-size: 1rem;
-    color: #fff;
     background-color: #d9534f;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
 }
 
 .live-toggle-button:hover {
     background-color: #c9302c;
 }
 
-.scorer-form {
-    display: flex;
-    gap: 14px;
-    align-items: center;
-    margin: 20px 0;
-    flex-wrap: wrap;
+.reset-button {
+    background-color: #111;
 }
 
-.scorer-form select,
-.scorer-form input {
-    padding: 8px 12px;
+.reset-button:hover {
     background-color: #222;
-    color: white;
-    border: 1px solid #555;
-    border-radius: 6px;
-    font-size: 0.95rem;
-}
-
-.scorer-form button {
-    padding: 10px 14px;
-    background-color: #f0b323;
-    color: black;
-    border: none;
-    border-radius: 6px;
-    font-weight: bold;
-    cursor: pointer;
 }
