@@ -187,7 +187,7 @@ const AdminLiveBroadcast = () => {
                                         onChange={(e) => setLiveData(prev => ({ ...prev, periodInfo: e.target.value }))}
                                     />
                                     <span className="time-left">{formatTime(liveData.timeLeft)}</span>
-                                    <div>
+                                    <div className="timer-controls">
                                         <button onClick={() => handleTimer('start')}>Start</button>
                                         <button onClick={() => handleTimer('pause')}>Pause</button>
                                         <button onClick={() => handleTimer('reset')}>Reset</button>

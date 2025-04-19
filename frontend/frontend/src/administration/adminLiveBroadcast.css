@@ -118,6 +118,10 @@
     display: block;
 }
 
+.timer-controls button {
+    margin-left: 10px;
+}
+
 .scorer-form {
     margin-top: 15px;
     display: flex;
