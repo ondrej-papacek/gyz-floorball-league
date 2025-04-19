@@ -160,7 +160,7 @@ const AdminLiveBroadcast = () => {
                         <div className="scoreboard">
                             <div className="team team-a">
                                 <img
-                                    src={`/team-logos/${sanitizeTeamName(liveData.teamA)}.png`}
+                                    src={`/team-logos/${liveData.teamA}.png`}
                                     alt={`Logo týmu ${liveData.teamA_name}`}
                                 />
                                 <span className="team-name">{liveData.teamA_name}</span>
