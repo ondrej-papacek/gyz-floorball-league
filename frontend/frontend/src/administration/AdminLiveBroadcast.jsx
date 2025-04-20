@@ -14,6 +14,31 @@ import './adminLiveBroadcast.css';
 import AdminNavbar from '../components/AdminNavbar';
 import { sanitizeTeamName } from '../utils/teamUtils';
 
+const normalizeName = (name) =>
+    name
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .toLowerCase()
+        .split(' ')
+        .reverse()
+        .join('_');
+
+const consolidateScorers = (scorers = []) => {
+    const map = new Map();
+
+    for (const s of scorers) {
+        const id = s.id || normalizeName(s.name);
+        if (map.has(id)) {
+            const existing = map.get(id);
+            existing.goals += s.goals;
+        } else {
+            map.set(id, { ...s, id });
+        }
+    }
+
+    return Array.from(map.values());
+};
+
 const AdminLiveBroadcast = () => {
     const [liveMatches, setLiveMatches] = useState([]);
     const [liveData, setLiveData] = useState(null);
@@ -135,14 +160,38 @@ const AdminLiveBroadcast = () => {
 
     const handleAddScorer = (team) => {
         if (!scorerName) return;
+
         const field = team === 'A' ? 'scorerA' : 'scorerB';
+        const players = team === 'A' ? playersA : playersB;
+
+        const selected = players.find(p => p.name === scorerName);
+        if (!selected) return;
+
+        const scorerId = selected.id || normalizeName(selected.name);
 
         setLiveData(prev => {
+            const currentScorers = [...(prev[field] || [])];
+            const existing = currentScorers.find(s => s.id === scorerId);
+
+            let updatedScorers;
+            if (existing) {
+                updatedScorers = currentScorers.map(s =>
+                    s.id === scorerId ? { ...s, goals: s.goals + 1 } : s
+                );
+            } else {
+                updatedScorers = [...currentScorers, {
+                    name: selected.name,
+                    id: scorerId,
+                    goals: 1
+                }];
+            }
+
             const updated = {
                 ...prev,
-                [field]: [...(prev[field] || []), { name: scorerName, goals: 1 }],
+                [field]: updatedScorers,
                 lastUpdated: Timestamp.now()
             };
+
             setDoc(doc(db, 'liveBroadcast', 'currentMatch'), updated);
             return updated;
         });
@@ -186,19 +235,10 @@ const AdminLiveBroadcast = () => {
                 matchId
             };
 
-            const matchesA = teamAData.matches || [];
-            const matchesB = teamBData.matches || [];
+            const alreadyExists = teamAData.matches?.some(m => m.matchId === matchId);
+            if (alreadyExists) return alert("Zápas již zapsán.");
 
-            const alreadyExistsA = matchesA.some(m => m.matchId === matchId);
-            const alreadyExistsB = matchesB.some(m => m.matchId === matchId);
-            if (alreadyExistsA || alreadyExistsB) {
-                alert("Zápas už byl zapsán dříve.");
-                return;
-            }
-
-            let pointsA = 0, pointsB = 0;
-            let winA = 0, drawA = 0, lossA = 0;
-            let winB = 0, drawB = 0, lossB = 0;
+            let pointsA = 0, pointsB = 0, winA = 0, winB = 0, drawA = 0, drawB = 0, lossA = 0, lossB = 0;
 
             if (liveData.scoreA > liveData.scoreB) {
                 pointsA = 3; winA = 1; lossB = 1;
@@ -208,6 +248,43 @@ const AdminLiveBroadcast = () => {
                 pointsA = pointsB = 1;
                 drawA = drawB = 1;
             }
+
+            const updatePlayerGoals = async (teamId, scorers) => {
+                const teamPath = `leagues/${year}_${division}/teams/${teamId}/players`;
+                for (const scorer of scorers || []) {
+                    const playerId = scorer.id || normalizeName(scorer.name);
+                    const playerRef = doc(db, teamPath, playerId);
+                    const snap = await getDoc(playerRef);
+                    const data = snap.exists() ? snap.data() : {};
+                    await setDoc(playerRef, {
+                        ...data,
+                        goals: (data.goals || 0) + scorer.goals
+                    });
+                }
+            };
+
+            const updateGoalScorerList = async (division, teamId, scorers) => {
+                const goalScorersRef = collection(db, `leagues/${year}_${division}/goalScorers`);
+                const snapshot = await getDocs(goalScorersRef);
+
+                for (const scorer of scorers || []) {
+                    const scorerId = scorer.id || normalizeName(scorer.name);
+                    const existing = snapshot.docs.find(doc => doc.data().id === scorerId);
+
+                    if (existing) {
+                        await updateDoc(doc(db, `leagues/${year}_${division}/goalScorers/${existing.id}`), {
+                            goals: increment(scorer.goals)
+                        });
+                    } else {
+                        await setDoc(doc(goalScorersRef), {
+                            id: scorerId,
+                            name: scorer.name,
+                            goals: scorer.goals,
+                            team: teamId
+                        });
+                    }
+                }
+            };
 
             await Promise.all([
                 setDoc(teamARef, {
@@ -219,7 +296,7 @@ const AdminLiveBroadcast = () => {
                     goalsScored: (teamAData.goalsScored || 0) + liveData.scoreA,
                     goalsConceded: (teamAData.goalsConceded || 0) + liveData.scoreB,
                     matchesPlayed: (teamAData.matchesPlayed || 0) + 1,
-                    matches: [...matchesA, matchEntryA]
+                    matches: [...(teamAData.matches || []), matchEntryA]
                 }),
                 setDoc(teamBRef, {
                     ...teamBData,
@@ -230,52 +307,17 @@ const AdminLiveBroadcast = () => {
                     goalsScored: (teamBData.goalsScored || 0) + liveData.scoreB,
                     goalsConceded: (teamBData.goalsConceded || 0) + liveData.scoreA,
                     matchesPlayed: (teamBData.matchesPlayed || 0) + 1,
-                    matches: [...matchesB, matchEntryB]
-                })
+                    matches: [...(teamBData.matches || []), matchEntryB]
+                }),
+                updatePlayerGoals(liveData.teamA, consolidateScorers(liveData.scorerA)),
+                updatePlayerGoals(liveData.teamB, consolidateScorers(liveData.scorerB)),
+                updateGoalScorerList(division, liveData.teamA, consolidateScorers(liveData.scorerA)),
+                updateGoalScorerList(division, liveData.teamB, consolidateScorers(liveData.scorerB))
             ]);
-
-            const updatePlayerGoals = async (teamId, scorers) => {
-                const teamPath = `leagues/${year}_${division}/teams/${teamId}/players`;
-                for (const scorer of scorers || []) {
-                    const playerRef = doc(db, teamPath, scorer.name);
-                    const snap = await getDoc(playerRef);
-                    const data = snap.exists() ? snap.data() : {};
-                    await setDoc(playerRef, {
-                        ...data,
-                        goals: (data.goals || 0) + scorer.goals
-                    });
-                }
-            };
-
-            await updatePlayerGoals(liveData.teamA, liveData.scorerA);
-            await updatePlayerGoals(liveData.teamB, liveData.scorerB);
-
-            const updateGoalScorerList = async (division, teamId, scorers) => {
-                const goalScorersRef = collection(db, `leagues/${year}_${division}/goalScorers`);
-                const snapshot = await getDocs(goalScorersRef);
-
-                for (const scorer of scorers || []) {
-                    const existing = snapshot.docs.find(doc => doc.data().name === scorer.name);
-                    if (existing) {
-                        await updateDoc(doc(db, `leagues/${year}_${division}/goalScorers/${existing.id}`), {
-                            goals: increment(scorer.goals)
-                        });
-                    } else {
-                        await setDoc(doc(goalScorersRef), {
-                            name: scorer.name,
-                            goals: scorer.goals,
-                            team: teamId
-                        });
-                    }
-                }
-            };
-
-            await updateGoalScorerList(division, liveData.teamA, liveData.scorerA);
-            await updateGoalScorerList(division, liveData.teamB, liveData.scorerB);
 
             await setDoc(doc(db, 'liveBroadcast', 'currentMatch'), { id: 'placeholder' });
 
-            alert("Zápas byl úspěšně ukončen a data bezpečně zapsána.");
+            alert("Zápas byl úspěšně ukončen.");
             setLiveData(null);
             setIsTimerRunning(false);
             clearInterval(timerRef.current);
@@ -287,7 +329,6 @@ const AdminLiveBroadcast = () => {
         }
     };
 
-
     const handleResetMatch = async () => {
         await setDoc(doc(db, 'liveBroadcast', 'currentMatch'), { id: 'placeholder' });
         setLiveData(null);
@@ -295,13 +336,7 @@ const AdminLiveBroadcast = () => {
         await fetchLiveMatches();
     };
 
-    useEffect(() => {
-        fetchLiveMatches();
-        return () => clearInterval(timerRef.current);
-    }, []);
-
-    const formatTime = (seconds) =>
-        `${Math.floor(seconds / 60)}:${String(seconds % 60).padStart(2, '0')}`;
+    const formatTime = (seconds) => `${Math.floor(seconds / 60)}:${String(seconds % 60).padStart(2, '0')}`;
 
     return (
         <>
@@ -323,22 +358,19 @@ const AdminLiveBroadcast = () => {
                         <div className="match-info">{new Date(liveData.date).toLocaleString("cs-CZ")}</div>
 
                         <div className="scoreboard">
+                            {/* Team A */}
                             <div className="team team-a">
-                                <img src={`/team-logos/${sanitizeTeamName(liveData.teamA_name)}.png`} alt={`Logo týmu ${liveData.teamA_name}`} />
+                                <img src={`/team-logos/${sanitizeTeamName(liveData.teamA_name)}.png`} alt={`Logo ${liveData.teamA_name}`} />
                                 <span className="team-name">{liveData.teamA_name}</span>
                                 <span className="scorers">
-                                    {(liveData.scorerA || []).map(s => `${s.name} (${s.goals})`).join(', ') || 'No scorer details'}
+                                    {(liveData.scorerA || []).map(s => `${s.name} (${s.goals})`).join(', ') || 'Žádný střelec'}
                                 </span>
                                 <div>
                                     <button onClick={() => handleScore('scoreA', 1)}>+1</button>
                                     <button onClick={() => handleScore('scoreA', -1)}>-1</button>
                                 </div>
                                 <div className="scorer-form">
-                                    <select
-                                        value={scorerName}
-                                        onChange={(e) => setScorerName(e.target.value)}
-                                        className="player-select"
-                                    >
+                                    <select value={scorerName} onChange={(e) => setScorerName(e.target.value)} className="player-select">
                                         <option value="">Vyberte hráče</option>
                                         {playersA.map(p => (
                                             <option key={p.name} value={p.name}>{p.name}</option>
@@ -348,6 +380,7 @@ const AdminLiveBroadcast = () => {
                                 </div>
                             </div>
 
+                            {/* Skóre */}
                             <div className="score-info">
                                 <div className="score">{liveData.scoreA} - {liveData.scoreB}</div>
                                 <div className="period-info">
@@ -364,22 +397,19 @@ const AdminLiveBroadcast = () => {
                                 </div>
                             </div>
 
+                            {/* Team B */}
                             <div className="team team-b">
-                                <img src={`/team-logos/${sanitizeTeamName(liveData.teamB_name)}.png`} alt={`Logo týmu ${liveData.teamB_name}`} />
+                                <img src={`/team-logos/${sanitizeTeamName(liveData.teamB_name)}.png`} alt={`Logo ${liveData.teamB_name}`} />
                                 <span className="team-name">{liveData.teamB_name}</span>
                                 <span className="scorers">
-                                    {(liveData.scorerB || []).map(s => `${s.name} (${s.goals})`).join(', ') || 'No scorer details'}
+                                    {(liveData.scorerB || []).map(s => `${s.name} (${s.goals})`).join(', ') || 'Žádný střelec'}
                                 </span>
                                 <div>
                                     <button onClick={() => handleScore('scoreB', 1)}>+1</button>
                                     <button onClick={() => handleScore('scoreB', -1)}>-1</button>
                                 </div>
                                 <div className="scorer-form">
-                                    <select
-                                        value={scorerName}
-                                        onChange={(e) => setScorerName(e.target.value)}
-                                        className="player-select"
-                                    >
+                                    <select value={scorerName} onChange={(e) => setScorerName(e.target.value)} className="player-select">
                                         <option value="">Vyberte hráče</option>
                                         {playersB.map(p => (
                                             <option key={p.name} value={p.name}>{p.name}</option>
