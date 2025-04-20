@@ -1,6 +1,7 @@
 ﻿import React, { useState, useEffect } from 'react';
 import './liveBroadcast.css';
-import { subscribeToLiveBroadcast } from '../services/liveBroadcastService';
+import { db } from '../services/firebase';
+import { doc, getDoc, onSnapshot } from 'firebase/firestore';
 import { sanitizeTeamName } from '../utils/teamUtils';
 
 function LiveBroadcast() {
@@ -8,49 +9,40 @@ function LiveBroadcast() {
     const [timeLeft, setTimeLeft] = useState(0);
 
     useEffect(() => {
-        const unsubscribe = subscribeToLiveBroadcast((data) => {
+        const unsub = onSnapshot(doc(db, 'liveBroadcast', 'currentMatch'), (snap) => {
+            const data = snap.data();
             if (data) {
-                const parsedTimeLeft = typeof data.timeLeft === "string"
-                    ? parseInt(data.timeLeft, 10)
-                    : data.timeLeft || 0;
-
-                setTimeLeft(parsedTimeLeft);
                 setLiveData(data);
-            } else {
-                console.error("No live broadcast found.");
-                setLiveData(null);
+                setTimeLeft(typeof data.timeLeft === 'number' ? data.timeLeft : 0);
             }
         });
 
-        return () => unsubscribe();
+        return () => unsub();
     }, []);
 
     useEffect(() => {
         let timer;
-        if (liveData && liveData.status === "live" && timeLeft > 0) {
+        if (liveData?.status === "live" && timeLeft > 0) {
             timer = setInterval(() => {
-                setTimeLeft(prev => (prev > 0 ? prev - 1 : 0));
+                setTimeLeft(prev => prev - 1);
             }, 1000);
         }
-
         return () => clearInterval(timer);
     }, [liveData, timeLeft]);
 
     const formatDate = (timestamp) => {
         return timestamp?.seconds
             ? new Date(timestamp.seconds * 1000).toLocaleString("cs-CZ")
-            : "Unknown Date";
+            : "Neznámé datum";
     };
+
+    const timeLeftFormatted = `${Math.floor(timeLeft / 60)}:${String(timeLeft % 60).padStart(2, '0')}`;
 
     const formatScorers = (scorers = []) => {
         return scorers.length > 0
             ? scorers.map(s => `${s.name} (${s.goals})`).join(", ")
-            : "No scorer details";
+            : "Žádné detaily o střelcích gólů";
     };
-
-    const timeLeftFormatted = timeLeft > 0
-        ? `${Math.floor(timeLeft / 60)}:${String(timeLeft % 60).padStart(2, '0')}`
-        : "0:00";
 
     if (!liveData || liveData.id === "placeholder") {
         return (
@@ -73,7 +65,7 @@ function LiveBroadcast() {
                             src={`/team-logos/${sanitizeTeamName(liveData.teamA_name)}.png`}
                             alt={`Logo týmu ${liveData.teamA_name}`}
                         />
-                        <span className="team-name">{liveData.teamA_name || "Neznámý tým A"}</span>
+                        <span className="team-name">{liveData.teamA_name}</span>
                         <span className="scorers">{formatScorers(liveData.scorerA)}</span>
                     </div>
                     <div className="score-info">
@@ -88,7 +80,7 @@ function LiveBroadcast() {
                             src={`/team-logos/${sanitizeTeamName(liveData.teamB_name)}.png`}
                             alt={`Logo týmu ${liveData.teamB_name}`}
                         />
-                        <span className="team-name">{liveData.teamB_name || "Neznámý tým B"}</span>
+                        <span className="team-name">{liveData.teamB_name}</span>
                         <span className="scorers">{formatScorers(liveData.scorerB)}</span>
                     </div>
                 </div>

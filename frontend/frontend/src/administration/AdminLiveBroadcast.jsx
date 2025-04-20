@@ -5,10 +5,11 @@ import {
     getDocs,
     doc,
     getDoc,
-    setDoc
+    setDoc,
+    Timestamp
 } from 'firebase/firestore';
 import './adminLiveBroadcast.css';
-import AdminNavbar from "../components/AdminNavbar";
+import AdminNavbar from '../components/AdminNavbar';
 import { sanitizeTeamName } from '../utils/teamUtils';
 
 const AdminLiveBroadcast = () => {
@@ -17,7 +18,7 @@ const AdminLiveBroadcast = () => {
     const [playersA, setPlayersA] = useState([]);
     const [playersB, setPlayersB] = useState([]);
     const [scorerName, setScorerName] = useState('');
-    const [scorerTeam, setScorerTeam] = useState('');
+    const [isTimerRunning, setIsTimerRunning] = useState(false);
     const timerRef = useRef(null);
 
     const fetchLiveMatches = async () => {
@@ -57,6 +58,7 @@ const AdminLiveBroadcast = () => {
             id: matchId,
             status: 'live',
             timeLeft: 600,
+            lastUpdated: Timestamp.now(),
             periodInfo: '1. POLOČAS',
             scorerA: [],
             scorerB: [],
@@ -69,6 +71,49 @@ const AdminLiveBroadcast = () => {
         setLiveData(payload);
         setPlayersA(teamAData);
         setPlayersB(teamBData);
+        setIsTimerRunning(false);
+        clearInterval(timerRef.current);
+        timerRef.current = null;
+    };
+
+    const handleTimer = (action) => {
+        if (action === 'start') {
+            if (!timerRef.current && liveData) {
+                setIsTimerRunning(true);
+                timerRef.current = setInterval(() => {
+                    setLiveData(prev => {
+                        const updated = {
+                            ...prev,
+                            timeLeft: Math.max(0, prev.timeLeft - 60),
+                            lastUpdated: Timestamp.now()
+                        };
+                        setDoc(doc(db, 'liveBroadcast', 'currentMatch'), updated);
+                        return updated;
+                    });
+                }, 60000); // každou minutu
+            }
+        } else {
+            clearInterval(timerRef.current);
+            timerRef.current = null;
+            setIsTimerRunning(false);
+            if (action === 'reset') {
+                const updated = {
+                    ...liveData,
+                    timeLeft: 600,
+                    lastUpdated: Timestamp.now()
+                };
+                setLiveData(updated);
+                setDoc(doc(db, 'liveBroadcast', 'currentMatch'), updated);
+            }
+            if (action === 'pause') {
+                const updated = {
+                    ...liveData,
+                    lastUpdated: Timestamp.now()
+                };
+                setLiveData(updated);
+                setDoc(doc(db, 'liveBroadcast', 'currentMatch'), updated);
+            }
+        }
     };
 
     const handleScore = (team, value) => {
@@ -76,25 +121,6 @@ const AdminLiveBroadcast = () => {
             ...prev,
             [team]: Math.max(0, prev[team] + value)
         }));
-    };
-
-    const handleTimer = (action) => {
-        if (action === 'start') {
-            if (!timerRef.current) {
-                timerRef.current = setInterval(() => {
-                    setLiveData(prev => ({
-                        ...prev,
-                        timeLeft: Math.max(0, prev.timeLeft - 1)
-                    }));
-                }, 1000);
-            }
-        } else {
-            clearInterval(timerRef.current);
-            timerRef.current = null;
-            if (action === 'reset') {
-                setLiveData(prev => ({ ...prev, timeLeft: 600 }));
-            }
-        }
     };
 
     const handleAddScorer = (team) => {
@@ -111,12 +137,16 @@ const AdminLiveBroadcast = () => {
         await fetch('/api/liveBroadcast/complete', { method: 'POST' });
         alert("Zápas ukončen.");
         setLiveData(null);
+        setIsTimerRunning(false);
+        clearInterval(timerRef.current);
         await fetchLiveMatches();
     };
 
     const handleResetMatch = async () => {
         await setDoc(doc(db, 'liveBroadcast', 'currentMatch'), { id: 'placeholder' });
         setLiveData(null);
+        setIsTimerRunning(false);
+        clearInterval(timerRef.current);
         await fetchLiveMatches();
     };
 
@@ -124,12 +154,6 @@ const AdminLiveBroadcast = () => {
         fetchLiveMatches();
         return () => clearInterval(timerRef.current);
     }, []);
-
-    useEffect(() => {
-        if (liveData) {
-            setDoc(doc(db, 'liveBroadcast', 'currentMatch'), liveData);
-        }
-    }, [liveData]);
 
     const formatTime = (seconds) =>
         `${Math.floor(seconds / 60)}:${String(seconds % 60).padStart(2, '0')}`;
@@ -139,7 +163,7 @@ const AdminLiveBroadcast = () => {
             <AdminNavbar />
             <div className="live-match-container">
                 <h2>Zvolit Živý Zápas</h2>
-                <select className="match-select" onChange={(e) => fetchAndPushMatch(e.target.value)} defaultValue="">
+                <select onChange={(e) => fetchAndPushMatch(e.target.value)} defaultValue="">
                     <option value="" disabled>Zvolte zápas...</option>
                     {liveMatches.map(m => (
                         <option key={m.id} value={m.id}>
@@ -151,34 +175,39 @@ const AdminLiveBroadcast = () => {
                 {liveData && (
                     <div className="live-match-background">
                         <h2>ŽIVÝ ZÁPAS</h2>
-                        <div className="match-info">
-                            {new Date(liveData.date).toLocaleString("cs-CZ")}
-                        </div>
+                        <div className="match-info">{new Date(liveData.date).toLocaleString("cs-CZ")}</div>
                         <div className="scoreboard">
-                            <div className="team team-a">
-                                <img
-                                    src={`/team-logos/${sanitizeTeamName(liveData.teamA_name)}.png`}
-                                    alt={`Logo týmu ${liveData.teamA_name}`}
-                                />
-                                <span className="team-name">{liveData.teamA_name}</span>
-                                <span className="scorers">
-                                    {(liveData.scorerA || []).map(s => `${s.name} (${s.goals})`).join(', ') || 'No scorer details'}
-                                </span>
-                                <div>
-                                    <button onClick={() => handleScore('scoreA', 1)}>+1</button>
-                                    <button onClick={() => handleScore('scoreA', -1)}>-1</button>
-                                </div>
-                                <div className="scorer-form">
-                                    <select className="player-select" value={scorerName} onChange={(e) => setScorerName(e.target.value)}>
-                                        <option value="">Vyberte hráče</option>
-                                        {playersA.map(p => (
-                                            <option key={p.name} value={p.name}>{p.name}</option>
-                                        ))}
-                                    </select>
-                                    <button onClick={() => handleAddScorer('A')}>Přidat střelce</button>
-                                </div>
-                            </div>
+                            {['A', 'B'].map((team, i) => {
+                                const nameKey = `team${team}_name`;
+                                const scorerKey = `scorer${team}`;
+                                const players = team === 'A' ? playersA : playersB;
 
+                                return (
+                                    <div key={team} className={`team team-${team.toLowerCase()}`}>
+                                        <img
+                                            src={`/team-logos/${sanitizeTeamName(liveData[nameKey])}.png`}
+                                            alt={`Logo týmu ${liveData[nameKey]}`}
+                                        />
+                                        <span className="team-name">{liveData[nameKey]}</span>
+                                        <span className="scorers">
+                      {(liveData[scorerKey] || []).map(s => `${s.name} (${s.goals})`).join(', ') || 'No scorer details'}
+                    </span>
+                                        <div>
+                                            <button onClick={() => handleScore(`score${team}`, 1)}>+1</button>
+                                            <button onClick={() => handleScore(`score${team}`, -1)}>-1</button>
+                                        </div>
+                                        <div className="scorer-form">
+                                            <select value={scorerName} onChange={(e) => setScorerName(e.target.value)}>
+                                                <option value="">Vyberte hráče</option>
+                                                {players.map(p => (
+                                                    <option key={p.name} value={p.name}>{p.name}</option>
+                                                ))}
+                                            </select>
+                                            <button onClick={() => handleAddScorer(team)}>Přidat střelce</button>
+                                        </div>
+                                    </div>
+                                );
+                            })}
                             <div className="score-info">
                                 <div className="score">{liveData.scoreA} - {liveData.scoreB}</div>
                                 <div className="period-info">
@@ -192,30 +221,6 @@ const AdminLiveBroadcast = () => {
                                         <button onClick={() => handleTimer('pause')}>Pause</button>
                                         <button onClick={() => handleTimer('reset')}>Reset</button>
                                     </div>
-                                </div>
-                            </div>
-
-                            <div className="team team-b">
-                                <img
-                                    src={`/team-logos/${sanitizeTeamName(liveData.teamB_name)}.png`}
-                                    alt={`Logo týmu ${liveData.teamB_name}`}
-                                />
-                                <span className="team-name">{liveData.teamB_name}</span>
-                                <span className="scorers">
-                                    {(liveData.scorerB || []).map(s => `${s.name} (${s.goals})`).join(', ') || 'No scorer details'}
-                                </span>
-                                <div>
-                                    <button onClick={() => handleScore('scoreB', 1)}>+1</button>
-                                    <button onClick={() => handleScore('scoreB', -1)}>-1</button>
-                                </div>
-                                <div className="scorer-form">
-                                    <select className="player-select" value={scorerName} onChange={(e) => setScorerName(e.target.value)}>
-                                        <option value="">Vyberte hráče</option>
-                                        {playersB.map(p => (
-                                            <option key={p.name} value={p.name}>{p.name}</option>
-                                        ))}
-                                    </select>
-                                    <button onClick={() => handleAddScorer('B')}>Přidat střelce</button>
                                 </div>
                             </div>
                         </div>

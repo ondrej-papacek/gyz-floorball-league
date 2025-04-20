@@ -1,6 +1,6 @@
 ﻿import React, { useState, useEffect } from 'react';
 import { db } from '../services/firebase';
-import { doc, onSnapshot, getDoc, updateDoc } from 'firebase/firestore';
+import { doc, onSnapshot, getDoc } from 'firebase/firestore';
 import './liveMatch.css';
 import { sanitizeTeamName } from '../utils/teamUtils';
 
@@ -19,38 +19,26 @@ function LiveMatch() {
 
         const unsubscribe = onSnapshot(broadcastRef, async (docSnapshot) => {
             if (!docSnapshot.exists()) {
-                console.error("No live match found.");
                 setLiveData(null);
                 return;
             }
 
-            const broadcastData = docSnapshot.data();
+            const data = docSnapshot.data();
 
-            if (!broadcastData.matchRefPath) {
-                console.error("matchRefPath missing in currentMatch.");
-                setLiveData(broadcastData);
+            if (!data.matchRefPath || data.id === "placeholder") {
+                setLiveData(data);
                 return;
             }
 
             try {
-                const matchDocRef = doc(db, broadcastData.matchRefPath);
-                const matchSnap = await getDoc(matchDocRef);
+                const matchSnap = await getDoc(doc(db, data.matchRefPath));
+                const fullMatchData = { ...matchSnap.data(), ...data };
 
-                if (!matchSnap.exists()) {
-                    console.error("Referenced match not found.");
-                    setLiveData(broadcastData);
-                    return;
-                }
-
-                const fullMatchData = { ...matchSnap.data(), ...broadcastData };
                 setLiveData(fullMatchData);
-
-                setTimeLeft(
-                    typeof fullMatchData.timeLeft === "number" ? fullMatchData.timeLeft : 0
-                );
+                setTimeLeft(typeof fullMatchData.timeLeft === 'number' ? fullMatchData.timeLeft : 0);
             } catch (err) {
-                console.error("Failed to fetch full match data:", err);
-                setLiveData(broadcastData);
+                console.error("Chyba při načítání zápasu:", err);
+                setLiveData(data);
             }
         });
 
@@ -59,27 +47,15 @@ function LiveMatch() {
 
     useEffect(() => {
         let timer;
-
         if (liveData?.status === "live" && timeLeft > 0) {
-            timer = setInterval(async () => {
-                const newTime = timeLeft - 1;
-                setTimeLeft(newTime);
-
-                try {
-                    const ref = doc(db, 'liveBroadcast', 'currentMatch');
-                    await updateDoc(ref, { timeLeft: newTime });
-                } catch (error) {
-                    console.error("Failed to update timeLeft in Firestore:", error);
-                }
+            timer = setInterval(() => {
+                setTimeLeft(prev => prev - 1);
             }, 1000);
         }
-
         return () => clearInterval(timer);
     }, [liveData, timeLeft]);
 
-    const timeLeftFormatted = timeLeft > 0
-        ? `${Math.floor(timeLeft / 60)}:${String(timeLeft % 60).padStart(2, '0')}`
-        : "0:00";
+    const timeLeftFormatted = `${Math.floor(timeLeft / 60)}:${String(timeLeft % 60).padStart(2, '0')}`;
 
     if (!liveData || liveData.id === "placeholder") {
         return (
