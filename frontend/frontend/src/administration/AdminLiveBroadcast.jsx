@@ -161,7 +161,9 @@ const AdminLiveBroadcast = () => {
             const finalMatchData = {
                 ...liveData,
                 status: 'finished',
-                lastUpdated: Timestamp.now()
+                lastUpdated: Timestamp.now(),
+                teamA_id: liveData.teamA,
+                teamB_id: liveData.teamB
             };
 
             await setDoc(doc(db, `leagues/${year}_${division}/matches/${matchId}`), finalMatchData);

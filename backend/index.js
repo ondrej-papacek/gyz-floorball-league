@@ -15,7 +15,7 @@ const playerRoutes = require('./routes/playerRoutes');
 const playoffRoutes = require('./routes/playoffRoutes');
 const goalScorerRoutes = require('./routes/goalScorerRoutes');
 const newsRoutes = require('./routes/newsRoutes');
-const matchesRoutes = require('./routes/matchesRoutes');
+// const matchesRoutes = require('./routes/matchesRoutes');
 const createUserRoute = require('./routes/createUser');
 const errorHandler = require("./middleware/errorHandler");
 
@@ -27,7 +27,7 @@ app.use('/api/players', playerRoutes);
 app.use('/api/playoff', playoffRoutes);
 app.use('/api/goalScorers', goalScorerRoutes);
 app.use('/api/news', newsRoutes);
-app.use('/api/matches', matchesRoutes);
+// app.use('/api/matches', matchesRoutes);
 app.use('/api', createUserRoute);
 app.use(errorHandler);
 

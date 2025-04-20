@@ -16,7 +16,7 @@ import LoginPage from './pages/LoginPage';
 import AdminDashboard from './administration/AdminDashboard';
 import AdminLiveBroadcast from "./administration/AdminLiveBroadcast.jsx";
 import ManageTeams from './administration/ManageTeams';
-import ManageMatches from './administration/ManageMatches';
+// import ManageMatches from './administration/ManageMatches';
 import ManageNews from './administration/ManageNews';
 import ManageLeague from './administration/ManageLeague';
 import ManagePlayoffs from "./administration/ManagePlayoffs.jsx";
@@ -61,7 +61,7 @@ function App() {
                 <Route path="/admin" element={withRoleGuard(AdminDashboard, 'admin')()} />
                 <Route path="/admin/liveBroadcast" element={withRoleGuard(AdminLiveBroadcast, 'admin')()} />
                 <Route path="/admin/manage-teams/" element={withRoleGuard(ManageTeams, 'admin')()} />
-                <Route path="/admin/manage-matches/" element={withRoleGuard(ManageMatches, 'admin')()} />
+                {/*<Route path="/admin/manage-matches/" element={withRoleGuard(ManageMatches, 'admin')()} />*/}
                 <Route path="/admin/manage-playoffs/" element={withRoleGuard(ManagePlayoffs, 'admin')()} />
                 <Route path="/admin/manage-news" element={withRoleGuard(ManageNews, 'admin')()} />
                 <Route path="/admin/manage-league" element={withRoleGuard(ManageLeague, 'admin')()} />
