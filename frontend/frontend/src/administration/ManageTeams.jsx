@@ -28,7 +28,7 @@ const ManageTeams = () => {
             };
         });
         setLeagues(data);
-        if (data.length > 0) setSelectedLeagueId(data[0].id); // Default to first
+        if (data.length > 0) setSelectedLeagueId(data[0].id);
     };
 
     const loadTeams = async () => {
@@ -54,8 +54,13 @@ const ManageTeams = () => {
 
         const newTeam = {
             name: newTeamName.trim(),
-            wins: 0, draws: 0, losses: 0,
-            matchesPlayed: 0, goalsScored: 0, goalsConceded: 0, points: 0
+            wins: 0,
+            draws: 0,
+            losses: 0,
+            matchesPlayed: 0,
+            goalsScored: 0,
+            goalsConceded: 0,
+            points: 0
         };
 
         await addTeam(year, division, newTeam);
@@ -83,7 +88,24 @@ const ManageTeams = () => {
 
     const handleSave = async (team) => {
         const [year, division] = selectedLeagueId.split('_');
-        await updateTeam(year, division, team.id, team);
+
+        const teamRef = doc(db, `leagues/${year}_${division}/teams/${team.id}`);
+        const snap = await getDoc(teamRef);
+        const currentData = snap.exists() ? snap.data() : {};
+
+        const updatedData = {
+            ...currentData,
+            name: team.name,
+            wins: team.wins ?? currentData.wins ?? 0,
+            draws: team.draws ?? currentData.draws ?? 0,
+            losses: team.losses ?? currentData.losses ?? 0,
+            goalsScored: team.goalsScored ?? currentData.goalsScored ?? 0,
+            goalsConceded: team.goalsConceded ?? currentData.goalsConceded ?? 0,
+            matchesPlayed: team.matchesPlayed ?? currentData.matchesPlayed ?? 0,
+            points: team.points ?? currentData.points ?? 0,
+        };
+
+        await updateTeam(year, division, team.id, updatedData);
         await loadTeams();
     };
 
@@ -168,10 +190,10 @@ const ManageTeams = () => {
                         <thead>
                         <tr>
                             <th>Název</th>
-                            <th>Zápasy</th>
                             <th>Výhra</th>
-                            <th>Prohra</th>
                             <th>Remíza</th>
+                            <th>Prohra</th>
+                            <th>Zápasy</th>
                             <th>Vstřelené</th>
                             <th>Obdržené</th>
                             <th>Body</th>

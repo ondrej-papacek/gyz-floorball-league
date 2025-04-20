@@ -175,39 +175,62 @@ const AdminLiveBroadcast = () => {
             const teamAData = teamASnap.data();
             const teamBData = teamBSnap.data();
 
+            const matchEntryA = {
+                opponent: liveData.teamB_name,
+                score: `${liveData.scoreA}-${liveData.scoreB}`,
+                matchId
+            };
+            const matchEntryB = {
+                opponent: liveData.teamA_name,
+                score: `${liveData.scoreB}-${liveData.scoreA}`,
+                matchId
+            };
+
+            const matchesA = teamAData.matches || [];
+            const matchesB = teamBData.matches || [];
+
+            const alreadyExistsA = matchesA.some(m => m.matchId === matchId);
+            const alreadyExistsB = matchesB.some(m => m.matchId === matchId);
+            if (alreadyExistsA || alreadyExistsB) {
+                alert("Zápas už byl zapsán dříve.");
+                return;
+            }
+
             let pointsA = 0, pointsB = 0;
-            if (liveData.scoreA > liveData.scoreB) pointsA = 3;
-            else if (liveData.scoreA < liveData.scoreB) pointsB = 3;
-            else pointsA = pointsB = 1;
+            let winA = 0, drawA = 0, lossA = 0;
+            let winB = 0, drawB = 0, lossB = 0;
+
+            if (liveData.scoreA > liveData.scoreB) {
+                pointsA = 3; winA = 1; lossB = 1;
+            } else if (liveData.scoreA < liveData.scoreB) {
+                pointsB = 3; winB = 1; lossA = 1;
+            } else {
+                pointsA = pointsB = 1;
+                drawA = drawB = 1;
+            }
 
             await Promise.all([
                 setDoc(teamARef, {
                     ...teamAData,
                     points: (teamAData.points || 0) + pointsA,
-                    wins: (teamAData.wins || 0) + (pointsA === 3 ? 1 : 0),
-                    draws: (teamAData.draws || 0) + (pointsA === 1 ? 1 : 0),
-                    losses: (teamAData.losses || 0) + (pointsA === 0 ? 1 : 0),
+                    wins: (teamAData.wins || 0) + winA,
+                    draws: (teamAData.draws || 0) + drawA,
+                    losses: (teamAData.losses || 0) + lossA,
                     goalsScored: (teamAData.goalsScored || 0) + liveData.scoreA,
                     goalsConceded: (teamAData.goalsConceded || 0) + liveData.scoreB,
                     matchesPlayed: (teamAData.matchesPlayed || 0) + 1,
-                    matches: [...(teamAData.matches || []), {
-                        opponent: liveData.teamB_name,
-                        score: `${liveData.scoreA}-${liveData.scoreB}`
-                    }]
+                    matches: [...matchesA, matchEntryA]
                 }),
                 setDoc(teamBRef, {
                     ...teamBData,
                     points: (teamBData.points || 0) + pointsB,
-                    wins: (teamBData.wins || 0) + (pointsB === 3 ? 1 : 0),
-                    draws: (teamBData.draws || 0) + (pointsB === 1 ? 1 : 0),
-                    losses: (teamBData.losses || 0) + (pointsB === 0 ? 1 : 0),
+                    wins: (teamBData.wins || 0) + winB,
+                    draws: (teamBData.draws || 0) + drawB,
+                    losses: (teamBData.losses || 0) + lossB,
                     goalsScored: (teamBData.goalsScored || 0) + liveData.scoreB,
                     goalsConceded: (teamBData.goalsConceded || 0) + liveData.scoreA,
                     matchesPlayed: (teamBData.matchesPlayed || 0) + 1,
-                    matches: [...(teamBData.matches || []), {
-                        opponent: liveData.teamA_name,
-                        score: `${liveData.scoreB}-${liveData.scoreA}`
-                    }]
+                    matches: [...matchesB, matchEntryB]
                 })
             ]);
 
@@ -252,17 +275,18 @@ const AdminLiveBroadcast = () => {
 
             await setDoc(doc(db, 'liveBroadcast', 'currentMatch'), { id: 'placeholder' });
 
-            alert("Zápas byl úspěšně ukončen a data aktualizována.");
-
+            alert("Zápas byl úspěšně ukončen a data bezpečně zapsána.");
             setLiveData(null);
             setIsTimerRunning(false);
             clearInterval(timerRef.current);
             await fetchLiveMatches();
+
         } catch (error) {
             console.error("Chyba při ukončení zápasu:", error);
             alert("Nastala chyba při ukončování zápasu.");
         }
     };
+
 
     const handleResetMatch = async () => {
         await setDoc(doc(db, 'liveBroadcast', 'currentMatch'), { id: 'placeholder' });

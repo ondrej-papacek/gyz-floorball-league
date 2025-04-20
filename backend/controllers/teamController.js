@@ -56,14 +56,21 @@ exports.updateTeam = async (req, res, next) => {
     try {
         const { year, division, teamId } = req.params;
         const teamData = req.body;
+
+        if (!Array.isArray(teamData.matches)) {
+            teamData.matches = [];
+        }
+
         await db
             .collection('leagues')
             .doc(`${year}_${division}`)
             .collection('teams')
             .doc(teamId)
             .update(teamData);
+
         res.status(200).json({ message: 'Tým byl úspěšně aktualizován.' });
     } catch (error) {
+        console.error("Update team error:", error);
         next(new Error('Nepodařilo se aktualizovat tým.'));
     }
 };
