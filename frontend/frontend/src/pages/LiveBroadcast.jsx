@@ -9,26 +9,24 @@ function LiveBroadcast() {
     const [timeLeft, setTimeLeft] = useState(0);
 
     useEffect(() => {
-        const unsub = onSnapshot(doc(db, 'liveBroadcast', 'currentMatch'), (snap) => {
+        const unsub = onSnapshot(doc(db, 'liveBroadcast', 'currentMatch'), async (snap) => {
             const data = snap.data();
-            if (data) {
+            if (data && data.id !== 'placeholder') {
                 setLiveData(data);
                 setTimeLeft(typeof data.timeLeft === 'number' ? data.timeLeft : 0);
+            } else {
+                setLiveData(null);
             }
         });
 
         return () => unsub();
     }, []);
 
-    useEffect(() => {
-        let timer;
-        if (liveData?.status === "live" && timeLeft > 0) {
-            timer = setInterval(() => {
-                setTimeLeft(prev => prev - 1);
-            }, 1000);
-        }
-        return () => clearInterval(timer);
-    }, [liveData, timeLeft]);
+    const formatScorers = (scorers = []) => {
+        return scorers.length > 0
+            ? scorers.map(s => `${s.name} (${s.goals})`).join(", ")
+            : "Žádné detaily o střelcích gólů";
+    };
 
     const formatDate = (timestamp) => {
         return timestamp?.seconds
@@ -38,13 +36,7 @@ function LiveBroadcast() {
 
     const timeLeftFormatted = `${Math.floor(timeLeft / 60)}:${String(timeLeft % 60).padStart(2, '0')}`;
 
-    const formatScorers = (scorers = []) => {
-        return scorers.length > 0
-            ? scorers.map(s => `${s.name} (${s.goals})`).join(", ")
-            : "Žádné detaily o střelcích gólů";
-    };
-
-    if (!liveData || liveData.id === "placeholder") {
+    if (!liveData) {
         return (
             <div className="live-match-container">
                 <h2>Momentálně není žádný živý přenos</h2>
