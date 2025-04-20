@@ -43,13 +43,13 @@
 .scoreboard {
     display: flex;
     justify-content: space-between;
-    align-items: center;
-    flex-wrap: nowrap;
+    align-items: stretch;
     gap: 20px;
+    flex-wrap: wrap;
 }
 
 .team {
-    width: 30%;
+    flex: 1 1 30%;
     text-align: center;
 }
 
@@ -90,8 +90,13 @@
 }
 
 .score-info {
-    width: 35%;
+    flex: 1 1 30%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
     text-align: center;
+    padding: 0 10px;
 }
 
 .score {
@@ -99,6 +104,14 @@
     font-weight: bold;
     color: #f0b323;
     margin-bottom: 10px;
+}
+
+.period-info {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    margin-top: 10px;
 }
 
 .period-info input {
@@ -109,18 +122,28 @@
     background-color: #222;
     color: white;
     text-align: center;
-    margin-bottom: 10px;
 }
 
 .time-left {
     font-size: 1.1rem;
     color: #ccc;
-    margin-bottom: 10px;
-    display: block;
+}
+
+.timer-controls {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
 }
 
 .timer-controls button {
-    margin-left: 10px;
+    padding: 6px 14px;
+    font-size: 0.95rem;
+    font-weight: bold;
+    background-color: #000;
+    color: white;
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
 }
 
 .scorer-form {
@@ -169,4 +192,15 @@
     background-color: #111;
     color: white;
     margin-left: 10px;
+}
+
+@media (max-width: 800px) {
+    .scoreboard {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .team, .score-info {
+        width: 100%;
+    }
 }
