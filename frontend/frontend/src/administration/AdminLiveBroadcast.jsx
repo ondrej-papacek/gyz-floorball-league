@@ -18,8 +18,8 @@ const AdminLiveBroadcast = () => {
     const [playersA, setPlayersA] = useState([]);
     const [playersB, setPlayersB] = useState([]);
     const [scorerName, setScorerName] = useState('');
-    const [isTimerRunning, setIsTimerRunning] = useState(false);
     const timerRef = useRef(null);
+    const updateRef = useRef(0);
 
     const fetchLiveMatches = async () => {
         const divisions = ['lower', 'upper'];
@@ -71,7 +71,6 @@ const AdminLiveBroadcast = () => {
         setLiveData(payload);
         setPlayersA(teamAData);
         setPlayersB(teamBData);
-        setIsTimerRunning(false);
         clearInterval(timerRef.current);
         timerRef.current = null;
     };
@@ -79,23 +78,32 @@ const AdminLiveBroadcast = () => {
     const handleTimer = (action) => {
         if (action === 'start') {
             if (!timerRef.current && liveData) {
-                setIsTimerRunning(true);
+                updateRef.current = 0;
                 timerRef.current = setInterval(() => {
                     setLiveData(prev => {
+                        const newTime = Math.max(0, prev.timeLeft - 1);
                         const updated = {
                             ...prev,
-                            timeLeft: Math.max(0, prev.timeLeft - 60),
-                            lastUpdated: Timestamp.now()
+                            timeLeft: newTime
                         };
-                        setDoc(doc(db, 'liveBroadcast', 'currentMatch'), updated);
+
+                        updateRef.current += 1;
+
+                        if (updateRef.current >= 60 || newTime === 0) {
+                            setDoc(doc(db, 'liveBroadcast', 'currentMatch'), {
+                                ...updated,
+                                lastUpdated: Timestamp.now()
+                            });
+                            updateRef.current = 0;
+                        }
+
                         return updated;
                     });
-                }, 60000); // update každou minutu
+                }, 1000);
             }
         } else {
             clearInterval(timerRef.current);
             timerRef.current = null;
-            setIsTimerRunning(false);
 
             const updated = {
                 ...liveData,
@@ -109,19 +117,31 @@ const AdminLiveBroadcast = () => {
     };
 
     const handleScore = (team, value) => {
-        setLiveData(prev => ({
-            ...prev,
-            [team]: Math.max(0, prev[team] + value)
-        }));
+        setLiveData(prev => {
+            const updated = {
+                ...prev,
+                [team]: Math.max(0, prev[team] + value),
+                lastUpdated: Timestamp.now()
+            };
+            setDoc(doc(db, 'liveBroadcast', 'currentMatch'), updated);
+            return updated;
+        });
     };
 
     const handleAddScorer = (team) => {
         if (!scorerName) return;
         const field = team === 'A' ? 'scorerA' : 'scorerB';
-        setLiveData(prev => ({
-            ...prev,
-            [field]: [...(prev[field] || []), { name: scorerName, goals: 1 }]
-        }));
+
+        setLiveData(prev => {
+            const updated = {
+                ...prev,
+                [field]: [...(prev[field] || []), { name: scorerName, goals: 1 }],
+                lastUpdated: Timestamp.now()
+            };
+            setDoc(doc(db, 'liveBroadcast', 'currentMatch'), updated);
+            return updated;
+        });
+
         setScorerName('');
     };
 
@@ -129,7 +149,6 @@ const AdminLiveBroadcast = () => {
         await fetch('/api/liveBroadcast/complete', { method: 'POST' });
         alert("Zápas ukončen.");
         setLiveData(null);
-        setIsTimerRunning(false);
         clearInterval(timerRef.current);
         await fetchLiveMatches();
     };
@@ -137,7 +156,6 @@ const AdminLiveBroadcast = () => {
     const handleResetMatch = async () => {
         await setDoc(doc(db, 'liveBroadcast', 'currentMatch'), { id: 'placeholder' });
         setLiveData(null);
-        setIsTimerRunning(false);
         clearInterval(timerRef.current);
         await fetchLiveMatches();
     };
