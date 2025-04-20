@@ -6,6 +6,8 @@ import {
     doc,
     getDoc,
     setDoc,
+    updateDoc,
+    increment,
     Timestamp
 } from 'firebase/firestore';
 import './adminLiveBroadcast.css';
@@ -18,6 +20,7 @@ const AdminLiveBroadcast = () => {
     const [playersA, setPlayersA] = useState([]);
     const [playersB, setPlayersB] = useState([]);
     const [scorerName, setScorerName] = useState('');
+    const [isTimerRunning, setIsTimerRunning] = useState(false);
     const timerRef = useRef(null);
     const updateRef = useRef(0);
 
@@ -78,6 +81,7 @@ const AdminLiveBroadcast = () => {
     const handleTimer = (action) => {
         if (action === 'start') {
             if (!timerRef.current && liveData) {
+                setIsTimerRunning(true);
                 updateRef.current = 0;
                 timerRef.current = setInterval(() => {
                     setLiveData(prev => {
@@ -104,6 +108,7 @@ const AdminLiveBroadcast = () => {
         } else {
             clearInterval(timerRef.current);
             timerRef.current = null;
+            setIsTimerRunning(false);
 
             const updated = {
                 ...liveData,
@@ -146,11 +151,115 @@ const AdminLiveBroadcast = () => {
     };
 
     const handleEndMatch = async () => {
-        await fetch('/api/liveBroadcast/complete', { method: 'POST' });
-        alert("Zápas ukončen.");
-        setLiveData(null);
-        clearInterval(timerRef.current);
-        await fetchLiveMatches();
+        if (!liveData) return;
+
+        try {
+            const year = 2025;
+            const division = liveData.division;
+            const matchId = liveData.id;
+
+            const finalMatchData = {
+                ...liveData,
+                status: 'finished',
+                lastUpdated: Timestamp.now()
+            };
+
+            await setDoc(doc(db, `leagues/${year}_${division}/matches/${matchId}`), finalMatchData);
+
+            const teamARef = doc(db, `leagues/${year}_${division}/teams/${liveData.teamA}`);
+            const teamBRef = doc(db, `leagues/${year}_${division}/teams/${liveData.teamB}`);
+
+            const [teamASnap, teamBSnap] = await Promise.all([getDoc(teamARef), getDoc(teamBRef)]);
+            const teamAData = teamASnap.data();
+            const teamBData = teamBSnap.data();
+
+            let pointsA = 0, pointsB = 0;
+            if (liveData.scoreA > liveData.scoreB) pointsA = 3;
+            else if (liveData.scoreA < liveData.scoreB) pointsB = 3;
+            else pointsA = pointsB = 1;
+
+            await Promise.all([
+                setDoc(teamARef, {
+                    ...teamAData,
+                    points: (teamAData.points || 0) + pointsA,
+                    wins: (teamAData.wins || 0) + (pointsA === 3 ? 1 : 0),
+                    draws: (teamAData.draws || 0) + (pointsA === 1 ? 1 : 0),
+                    losses: (teamAData.losses || 0) + (pointsA === 0 ? 1 : 0),
+                    goalsScored: (teamAData.goalsScored || 0) + liveData.scoreA,
+                    goalsConceded: (teamAData.goalsConceded || 0) + liveData.scoreB,
+                    matchesPlayed: (teamAData.matchesPlayed || 0) + 1,
+                    matches: [...(teamAData.matches || []), {
+                        opponent: liveData.teamB_name,
+                        score: `${liveData.scoreA}-${liveData.scoreB}`
+                    }]
+                }),
+                setDoc(teamBRef, {
+                    ...teamBData,
+                    points: (teamBData.points || 0) + pointsB,
+                    wins: (teamBData.wins || 0) + (pointsB === 3 ? 1 : 0),
+                    draws: (teamBData.draws || 0) + (pointsB === 1 ? 1 : 0),
+                    losses: (teamBData.losses || 0) + (pointsB === 0 ? 1 : 0),
+                    goalsScored: (teamBData.goalsScored || 0) + liveData.scoreB,
+                    goalsConceded: (teamBData.goalsConceded || 0) + liveData.scoreA,
+                    matchesPlayed: (teamBData.matchesPlayed || 0) + 1,
+                    matches: [...(teamBData.matches || []), {
+                        opponent: liveData.teamA_name,
+                        score: `${liveData.scoreB}-${liveData.scoreA}`
+                    }]
+                })
+            ]);
+
+            const updatePlayerGoals = async (teamId, scorers) => {
+                const teamPath = `leagues/${year}_${division}/teams/${teamId}/players`;
+                for (const scorer of scorers || []) {
+                    const playerRef = doc(db, teamPath, scorer.name);
+                    const snap = await getDoc(playerRef);
+                    const data = snap.exists() ? snap.data() : {};
+                    await setDoc(playerRef, {
+                        ...data,
+                        goals: (data.goals || 0) + scorer.goals
+                    });
+                }
+            };
+
+            await updatePlayerGoals(liveData.teamA, liveData.scorerA);
+            await updatePlayerGoals(liveData.teamB, liveData.scorerB);
+
+            const updateGoalScorerList = async (division, teamId, scorers) => {
+                const goalScorersRef = collection(db, `leagues/${year}_${division}/goalScorers`);
+                const snapshot = await getDocs(goalScorersRef);
+
+                for (const scorer of scorers || []) {
+                    const existing = snapshot.docs.find(doc => doc.data().name === scorer.name);
+                    if (existing) {
+                        await updateDoc(doc(db, `leagues/${year}_${division}/goalScorers/${existing.id}`), {
+                            goals: increment(scorer.goals)
+                        });
+                    } else {
+                        await setDoc(doc(goalScorersRef), {
+                            name: scorer.name,
+                            goals: scorer.goals,
+                            team: teamId
+                        });
+                    }
+                }
+            };
+
+            await updateGoalScorerList(division, liveData.teamA, liveData.scorerA);
+            await updateGoalScorerList(division, liveData.teamB, liveData.scorerB);
+
+            await setDoc(doc(db, 'liveBroadcast', 'currentMatch'), { id: 'placeholder' });
+
+            alert("Zápas byl úspěšně ukončen a data aktualizována.");
+
+            setLiveData(null);
+            setIsTimerRunning(false);
+            clearInterval(timerRef.current);
+            await fetchLiveMatches();
+        } catch (error) {
+            console.error("Chyba při ukončení zápasu:", error);
+            alert("Nastala chyba při ukončování zápasu.");
+        }
     };
 
     const handleResetMatch = async () => {
