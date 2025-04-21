@@ -51,6 +51,9 @@
     border-radius: 4px;
     cursor: pointer;
     margin-top: 0.5rem;
+    max-width: fit-content;
+    white-space: nowrap;
+    align-self: flex-start;
 }
 
 .news-description {

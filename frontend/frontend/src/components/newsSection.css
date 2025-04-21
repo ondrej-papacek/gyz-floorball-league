@@ -24,7 +24,8 @@
 .news-list {
     list-style-type: none;
     padding: 0;
-    /*margin: auto;*/
+    margin: auto;
+    width: 100%;
 }
 
 .news-section-item {
