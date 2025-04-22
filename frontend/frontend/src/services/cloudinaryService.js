@@ -4,6 +4,9 @@
     formData.append('upload_preset', import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET);
     formData.append('cloud_name', import.meta.env.VITE_CLOUDINARY_CLOUD_NAME);
 
+    console.log("⬆Upload preset:", import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET);
+    console.log("⬆Cloud name:", import.meta.env.VITE_CLOUDINARY_CLOUD_NAME);
+
     try {
         const response = await fetch(
             `https://api.cloudinary.com/v1_1/${import.meta.env.VITE_CLOUDINARY_CLOUD_NAME}/image/upload`,
