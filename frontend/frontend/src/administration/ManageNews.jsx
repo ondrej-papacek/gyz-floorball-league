@@ -70,6 +70,11 @@ const ManageNews = () => {
     };
 
     const handleSubmit = async () => {
+        if (!form.title || !form.shortDescription || !form.longDescription || !form.image) {
+            alert("Vyplň všechna pole a nahraj obrázek.");
+            return;
+        }
+
         const payload = {
             ...form,
             date: new Date(form.date).toISOString()
@@ -145,12 +150,16 @@ const ManageNews = () => {
                 <div className="news-list">
                     {news.map(article => (
                         <div key={article.id} className="news-item">
-                            <img src={article.image} alt={article.title} />
+                            <div className="news-image-container">
+                                <img src={article.image} alt={article.title} />
+                            </div>
                             <div className="news-content">
                                 <h3>{article.title}</h3>
                                 <p>{article.shortDescription}</p>
-                                <button onClick={() => handleEdit(article)} className="edit-button">Upravit</button>
-                                <button onClick={() => handleDelete(article.id)} className="delete-button">Smazat</button>
+                                <div className="news-buttons">
+                                    <button onClick={() => handleEdit(article)} className="edit-button">Upravit</button>
+                                    <button onClick={() => handleDelete(article.id)} className="delete-button">Smazat</button>
+                                </div>
                             </div>
                         </div>
                     ))}

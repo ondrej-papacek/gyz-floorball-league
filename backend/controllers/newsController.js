@@ -1,6 +1,13 @@
 ﻿const admin = require('../firebase');
 const db = admin.firestore();
 
+const parseDate = (date) => {
+    if (!date) return null;
+    if (typeof date.toDate === 'function') return date.toDate(); // Firestore Timestamp
+    if (typeof date === 'string' || typeof date === 'number') return new Date(date);
+    return null;
+};
+
 // Fetch all news articles, sorted by date
 exports.getNews = async (req, res, next) => {
     try {
@@ -10,7 +17,7 @@ exports.getNews = async (req, res, next) => {
             return {
                 id: doc.id,
                 ...newsItem,
-                date: newsItem.date.toDate(),
+                date: parseDate(newsItem.date),
             };
         });
         res.status(200).json(news);
@@ -28,10 +35,9 @@ exports.getLatestNews = async (req, res, next) => {
             return {
                 id: doc.id,
                 ...newsItem,
-                date: newsItem.date.toDate(),
+                date: parseDate(newsItem.date),
             };
         });
-
         res.status(200).json(latestNews);
     } catch (error) {
         console.error('Error fetching latest news:', error);
