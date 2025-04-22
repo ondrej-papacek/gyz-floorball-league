@@ -25,6 +25,7 @@ const ManageNews = () => {
     });
     const [editingId, setEditingId] = useState(null);
     const [imagePreview, setImagePreview] = useState('');
+    const [uploading, setUploading] = useState(false);
 
     useEffect(() => {
         const fetchNews = async () => {
@@ -51,9 +52,17 @@ const ManageNews = () => {
     const handleImageUpload = async (e) => {
         const file = e.target.files[0];
         if (file) {
-            const url = await uploadImageToCloudinary(file);
-            setForm(prev => ({ ...prev, image: url }));
-            setImagePreview(URL.createObjectURL(file));
+            setUploading(true);
+            try {
+                const url = await uploadImageToCloudinary(file);
+                console.log("Cloudinary URL:", url);
+                setForm(prev => ({ ...prev, image: url }));
+                setImagePreview(URL.createObjectURL(file));
+            } catch (error) {
+                alert("Chyba při nahrávání obrázku. Zkontroluj formát nebo připojení.");
+            } finally {
+                setUploading(false);
+            }
         }
     };
 
@@ -70,6 +79,8 @@ const ManageNews = () => {
     };
 
     const handleSubmit = async () => {
+        console.log("Submitting form with data:", form);
+
         if (!form.title || !form.shortDescription || !form.longDescription || !form.image) {
             alert("Vyplň všechna pole a nahraj obrázek.");
             return;
@@ -80,16 +91,21 @@ const ManageNews = () => {
             date: new Date(form.date).toISOString()
         };
 
-        if (editingId) {
-            await updateDoc(doc(db, 'news', editingId), payload);
-            setNews(prev => prev.map(n => n.id === editingId ? { id: editingId, ...payload } : n));
-        } else {
-            const docRef = await addDoc(collection(db, 'news'), payload);
-            setNews(prev => [{ id: docRef.id, ...payload }, ...prev]);
-        }
+        try {
+            if (editingId) {
+                await updateDoc(doc(db, 'news', editingId), payload);
+                setNews(prev => prev.map(n => n.id === editingId ? { id: editingId, ...payload } : n));
+            } else {
+                const docRef = await addDoc(collection(db, 'news'), payload);
+                setNews(prev => [{ id: docRef.id, ...payload }, ...prev]);
+            }
 
-        resetForm();
-        alert(editingId ? "Novinka upravena." : "Novinka přidána.");
+            resetForm();
+            alert(editingId ? "Novinka upravena." : "Novinka přidána.");
+        } catch (error) {
+            alert("Došlo k chybě při ukládání novinky.");
+            console.error("Submit error:", error);
+        }
     };
 
     const handleEdit = (article) => {
@@ -141,7 +157,7 @@ const ManageNews = () => {
                     />
                     <input type="file" onChange={handleImageUpload} />
                     {imagePreview && <img src={imagePreview} alt="Preview" className="news-preview-image" />}
-                    <button onClick={handleSubmit}>
+                    <button onClick={handleSubmit} disabled={uploading}>
                         {editingId ? 'Uložit změny' : 'Přidat Novinku'}
                     </button>
                     {editingId && <button onClick={resetForm}>Zrušit úpravy</button>}
@@ -151,7 +167,7 @@ const ManageNews = () => {
                     {news.map(article => (
                         <div key={article.id} className="news-item">
                             <div className="news-image-container">
-                                <img src={article.image} alt={article.title} />
+                                <img src={article.image || "https://via.placeholder.com/100"} alt={article.title} />
                             </div>
                             <div className="news-content">
                                 <h3>{article.title}</h3>
