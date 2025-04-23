@@ -14,6 +14,9 @@ import { uploadImageToCloudinary } from '../services/cloudinaryService';
 import './manageNews.css';
 import AdminNavbar from "../components/AdminNavbar.jsx";
 
+console.log("🧪 TEST ENV PRESET:", import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET);
+console.log("🧪 TEST ENV CLOUD NAME:", import.meta.env.VITE_CLOUDINARY_CLOUD_NAME);
+
 const ManageNews = () => {
     const [news, setNews] = useState([]);
     const [form, setForm] = useState({
