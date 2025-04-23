@@ -9,7 +9,7 @@ function HeroSection() {
                  uk-slider="autoplay: true; autoplay-interval: 5000;">
                 <ul className="uk-slider-items uk-child-width-1-1">
                     <li>
-                        <img src="/images/hero-img.jpg" alt="Slide 1" className="hero-img"/>
+                        <img src="/images/IMG_1778.JPG" alt="Slide 1" className="hero-img"/>
                     </li>
                     <li>
                         <img src="/images/hero-img2.png" alt="Slide 2" className="hero-img"/>
@@ -17,8 +17,25 @@ function HeroSection() {
                     <li>
                         <img src="/images/hero-img3.png" alt="Slide 3" className="hero-img"/>
                     </li>
+                    <li>
+                        <img src="/images/IMG_1819.JPG" alt="Slide 3" className="hero-img"/>
+                    </li>
+                    <li>
+                        <img src="/images/IMG_1853.JPG" alt="Slide 3" className="hero-img"/>
+                    </li>
+                    <li>
+                        <img src="/images/IMG_1795.JPG" alt="Slide 3" className="hero-img"/>
+                    </li>
+                    <li>
+                        <img src="/images/IMG_1872.JPG" alt="Slide 3" className="hero-img"/>
+                    </li>
+                    <li>
+                        <img src="/images/IMG_1854.JPG" alt="Slide 3" className="hero-img"/>
+                    </li>
+                    <li>
+                        <img src="/images/IMG_1853.JPG" alt="Slide 3" className="hero-img"/>
+                    </li>
                 </ul>
-
                 <a className="uk-position-center-left uk-position-small uk-hidden-hover nav-arrow" href="#"
                    uk-slidenav-previous="true" uk-slider-item="previous"></a>
                 <a className="uk-position-center-right uk-position-small uk-hidden-hover nav-arrow" href="#"
