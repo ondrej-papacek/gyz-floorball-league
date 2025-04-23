@@ -79,6 +79,10 @@
     cursor: pointer;
 }
 
+.news-image-container p {
+    margin-bottom: 3px;
+}
+
 .news-image-caption {
     font-size: 0.8rem;
     color: #bebebe;
