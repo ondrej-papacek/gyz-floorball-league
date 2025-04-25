@@ -54,6 +54,12 @@
     max-width: fit-content;
     white-space: nowrap;
     align-self: flex-start;
+    font-size: 1rem;
+    transition: background-color 0.3s ease;
+}
+
+.news-toggle-button:hover {
+    background-color: #b3861d;
 }
 
 .news-description {
@@ -121,4 +127,120 @@
 @keyframes scaleIn {
     0% { transform: scale(0.8); opacity: 0; }
     100% { transform: scale(1); opacity: 1; }
+}
+
+/* =================== Smartphones =================== */
+@media (max-width: 480px) {
+    .news-item {
+        flex-direction: column;
+        align-items: center;
+        padding: 1rem 0.5rem;
+    }
+
+    .news-image-container {
+        margin-left: 0;
+        margin-bottom: 1rem;
+        width: 100%;
+        max-width: 280px;
+    }
+
+    .news-content h2 {
+        font-size: 1.2rem;
+        text-align: center;
+    }
+
+    .news-toggle-button {
+        width: 100%;
+        text-align: center;
+        align-self: center;
+        font-size: 1rem;
+        padding: 0.75rem 1rem;
+    }
+}
+
+/* =================== Tablets =================== */
+@media (min-width: 481px) and (max-width: 768px) {
+    .news-item {
+        flex-direction: column;
+        align-items: center;
+        padding: 1rem;
+    }
+
+    .news-image-container {
+        margin-left: 0;
+        margin-bottom: 1rem;
+        width: 100%;
+        max-width: 300px;
+    }
+
+    .news-content h2 {
+        font-size: 1.4rem;
+        text-align: center;
+    }
+
+    .news-toggle-button {
+        width: 100%;
+        text-align: center;
+        align-self: center;
+        font-size: 1rem;
+        padding: 0.75rem 1rem;
+    }
+}
+
+/* =================== Small Laptops =================== */
+@media (min-width: 769px) and (max-width: 1024px) {
+    .news-item {
+        flex-direction: row;
+        flex-wrap: wrap;
+    }
+
+    .news-image-container {
+        width: 120px;
+    }
+
+    .news-content h2 {
+        font-size: 1.5rem;
+    }
+
+    .news-toggle-button {
+        font-size: 0.95rem;
+        padding: 0.6rem 1rem;
+    }
+}
+
+/* =================== Desktops =================== */
+@media (min-width: 1025px) and (max-width: 1440px) {
+    .news-content h2 {
+        font-size: 1.6rem;
+    }
+
+    .news-toggle-button {
+        font-size: 0.95rem;
+        padding: 0.5rem 1rem;
+    }
+}
+
+/* =================== XL / 4K Screens =================== */
+@media (min-width: 1441px) {
+    .news-page {
+        max-width: 1400px;
+        margin: 0 auto;
+    }
+
+    .news-item {
+        max-width: 1400px;
+    }
+
+    .news-content h2 {
+        font-size: 1.8rem;
+    }
+
+    .news-toggle-button {
+        font-size: 1rem;
+        padding: 0.75rem 1.25rem;
+    }
+
+    .news-image-container {
+        width: 200px;
+    }
 }
