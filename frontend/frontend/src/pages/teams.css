@@ -6,25 +6,29 @@
     display: flex;
     flex-direction: column;
     align-items: center;
+    min-height: 100vh;
+    box-sizing: border-box;
 }
 
 .teams-title {
     color: #d9a326;
     text-align: center;
     margin-bottom: 2rem;
+    font-size: 2rem;
 }
 
 .gym-section {
     width: 100%;
     max-width: 800px;
     margin-bottom: 2rem;
+    overflow-x: auto;
 }
 
 .gym-title {
     color: #d9a326;
     text-align: left;
     margin-bottom: 1rem;
-    font-size: 1.2rem;
+    font-size: 1.5rem;
 }
 
 .teams-table {
@@ -33,6 +37,7 @@
     background-color: #444;
     border-radius: 8px;
     overflow: hidden;
+    min-width: 400px; /* prevent squishing */
 }
 
 .teams-table th, .teams-table td {
@@ -40,10 +45,12 @@
     text-align: center;
     color: #fff;
     border-bottom: 1px solid #555;
+    font-size: 1rem;
 }
 
 .teams-table th {
     background-color: #555;
+    font-size: 1.1rem;
 }
 
 .teams-table tr:hover {
@@ -65,7 +72,6 @@
 
 .expanded-row {
     background-color: #d9a326;
-    /*border: solid 2px white;*/
 }
 
 tr.expanded-row:hover {
@@ -87,6 +93,7 @@ tr.expanded-row:hover {
 
 .match-details ul {
     display: flex;
+    flex-wrap: wrap;
     list-style-type: none;
     padding: 0;
     margin: 0;
@@ -94,7 +101,75 @@ tr.expanded-row:hover {
 
 .match-details li {
     padding: 0.25rem 0;
-    margin-left: 10px;
+    margin-right: 10px;
+    font-size: 0.95rem;
 }
 
+/* ============ Responsive Breakpoints ============ */
 
+/* 📱 Smartphones */
+@media (max-width: 480px) {
+    .teams-page {
+        padding: 1rem;
+    }
+
+    .teams-title {
+        font-size: 1.6rem;
+    }
+
+    .gym-title {
+        font-size: 1.2rem;
+    }
+
+    .teams-table th, .teams-table td {
+        padding: 0.5rem;
+        font-size: 0.9rem;
+    }
+
+    .expand-btn {
+        font-size: 1rem;
+    }
+
+    .match-details ul {
+        flex-direction: column;
+    }
+
+    .match-details li {
+        margin-right: 0;
+        font-size: 0.9rem;
+    }
+}
+
+/* 📱 Tablets */
+@media (min-width: 481px) and (max-width: 768px) {
+    .teams-title {
+        font-size: 1.8rem;
+    }
+
+    .gym-title {
+        font-size: 1.3rem;
+    }
+
+    .teams-table th, .teams-table td {
+        font-size: 1rem;
+    }
+}
+
+/* 💻 Small Laptops */
+@media (min-width: 769px) and (max-width: 1024px) {
+    .teams-title {
+        font-size: 2rem;
+    }
+
+    .gym-title {
+        font-size: 1.4rem;
+    }
+}
+
+/* 🖥️ XL Screens */
+@media (min-width: 1440px) {
+    .teams-page {
+        max-width: 1400px;
+        margin: 0 auto;
+    }
+}

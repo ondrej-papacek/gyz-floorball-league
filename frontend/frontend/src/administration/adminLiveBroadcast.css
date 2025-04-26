@@ -7,6 +7,7 @@
     color: #ffffff;
     border-radius: 12px;
     font-family: Arial, sans-serif;
+    box-sizing: border-box;
 }
 
 .live-match-container h2 {
@@ -51,6 +52,9 @@
 .team {
     flex: 1 1 30%;
     text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
 .team img {
@@ -133,6 +137,7 @@
     display: flex;
     justify-content: center;
     gap: 10px;
+    margin-top: 10px;
 }
 
 .timer-controls button {
@@ -194,13 +199,47 @@
     margin-left: 10px;
 }
 
-@media (max-width: 800px) {
+/* ========== 📱 Landscape smartphones ========== */
+@media (max-width: 850px) and (orientation: landscape) {
     .scoreboard {
-        flex-direction: column;
-        align-items: center;
+        flex-direction: row;
+        flex-wrap: wrap;
     }
 
     .team, .score-info {
-        width: 100%;
+        flex: 1 1 30%;
+        max-width: 30%;
+    }
+
+    .team img {
+        width: 160px;
+        height: 160px;
+    }
+
+    .score {
+        font-size: 2.4rem;
+    }
+}
+
+/* ========== 📱 Portrait smartphones ========== */
+@media (max-width: 850px) and (orientation: portrait) {
+    .live-match-container {
+        display: none;
+    }
+}
+
+/* ========== Tablets ========= */
+@media (min-width: 851px) and (max-width: 1024px) {
+    .team img {
+        width: 180px;
+        height: 180px;
+    }
+}
+
+/* ========== Desktops ========= */
+@media (min-width: 1025px) {
+    .team img {
+        width: 200px;
+        height: 200px;
     }
 }

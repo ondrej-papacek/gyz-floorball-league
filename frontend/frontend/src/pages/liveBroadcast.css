@@ -1,6 +1,6 @@
 ﻿.live-match-container {
     max-width: 1000px;
-    margin: auto auto;
+    margin: auto;
     padding: 30px;
     background-color: #333;
     color: #fff;
@@ -19,6 +19,7 @@
     color: #f0b323;
     font-weight: bold;
     margin-bottom: 10px;
+    font-size: 2rem;
 }
 
 .match-info {
@@ -32,6 +33,7 @@
     justify-content: space-between;
     align-items: center;
     padding: 0 60px;
+    flex-wrap: wrap;
 }
 
 .team {
@@ -39,6 +41,7 @@
     flex-direction: column;
     align-items: center;
     flex: 1;
+    margin-bottom: 20px;
 }
 
 .team img {
@@ -47,6 +50,7 @@
     border-radius: 10px;
     margin-bottom: 10px;
     box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+    object-fit: cover;
 }
 
 .team-name {
@@ -54,17 +58,20 @@
     font-weight: bold;
     color: #d9a326;
     margin-bottom: 5px;
+    text-align: center;
 }
 
 .scorers {
     font-size: 0.9rem;
     color: #ccc;
+    text-align: center;
 }
 
 .score-info {
     display: flex;
     flex-direction: column;
     align-items: center;
+    margin: 10px 0;
 }
 
 .score {
@@ -83,4 +90,105 @@
     font-size: 1rem;
     color: #d9a326;
     margin-top: 4px;
+}
+
+/* ================== Responsive Breakpoints ================== */
+
+/* Small devices (phones) */
+@media (max-width: 480px) {
+    .live-match-container {
+        padding: 20px;
+    }
+
+    .live-match-background h2 {
+        font-size: 1.6rem;
+    }
+
+    .scoreboard {
+        flex-direction: column;
+        padding: 0;
+    }
+
+    .team img {
+        width: 180px;
+        height: 180px;
+    }
+
+    .team-name {
+        font-size: 1.1rem;
+    }
+
+    .score {
+        font-size: 2rem;
+    }
+
+    .period-info,
+    .time-left {
+        font-size: 0.9rem;
+    }
+
+    .match-info {
+        font-size: 1rem;
+    }
+}
+
+/* Medium devices (tablets) */
+@media (min-width: 481px) and (max-width: 768px) {
+    .live-match-container {
+        padding: 25px;
+    }
+
+    .live-match-background h2 {
+        font-size: 1.8rem;
+    }
+
+    .scoreboard {
+        flex-direction: column;
+        padding: 0 20px;
+    }
+
+    .team img {
+        width: 200px;
+        height: 200px;
+    }
+
+    .team-name {
+        font-size: 1.2rem;
+    }
+
+    .score {
+        font-size: 2.2rem;
+    }
+
+    .period-info,
+    .time-left {
+        font-size: 0.95rem;
+    }
+}
+
+/* Small laptops */
+@media (min-width: 769px) and (max-width: 1024px) {
+    .live-match-container {
+        padding: 30px;
+    }
+
+    .scoreboard {
+        padding: 0 40px;
+    }
+
+    .team img {
+        width: 220px;
+        height: 220px;
+    }
+}
+
+/* XL Screens (Large desktops) */
+@media (min-width: 1440px) {
+    .live-match-container {
+        max-width: 1200px;
+    }
+
+    .scoreboard {
+        padding: 0 80px;
+    }
 }

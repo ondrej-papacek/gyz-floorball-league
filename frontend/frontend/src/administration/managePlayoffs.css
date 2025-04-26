@@ -1,30 +1,37 @@
 ﻿.manage-playoffs-page {
-    padding: 20px;
+    padding: 2rem;
     color: white;
     font-family: Poppins, sans-serif;
+    background-color: #333;
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    max-width: 100%;
 }
 
 .manage-playoffs-page h2 {
     color: #d9a326;
     text-align: center;
-    margin-bottom: 20px;
+    margin-bottom: 1.5rem;
+    font-size: 2rem; /* Default for desktops */
 }
 
 .playoff-controls {
     display: flex;
     justify-content: center;
     align-items: center;
-    gap: 12px;
-    margin-bottom: 24px;
     flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 2rem;
 }
 
 .playoff-controls label {
-    font-weight: 500;
+    font-weight: bold;
 }
 
 .playoff-controls select {
-    padding: 8px 12px;
+    padding: 10px 14px;
     border-radius: 6px;
     background-color: #444;
     color: white;
@@ -32,60 +39,46 @@
     border: 1px solid #777;
 }
 
-.playoff-controls button {
-    padding: 8px 14px;
-    background-color: #d9a326;
-    color: white;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-    font-weight: bold;
-}
-
-.playoff-controls button:hover {
-    background-color: #b5841d;
-}
-
 .playoff-round {
-    background-color: #2d2d2d;
-    padding: 16px;
+    background-color: #444;
+    padding: 20px;
+    margin-bottom: 2rem;
     border-radius: 8px;
-    margin-bottom: 20px;
-    border: 1px solid #444;
+    width: 100%;
+    max-width: 1200px;
+    box-sizing: border-box;
 }
 
-.playoff-round h3 {
+.round-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+    flex-wrap: wrap;
+}
+
+.round-header h3 {
     color: #f0b323;
-    font-size: 1.1rem;
-    margin-bottom: 10px;
+    font-size: 1.2rem;
     text-transform: uppercase;
-}
-
-input {
-    margin-bottom: 8px;
-    padding: 6px 10px;
-    font-size: 0.95rem;
-    border-radius: 6px;
-    background-color: #333;
-    color: white;
-    border: 1px solid #666;
+    margin: 0;
 }
 
 .playoff-match-row {
     display: flex;
     align-items: center;
+    flex-wrap: wrap;
     gap: 10px;
     margin-bottom: 12px;
-    flex-wrap: wrap;
 }
 
 .playoff-match-row select,
 .playoff-match-row input {
-    padding: 6px 10px;
-    font-size: 0.95rem;
-    border-radius: 6px;
     background-color: #333;
     color: white;
+    padding: 8px 10px;
+    font-size: 1rem;
+    border-radius: 6px;
     border: 1px solid #666;
 }
 
@@ -95,14 +88,15 @@ input {
 }
 
 .playoff-match-row button {
-    padding: 6px 10px;
     background-color: #666;
     color: white;
+    padding: 8px 14px;
     border: none;
-    border-radius: 4px;
-    font-weight: bold;
+    border-radius: 6px;
     cursor: pointer;
-    font-size: 0.95rem;
+    font-weight: bold;
+    transition: background-color 0.2s ease;
+    font-size: 1rem;
 }
 
 .playoff-match-row button:hover {
@@ -110,74 +104,61 @@ input {
     color: black;
 }
 
-.playoff-match-row button.save-btn {
-    background-color: #d9a326;
-    color: white;
-}
-
-.playoff-match-row button.save-btn:hover {
-    background-color: #b6841f;
-    color: black;
-}
-
-.round-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 14px;
-    gap: 12px;
-    flex-wrap: wrap;
-}
-
-.add-btn {
-    background-color: #d9a326;
-    margin-right: 12px;
-    color: white;
-    padding: 6px 12px;
-    border-radius: 6px;
-    font-weight: bold;
-    cursor: pointer;
-    font-size: 0.9rem;
-    transition: background-color 0.2s ease;
-}
-
-.add-btn:hover {
-    background-color: #b5841d;
-}
-
+.add-btn,
 .save-btn {
     background-color: #d9a326;
-    color: white;
-    padding: 6px 12px;
+    color: black;
+    padding: 10px 16px;
     border: none;
     border-radius: 6px;
-    font-weight: bold;
     cursor: pointer;
-    font-size: 0.9rem;
+    font-weight: bold;
+    margin-top: 10px;
 }
 
+.add-btn:hover,
 .save-btn:hover {
-    background-color: #b5841d;
-    color: black;
+    background-color: #b6841d;
 }
 
 .delete-round-button {
     background-color: #922c2c;
     color: white;
     border: none;
-    padding: 6px 12px;
+    padding: 10px 16px;
     border-radius: 6px;
-    font-weight: bold;
     cursor: pointer;
-    font-size: 0.9rem;
+    font-weight: bold;
 }
 
 .delete-round-button:hover {
     background-color: #b33a3a;
 }
 
-@media (max-width: 600px) {
-    .playoff-controls,
+/* =================== Smartphones =================== */
+@media (max-width: 480px) {
+    .manage-playoffs-page {
+        padding: 1rem;
+    }
+
+    .manage-playoffs-page h2 {
+        font-size: 1.6rem;
+    }
+
+    .playoff-controls {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .playoff-round {
+        padding: 1rem;
+    }
+
+    .round-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
     .playoff-match-row {
         flex-direction: column;
         align-items: flex-start;
@@ -188,7 +169,70 @@ input {
     .playoff-match-row input,
     .playoff-match-row button,
     .add-btn,
-    .save-btn {
+    .save-btn,
+    .delete-round-button {
         width: 100%;
+    }
+}
+
+/* =================== Tablets =================== */
+@media (min-width: 481px) and (max-width: 768px) {
+    .manage-playoffs-page {
+        padding: 1.5rem;
+    }
+
+    .manage-playoffs-page h2 {
+        font-size: 1.8rem;
+    }
+
+    .playoff-round {
+        padding: 1.5rem;
+    }
+
+    .playoff-match-row {
+        flex-wrap: wrap;
+        gap: 12px;
+    }
+}
+
+/* =================== Small Laptops =================== */
+@media (min-width: 769px) and (max-width: 1024px) {
+    .manage-playoffs-page h2 {
+        font-size: 2rem;
+    }
+
+    .round-header h3 {
+        font-size: 1.4rem;
+    }
+
+    .playoff-match-row {
+        gap: 14px;
+    }
+}
+
+/* =================== Desktops =================== */
+@media (min-width: 1025px) and (max-width: 1440px) {
+    .manage-playoffs-page h2 {
+        font-size: 2rem;
+    }
+
+    .round-header h3 {
+        font-size: 1.6rem;
+    }
+}
+
+/* =================== XL / 4K Screens =================== */
+@media (min-width: 1441px) {
+    .manage-playoffs-page {
+        max-width: 1400px;
+        margin: 0 auto;
+    }
+
+    .manage-playoffs-page h2 {
+        font-size: 2.2rem;
+    }
+
+    .round-header h3 {
+        font-size: 1.8rem;
     }
 }

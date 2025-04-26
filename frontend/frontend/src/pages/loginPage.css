@@ -2,12 +2,14 @@
     background-color: #333;
     color: #fff;
     border-radius: 12px;
-    height: 70vh;
+    min-height: 100vh;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
     font-family: Poppins, sans-serif;
+    padding: 2rem;
+    box-sizing: border-box;
 }
 
 .form-group {
@@ -25,6 +27,7 @@
     text-align: center;
     width: 100%;
     max-width: 400px;
+    box-sizing: border-box;
 }
 
 .login-title {
@@ -125,7 +128,8 @@
     cursor: pointer;
 }
 
-@media (max-width: 600px) {
+/* ================= Smartphones (<=480px) ================= */
+@media (max-width: 480px) {
     .login-box {
         padding: 20px;
     }
@@ -140,5 +144,47 @@
 
     .login-button {
         font-size: 0.9rem;
+        padding: 10px;
+    }
+
+    .remember-row {
+        font-size: 0.85rem;
+    }
+}
+
+/* ================= Tablets (481px - 768px) ================= */
+@media (min-width: 481px) and (max-width: 768px) {
+    .login-box {
+        padding: 25px;
+    }
+
+    .login-title {
+        font-size: 1.7rem;
+    }
+
+    .login-input {
+        font-size: 1rem;
+    }
+
+    .login-button {
+        font-size: 1rem;
+    }
+}
+
+/* ================= Small Laptops (769px - 1024px) ================= */
+@media (min-width: 769px) and (max-width: 1024px) {
+    .login-box {
+        padding: 30px;
+    }
+
+    .login-title {
+        font-size: 1.8rem;
+    }
+}
+
+/* ================= XL Screens (1440px +) ================= */
+@media (min-width: 1440px) {
+    .login-box {
+        max-width: 500px;
     }
 }

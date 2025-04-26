@@ -4,6 +4,7 @@
     color: white;
     background-color: #1f1f1f;
     min-height: 75vh;
+    box-sizing: border-box;
 }
 
 .manage-league-page h1 {
@@ -25,13 +26,13 @@
 .add-league-form input,
 .add-league-form select {
     background-color: #333;
-    margin-bottom: 0;
     color: white;
     border: 1px solid #555;
     border-radius: 6px;
-    padding: 8px 12px;
-    font-size: 0.95rem;
-    font-family: inherit;
+    padding: 10px 14px;
+    font-size: 1rem;
+    flex: 1 1 220px;
+    min-width: 160px;
 }
 
 .add-league-form input::placeholder {
@@ -42,12 +43,14 @@
     background-color: #111;
     color: white;
     border: none;
-    padding: 9px 16px;
-    font-size: 0.9rem;
+    padding: 10px 16px;
+    font-size: 1rem;
     border-radius: 6px;
     font-weight: 600;
     cursor: pointer;
     transition: background-color 0.2s ease, color 0.2s ease;
+    flex: 1 1 220px;
+    min-width: 160px;
 }
 
 .add-league-form button:hover {
@@ -61,6 +64,8 @@
     gap: 40px;
     max-width: 800px;
     margin: 0 auto;
+    padding: 0 10px;
+    box-sizing: border-box;
 }
 
 .league-item {
@@ -88,7 +93,7 @@
     padding: 8px 12px;
     margin: 5px 8px 5px 0;
     cursor: pointer;
-    font-size: 0.85rem;
+    font-size: 0.9rem;
     font-weight: 600;
     transition: background-color 0.2s ease, color 0.2s ease;
 }
@@ -100,12 +105,10 @@
 
 .league-item button:last-child {
     background-color: #d92d2d;
-    color: white;
 }
 
 .league-item button:last-child:hover {
     background-color: #a61a1a;
-    color: white;
 }
 
 .delete-league-btn {
@@ -113,7 +116,6 @@
     color: white;
     border: none;
     padding: 6px 12px;
-    margin-left: 8px;
     cursor: pointer;
 }
 
@@ -121,3 +123,58 @@
     background-color: #cc0000;
 }
 
+/* ==================== 📱 Smartphones ==================== */
+@media (max-width: 600px) {
+    .manage-league-page {
+        padding: 20px 10px;
+    }
+
+    .manage-league-page h1 {
+        font-size: 2rem;
+    }
+
+    .add-league-form {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .add-league-form input,
+    .add-league-form select,
+    .add-league-form button {
+        width: 100%;
+    }
+
+    .league-item {
+        padding: 20px;
+    }
+
+    .league-item h2 {
+        font-size: 1.2rem;
+    }
+
+    .league-item button {
+        width: 100%;
+        margin: 6px 0;
+    }
+}
+
+/* ==================== 💻 Tablets ==================== */
+@media (min-width: 601px) and (max-width: 1024px) {
+    .add-league-form {
+        flex-wrap: wrap;
+    }
+
+    .add-league-form input,
+    .add-league-form select,
+    .add-league-form button {
+        flex: 1 1 45%;
+    }
+}
+
+/* ==================== 🖥️ Desktops ==================== */
+@media (min-width: 1025px) {
+    .manage-league-page {
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+}

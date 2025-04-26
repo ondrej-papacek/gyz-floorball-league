@@ -1,11 +1,28 @@
-﻿.playoff-bracket h2 {
-    color: #d9a326; /* keep */
+﻿.playoff-bracket {
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+    margin-top: 20px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.playoff-bracket h2 {
+    color: #d9a326;
+}
+
+.playoff-round-block {
+    background-color: #333;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.4);
 }
 
 .playoff-round-block h3 {
     color: #d9a326;
-    font-size: 1.1rem;
-    margin-bottom: 10px;
+    font-size: 1.4rem;
+    margin-bottom: 15px;
+    text-align: center;
 }
 
 .match-row {
@@ -13,6 +30,12 @@
     border: 1px solid #555;
     border-radius: 6px;
     padding: 10px;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    flex-wrap: wrap;
     transition: background 0.2s ease;
 }
 
@@ -23,14 +46,77 @@
 .team-name {
     font-weight: 500;
     color: #fff;
+    font-size: 1rem;
 }
 
 .vs {
     color: #bbb;
     font-size: 0.9rem;
+    font-weight: bold;
 }
 
 .score {
     color: #d9a326;
     font-weight: bold;
+    font-size: 1.1rem;
+}
+
+/* ============ Responsive Breakpoints ============ */
+
+/* 📱 Smartphones */
+@media (max-width: 480px) {
+    .playoff-round-block {
+        padding: 15px;
+    }
+
+    .playoff-round-block h3 {
+        font-size: 1.2rem;
+    }
+
+    .match-row {
+        flex-direction: column;
+        gap: 5px;
+    }
+
+    .team-name {
+        font-size: 0.95rem;
+    }
+
+    .score {
+        font-size: 1rem;
+    }
+
+    .vs {
+        font-size: 0.85rem;
+    }
+}
+
+/* 📱 Tablets */
+@media (min-width: 481px) and (max-width: 768px) {
+    .playoff-round-block h3 {
+        font-size: 1.3rem;
+    }
+
+    .match-row {
+        gap: 6px;
+    }
+
+    .team-name {
+        font-size: 1rem;
+    }
+}
+
+/* 💻 Small Laptops */
+@media (min-width: 769px) and (max-width: 1024px) {
+    .playoff-round-block h3 {
+        font-size: 1.4rem;
+    }
+}
+
+/* 🖥️ XL Screens */
+@media (min-width: 1440px) {
+    .playoff-bracket {
+        max-width: 1200px;
+        margin: 0 auto;
+    }
 }

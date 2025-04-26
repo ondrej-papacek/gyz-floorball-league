@@ -6,12 +6,14 @@
     display: flex;
     flex-direction: column;
     align-items: center;
+    max-width: 100%;
 }
 
 .news-title {
     color: #d9a326;
     text-align: center;
     margin-bottom: 1.5rem;
+    font-size: 2rem; /* Default for desktops */
 }
 
 .news-item {
@@ -23,6 +25,7 @@
     max-width: 1200px;
     width: 100%;
     box-sizing: border-box;
+    transition: background-color 0.3s ease;
 }
 
 .news-item:hover {
@@ -131,10 +134,19 @@
 
 /* =================== Smartphones =================== */
 @media (max-width: 480px) {
+    .news-page {
+        padding: 1rem;
+    }
+
+    .news-title {
+        font-size: 1.6rem;
+    }
+
     .news-item {
         flex-direction: column;
         align-items: center;
         padding: 1rem 0.5rem;
+        margin-bottom: 1.5rem;
     }
 
     .news-image-container {
@@ -160,10 +172,19 @@
 
 /* =================== Tablets =================== */
 @media (min-width: 481px) and (max-width: 768px) {
+    .news-page {
+        padding: 1.5rem;
+    }
+
+    .news-title {
+        font-size: 1.8rem;
+    }
+
     .news-item {
         flex-direction: column;
         align-items: center;
         padding: 1rem;
+        margin-bottom: 1.5rem;
     }
 
     .news-image-container {
@@ -189,6 +210,10 @@
 
 /* =================== Small Laptops =================== */
 @media (min-width: 769px) and (max-width: 1024px) {
+    .news-title {
+        font-size: 2rem;
+    }
+
     .news-item {
         flex-direction: row;
         flex-wrap: wrap;
@@ -210,6 +235,10 @@
 
 /* =================== Desktops =================== */
 @media (min-width: 1025px) and (max-width: 1440px) {
+    .news-title {
+        font-size: 2rem;
+    }
+
     .news-content h2 {
         font-size: 1.6rem;
     }
@@ -229,6 +258,10 @@
 
     .news-item {
         max-width: 1400px;
+    }
+
+    .news-title {
+        font-size: 2.2rem;
     }
 
     .news-content h2 {

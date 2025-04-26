@@ -4,16 +4,17 @@
     color: #fff;
     text-align: center;
     min-height: 30vh;
+    box-sizing: border-box;
 }
 
 .admin-title {
-    font-size: 2rem;
+    font-size: 2.5rem;
     color: #d9a326;
     margin-bottom: 1rem;
 }
 
 .admin-subtitle {
-    font-size: 1rem;
+    font-size: 1.2rem;
     color: #ccc;
     margin-bottom: 2rem;
 }
@@ -29,15 +30,83 @@
     background-color: #d9a326;
     color: white;
     border: none;
-    padding: 12px 20px;
+    padding: 14px 24px;
     font-weight: bold;
-    font-size: 1rem;
+    font-size: 1.1rem;
     border-radius: 10px;
     cursor: pointer;
     transition: transform 0.2s ease, background-color 0.3s ease;
+    flex-shrink: 0;
 }
 
 .admin-links button:hover {
     background-color: #e09f1f;
     transform: scale(1.05);
+}
+
+/* ============ Responsive Breakpoints ============ */
+
+/* 📱 Smartphones */
+@media (max-width: 480px) {
+    .admin-dashboard {
+        padding: 1.5rem;
+    }
+
+    .admin-title {
+        font-size: 2rem;
+    }
+
+    .admin-subtitle {
+        font-size: 1rem;
+    }
+
+    .admin-links {
+        gap: 15px;
+    }
+
+    .admin-links button {
+        font-size: 1rem;
+        padding: 12px 18px;
+        width: 100%;
+        max-width: 250px;
+    }
+
+    .admin-links button:hover {
+        transform: scale(1.02); /* softer hover on mobile */
+    }
+}
+
+/* 📱 Tablets */
+@media (min-width: 481px) and (max-width: 768px) {
+    .admin-title {
+        font-size: 2.2rem;
+    }
+
+    .admin-subtitle {
+        font-size: 1.1rem;
+    }
+
+    .admin-links button {
+        font-size: 1.05rem;
+        padding: 12px 20px;
+    }
+}
+
+/* 💻 Small Laptops */
+@media (min-width: 769px) and (max-width: 1024px) {
+    .admin-title {
+        font-size: 2.4rem;
+    }
+
+    .admin-subtitle {
+        font-size: 1.2rem;
+    }
+}
+
+/* 🖥️ XL Screens */
+@media (min-width: 1440px) {
+    .admin-dashboard {
+        max-width: 1200px;
+        margin: 0 auto;
+    }
 }

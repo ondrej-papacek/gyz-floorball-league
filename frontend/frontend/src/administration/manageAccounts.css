@@ -4,13 +4,15 @@
     border-radius: 12px;
     color: white;
     max-width: 900px;
-    margin: 0 auto;
+    margin: 20px auto;
+    box-sizing: border-box;
 }
 
 .manage-accounts h2 {
     color: #f0b323;
     text-align: center;
     margin-bottom: 20px;
+    font-size: 2rem;
 }
 
 .manage-accounts table {
@@ -19,6 +21,7 @@
     background-color: #444;
     border-radius: 8px;
     overflow: hidden;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.4);
 }
 
 .manage-accounts thead {
@@ -31,6 +34,7 @@
     border: 1px solid #666;
     text-align: left;
     color: white;
+    font-size: 0.95rem;
 }
 
 .manage-accounts select {
@@ -38,7 +42,7 @@
     color: white;
     border: 1px solid #888;
     border-radius: 6px;
-    padding: 4px 8px;
+    padding: 6px 10px;
     font-family: Poppins, sans-serif;
 }
 
@@ -66,7 +70,8 @@
     flex-wrap: wrap;
     gap: 14px;
     align-items: center;
-    margin-bottom: 20px;
+    margin-bottom: 30px;
+    justify-content: center;
 }
 
 .create-user-form input,
@@ -76,8 +81,9 @@
     color: white;
     border: 1px solid #555;
     border-radius: 6px;
-    font-size: 0.95rem;
-    flex: 1;
+    font-size: 1rem;
+    flex: 1 1 220px;
+    box-sizing: border-box;
 }
 
 .create-user-form button {
@@ -89,6 +95,8 @@
     font-weight: bold;
     cursor: pointer;
     transition: background-color 0.3s ease;
+    flex: 1 1 220px;
+    min-width: 160px;
 }
 
 .create-user-form button:hover {
@@ -98,9 +106,63 @@
 .error-msg {
     color: #f44336;
     margin-top: 10px;
+    text-align: center;
 }
 
 .success-msg {
     color: #4caf50;
     margin-top: 10px;
+    text-align: center;
+}
+
+/* ========= 📱 Smartphones ========== */
+@media (max-width: 600px) {
+    .manage-accounts {
+        padding: 20px;
+    }
+
+    .create-user-form {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .create-user-form input,
+    .create-user-form select,
+    .create-user-form button {
+        flex: 1 1 auto;
+        width: 100%;
+    }
+
+    .manage-accounts table {
+        font-size: 0.85rem;
+    }
+
+    .manage-accounts th,
+    .manage-accounts td {
+        padding: 10px;
+    }
+}
+
+/* ========= 📱 Tablets ========== */
+@media (min-width: 601px) and (max-width: 1024px) {
+    .create-user-form {
+        flex-wrap: wrap;
+    }
+
+    .create-user-form input,
+    .create-user-form select,
+    .create-user-form button {
+        flex: 1 1 45%;
+    }
+
+    .manage-accounts table {
+        font-size: 0.9rem;
+    }
+}
+
+/* ========= 🖥️ Desktops ========== */
+@media (min-width: 1025px) {
+    .manage-accounts {
+        max-width: 900px;
+    }
 }

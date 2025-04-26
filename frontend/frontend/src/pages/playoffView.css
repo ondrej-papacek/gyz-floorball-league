@@ -4,16 +4,18 @@
     text-align: center;
     background-color: #1c1c1c;
     color: white;
+    min-height: 100vh;
+    box-sizing: border-box;
 }
 
 .playoff-title {
     color: #d9a326;
-    font-size: 28px;
+    font-size: 2rem;
     margin-bottom: 20px;
 }
 
 .division-title {
-    font-size: 20px;
+    font-size: 1.5rem;
     color: #f0b323;
     margin-top: 30px;
     margin-bottom: 15px;
@@ -25,9 +27,66 @@
     border: 1px solid #444;
     border-radius: 8px;
     background-color: #2d2d2d;
+    overflow-x: auto;
 }
 
 .error {
     color: #ff4f4f;
     font-weight: bold;
+}
+
+/* ============ Responsive Breakpoints ============ */
+
+/* 📱 Smartphones */
+@media (max-width: 480px) {
+    .playoff-view-page {
+        padding: 1rem;
+    }
+
+    .playoff-title {
+        font-size: 1.6rem;
+    }
+
+    .division-title {
+        font-size: 1.2rem;
+    }
+
+    .bracket-section {
+        padding: 10px;
+        margin-bottom: 30px;
+    }
+}
+
+/* 📱 Tablets */
+@media (min-width: 481px) and (max-width: 768px) {
+    .playoff-title {
+        font-size: 1.8rem;
+    }
+
+    .division-title {
+        font-size: 1.4rem;
+    }
+
+    .bracket-section {
+        padding: 12px;
+    }
+}
+
+/* 💻 Small Laptops */
+@media (min-width: 769px) and (max-width: 1024px) {
+    .playoff-title {
+        font-size: 2rem;
+    }
+
+    .division-title {
+        font-size: 1.5rem;
+    }
+}
+
+/* 🖥️ XL Screens */
+@media (min-width: 1440px) {
+    .playoff-view-page {
+        max-width: 1400px;
+        margin: 0 auto;
+    }
 }

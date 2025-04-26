@@ -9,54 +9,61 @@
 .footer {
     max-width: 1280px;
     display: flex;
+    flex-wrap: wrap;
     align-items: center;
     justify-content: space-around;
-    padding: 40px 200px 10px 200px;
+    padding: 40px 50px 10px 50px;
+    margin: 0 auto;
+    box-sizing: border-box;
 }
 
 .footer-logo-container {
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: space-between;
+    justify-content: center;
     gap: 15px;
 }
 
 .footer-league-logo {
-    width: 160px;
+    width: 140px;
     filter: saturate(1.5);
 }
 
 .footer-school-name-logo {
-    width: 160px;
+    width: 140px;
     border-radius: 10px;
 }
 
 .footer-links {
     display: flex;
     flex-direction: column;
-    justify-items: flex-end;
-    align-items: end;
+    align-items: flex-end;
     margin-top: 18px;
 }
 
 .footer-links ul {
     list-style-type: none;
     text-align: left;
-    line-height: 2.25;
+    line-height: 2;
     font-size: 14px;
     padding-left: 0;
 }
 
 .footer-links ul a {
     color: white;
+    text-decoration: none;
+}
+
+.footer-links ul a:hover {
+    color: #222;
 }
 
 .footer-socials-container {
-    align-items: center;
-    justify-content: center;
     display: flex;
     flex-direction: column;
+    align-items: center;
+    justify-content: center;
     gap: 10px;
 }
 
@@ -74,4 +81,76 @@
     padding: 20px;
     text-align: center;
     font-size: 14px;
+    background-color: #d9a326;
+}
+
+/* ================= Responsive Breakpoints ================= */
+
+/* Smartphones */
+@media (max-width: 480px) {
+    .footer {
+        flex-direction: column;
+        padding: 30px 20px 10px 20px;
+        text-align: center;
+    }
+
+    .footer-logo-container {
+        margin-bottom: 20px;
+    }
+
+    .footer-league-logo,
+    .footer-school-name-logo {
+        width: 120px;
+    }
+
+    .footer-links {
+        align-items: center;
+        margin-top: 15px;
+    }
+
+    .footer-links ul {
+        font-size: 13px;
+        line-height: 1.8;
+    }
+
+    .footer-socials-container {
+        flex-direction: row;
+        gap: 15px;
+        margin-top: 20px;
+    }
+
+    .footer-socials-container a {
+        font-size: 24px;
+    }
+}
+
+/* Tablets */
+@media (min-width: 481px) and (max-width: 768px) {
+    .footer {
+        flex-wrap: wrap;
+        padding: 30px 40px;
+    }
+
+    .footer-league-logo,
+    .footer-school-name-logo {
+        width: 130px;
+    }
+
+    .footer-links {
+        align-items: center;
+    }
+}
+
+/* Small Laptops */
+@media (min-width: 769px) and (max-width: 1024px) {
+    .footer {
+        padding: 40px 80px 10px 80px;
+    }
+}
+
+/* XL Screens */
+@media (min-width: 1440px) {
+    .footer {
+        max-width: 1400px;
+    }
 }

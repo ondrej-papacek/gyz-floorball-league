@@ -8,6 +8,19 @@
     margin-top: 20px;
     border-top-left-radius: 15px;
     border-top-right-radius: 15px;
+    flex-wrap: wrap;
+    box-sizing: border-box;
+}
+
+.logo-container {
+    display: flex;
+    align-items: center;
+}
+
+.school-name-logo {
+    height: 50px;
+    filter: saturate(1.5);
+    mix-blend-mode: screen;
 }
 
 .admin-nav-links {
@@ -16,6 +29,14 @@
     align-items: center;
     gap: 20px;
     margin-top: 20px;
+    flex-wrap: wrap;
+    justify-content: center;
+    padding: 0;
+}
+
+.admin-nav-links li {
+    display: flex;
+    align-items: center;
 }
 
 .admin-nav-links li a {
@@ -23,6 +44,7 @@
     font-family: Poppins, sans-serif;
     text-decoration: none;
     font-weight: 500;
+    font-size: 1rem;
 }
 
 .admin-nav-links li.active a {
@@ -36,12 +58,6 @@
     color: #f0b323;
 }
 
-.school-name-logo {
-    height: 50px;
-    filter: saturate(1.5);
-    mix-blend-mode: screen;
-}
-
 .logout-button {
     background-color: #f0b323;
     color: white;
@@ -50,6 +66,7 @@
     border-radius: 6px;
     cursor: pointer;
     font-family: Poppins, sans-serif;
+    font-size: 1rem;
     transition: background-color 0.3s ease;
 }
 
@@ -57,3 +74,64 @@
     background-color: #d9a326;
 }
 
+/* ============ Responsive Breakpoints ============ */
+
+/* Smartphones */
+@media (max-width: 480px) {
+    .admin-navbar {
+        flex-direction: column;
+        height: auto;
+        padding: 1rem;
+    }
+
+    .school-name-logo {
+        height: 40px;
+        margin-bottom: 1rem;
+    }
+
+    .admin-nav-links {
+        flex-direction: column;
+        align-items: center;
+        gap: 10px;
+        margin-top: 10px;
+    }
+
+    .admin-nav-links li a {
+        font-size: 0.95rem;
+    }
+
+    .logout-button {
+        font-size: 0.95rem;
+        padding: 8px 12px;
+    }
+}
+
+/* Tablets */
+@media (min-width: 481px) and (max-width: 768px) {
+    .admin-navbar {
+        flex-wrap: wrap;
+    }
+
+    .admin-nav-links {
+        gap: 15px;
+    }
+
+    .school-name-logo {
+        height: 45px;
+    }
+}
+
+/* Small Laptops */
+@media (min-width: 769px) and (max-width: 1024px) {
+    .admin-nav-links {
+        gap: 18px;
+    }
+}
+
+/* XL Screens */
+@media (min-width: 1440px) {
+    .admin-navbar {
+        max-width: 1400px;
+        margin: 20px auto 0 auto;
+    }
+}

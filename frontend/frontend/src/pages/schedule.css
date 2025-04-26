@@ -1,11 +1,16 @@
 ﻿.schedule-page {
     padding: 20px;
     text-align: center;
+    min-height: 100vh;
+    background-color: #1c1c1c;
+    color: white;
+    font-family: Poppins, sans-serif;
+    box-sizing: border-box;
 }
 
 .schedule-title {
     color: #d9a326;
-    font-size: 24px;
+    font-size: 2rem;
     font-weight: bold;
     margin-bottom: 20px;
 }
@@ -19,25 +24,7 @@
     border-radius: 6px;
     border: 1px solid #777;
     font-family: Poppins, sans-serif;
-}
-
-.match-date {
-    font-weight: bold;
-    margin-bottom: 10px;
-}
-
-.match-lower,
-.match-upper {
-    color: #fff;
-}
-
-.lower-tag,
-.upper-tag {
-    background-color: #d9a326;
-    color: white;
-    padding: 2px 5px;
-    margin-left: 5px;
-    border-radius: 5px;
+    width: auto;
 }
 
 .grid-of-rounds {
@@ -65,7 +52,7 @@
 }
 
 .round-title {
-    font-size: 1.1rem;
+    font-size: 1.2rem;
     font-weight: bold;
     color: #d9a326;
 }
@@ -101,4 +88,76 @@
 .vs-label {
     font-size: 0.85rem;
     color: #ccc;
+}
+
+/* =============== Responsive Breakpoints =============== */
+
+/* 📱 Smartphones */
+@media (max-width: 480px) {
+    .schedule-page {
+        padding: 1rem;
+    }
+
+    .schedule-title {
+        font-size: 1.6rem;
+    }
+
+    .schedule-selector {
+        width: 100%;
+        font-size: 0.95rem;
+    }
+
+    .round-title {
+        font-size: 1.1rem;
+    }
+
+    .match-teams {
+        font-size: 0.9rem;
+    }
+
+    .vs-label {
+        font-size: 0.8rem;
+    }
+
+    .round-card {
+        padding: 12px;
+    }
+}
+
+/* 📱 Tablets */
+@media (min-width: 481px) and (max-width: 768px) {
+    .schedule-title {
+        font-size: 1.8rem;
+    }
+
+    .schedule-selector {
+        font-size: 1rem;
+    }
+
+    .round-title {
+        font-size: 1.2rem;
+    }
+
+    .match-teams {
+        font-size: 0.95rem;
+    }
+}
+
+/* 💻 Small Laptops */
+@media (min-width: 769px) and (max-width: 1024px) {
+    .schedule-title {
+        font-size: 2rem;
+    }
+
+    .schedule-selector {
+        font-size: 1rem;
+    }
+}
+
+/* 🖥️ XL Screens */
+@media (min-width: 1440px) {
+    .schedule-page {
+        max-width: 1400px;
+        margin: 0 auto;
+    }
 }
