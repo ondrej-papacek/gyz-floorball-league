@@ -9,12 +9,15 @@
 }
 
 .schedule-title {
-    color: #d9a326 !important;
+    color: #d9a326;
     font-size: 2rem;
     font-weight: bold;
     margin-bottom: 20px;
 }
 
+.schedule-page h2 {
+    color: #d9a326 !important;
+}
 
 .schedule-selector {
     padding: 8px 12px;
