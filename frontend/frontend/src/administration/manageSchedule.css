@@ -284,3 +284,13 @@
         font-size: 2.2rem;
     }
 }
+
+/* Final overrides to beat UIkit resets */
+.manage-schedule .round-header h4,
+.manage-schedule .match-teams strong,
+.manage-schedule .vs-label {
+    font-family: Poppins, sans-serif;
+    font-style: normal;
+    font-weight: normal;
+    color: inherit;
+}
