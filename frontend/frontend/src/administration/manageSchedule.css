@@ -141,6 +141,12 @@
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
 }
 
+.match-card input[type="date"] {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
 .match-dot {
     position: absolute;
     top: 8px;
@@ -169,7 +175,7 @@
     align-items: center;
     justify-content: center;
     gap: 6px;
-    margin: 10px 0;
+    margin: 10px 30px;
 }
 
 .actions {
