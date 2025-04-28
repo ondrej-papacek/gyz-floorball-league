@@ -51,12 +51,13 @@
     transform: scale(1.01);
 }
 
-.schedule-page .round-title {
+.schedule-page .round-title span {
     font-size: 1.2rem;
     font-weight: bold;
     color: #d9a326;
     text-align: center;
     margin-bottom: 10px;
+    display: block;
 }
 
 .schedule-page .match-grid {
