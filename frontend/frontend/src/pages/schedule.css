@@ -8,20 +8,19 @@
     box-sizing: border-box;
 }
 
-/* Fix the H2 title */
 .schedule-page .schedule-title {
     color: #d9a326 !important;
     font-family: 'Poppins', sans-serif !important;
     font-size: 2rem !important;
-    font-weight: bold !important;
     margin-bottom: 20px;
     text-align: center;
+    font-weight: 500 !important;
 }
 
-/* Fix the select (dropdown) */
 .schedule-page select {
     padding: 12px 16px;
     margin-bottom: 30px;
+    margin-left: 20px;
     font-size: 1rem;
     background-color: #444;
     color: white;
@@ -29,13 +28,12 @@
     border: 1px solid #777;
     font-family: 'Poppins', sans-serif !important;
     width: auto;
-    appearance: none; /* Clean native select styles */
+    appearance: none;
 }
 
-/* Fix the yellow round title */
 .schedule-page .round-title span {
     font-size: 1.2rem;
-    font-weight: bold;
+    font-weight: 500 !important;
     color: #d9a326 !important;
     text-align: center;
     margin-bottom: 10px;
@@ -108,7 +106,7 @@
     font-family: 'Poppins', sans-serif !important;
 }
 
-/* RESPONSIVE PART (same as before) */
+/* RESPONSIVE PART */
 @media (max-width: 480px) {
     .schedule-page {
         padding: 1rem;
