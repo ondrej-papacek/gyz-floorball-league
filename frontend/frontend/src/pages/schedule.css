@@ -93,7 +93,7 @@
     color: #ccc;
 }
 
-/* Smartphones */
+/* 📱 Smartphones */
 @media (max-width: 480px) {
     .schedule-page {
         padding: 1rem;
@@ -125,7 +125,7 @@
     }
 }
 
-/* Tablets */
+/* 📱 Tablets */
 @media (min-width: 481px) and (max-width: 768px) {
     .schedule-page .schedule-title {
         font-size: 1.8rem;
@@ -144,7 +144,7 @@
     }
 }
 
-/* Small Laptops */
+/* 💻 Small Laptops */
 @media (min-width: 769px) and (max-width: 1024px) {
     .schedule-page .schedule-title {
         font-size: 2rem;
@@ -155,7 +155,7 @@
     }
 }
 
-/* XL Screens */
+/* 🖥️ XL Screens */
 @media (min-width: 1440px) {
     .schedule-page {
         max-width: 1400px;

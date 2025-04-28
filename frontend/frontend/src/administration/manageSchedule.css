@@ -28,7 +28,7 @@
     display: block;
 }
 
-.manage-schedule .grid-of-rounds {
+.grid-of-rounds {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
     gap: 20px;
@@ -37,7 +37,7 @@
     max-width: 1200px;
 }
 
-.manage-schedule .round-card {
+.round-card {
     background: #2d2d2d;
     padding: 20px;
     border-radius: 12px;
@@ -47,33 +47,33 @@
     gap: 1rem;
 }
 
-.manage-schedule .round-header {
+.round-header {
     display: flex;
     flex-direction: column;
     gap: 12px;
 }
 
-.manage-schedule .round-header h4 {
+.round-header h4 {
     color: #f0b323;
     font-size: 1.2rem;
 }
 
-.manage-schedule .round-controls,
-.manage-schedule .round-actions {
+.round-controls,
+.round-actions {
     display: flex;
     flex-wrap: wrap;
     gap: 10px;
 }
 
-.manage-schedule .round-controls label,
-.manage-schedule .match-status-select label {
+.round-controls label,
+.match-status-select label {
     font-size: 0.9rem;
     color: #ccc;
 }
 
-.manage-schedule .round-controls input[type="date"],
-.manage-schedule .match-card input[type="date"],
-.manage-schedule .match-status-select select {
+.round-controls input[type="date"],
+.match-card input[type="date"],
+.match-status-select select {
     padding: 8px 12px;
     border-radius: 6px;
     background-color: #444;
@@ -82,7 +82,7 @@
     border: 1px solid #777;
 }
 
-.manage-schedule .generate-buttons {
+.generate-buttons {
     margin: 1.5rem 0;
     display: flex;
     gap: 14px;
@@ -90,7 +90,7 @@
     justify-content: center;
 }
 
-.manage-schedule .generate-buttons button {
+.generate-buttons button {
     background-color: #d9a326;
     color: white;
     padding: 10px 16px;
@@ -101,11 +101,11 @@
     font-family: Poppins, sans-serif;
 }
 
-.manage-schedule .generate-buttons button:hover {
+.generate-buttons button:hover {
     background-color: #b07e1f;
 }
 
-.manage-schedule .legend {
+.legend {
     display: flex;
     gap: 20px;
     justify-content: center;
@@ -114,7 +114,7 @@
     color: #ccc;
 }
 
-.manage-schedule .dot {
+.dot {
     width: 10px;
     height: 10px;
     border-radius: 50%;
@@ -122,18 +122,18 @@
     margin-right: 6px;
 }
 
-.manage-schedule .dot-upcoming { background-color: #f0b323; }
-.manage-schedule .dot-live { background-color: #ff4444; }
-.manage-schedule .dot-finished { background-color: #00cc66; }
-.manage-schedule .dot-cancelled { background-color: #888; }
+.dot-upcoming { background-color: #f0b323; }
+.dot-live { background-color: #ff4444; }
+.dot-finished { background-color: #00cc66; }
+.dot-cancelled { background-color: #888; }
 
-.manage-schedule .match-grid {
+.match-grid {
     display: flex;
     flex-direction: column;
     gap: 12px;
 }
 
-.manage-schedule .match-card {
+.match-card {
     background-color: #3a3a3a;
     padding: 14px;
     border-radius: 10px;
@@ -141,7 +141,7 @@
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
 }
 
-.manage-schedule .match-dot {
+.match-dot {
     position: absolute;
     top: 8px;
     left: 8px;
@@ -150,7 +150,7 @@
     border-radius: 50%;
 }
 
-.manage-schedule .match-teams {
+.match-teams {
     display: flex;
     justify-content: center;
     gap: 10px;
@@ -159,12 +159,12 @@
     margin-bottom: 12px;
 }
 
-.manage-schedule .vs-label {
+.vs-label {
     font-weight: normal;
     color: #ccc;
 }
 
-.manage-schedule .match-status-select {
+.match-status-select {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -172,14 +172,14 @@
     margin: 10px 0;
 }
 
-.manage-schedule .actions {
+.actions {
     display: flex;
     flex-wrap: wrap;
     gap: 8px;
     justify-content: center;
 }
 
-.manage-schedule .actions button {
+.actions button {
     background-color: #666;
     color: white;
     padding: 8px 12px;
@@ -190,12 +190,12 @@
     font-family: Poppins, sans-serif;
 }
 
-.manage-schedule .actions button:hover {
+.actions button:hover {
     background-color: #f0b323;
     color: black;
 }
 
-.manage-schedule .error-msg {
+.error-msg {
     background-color: #d92d2d;
     color: white;
     padding: 12px;
@@ -204,7 +204,7 @@
     text-align: center;
 }
 
-/* Responsive Breakpoints */
+/* =================== Smartphones =================== */
 @media (max-width: 480px) {
     .manage-schedule {
         padding: 1rem;
@@ -214,26 +214,27 @@
         font-size: 1.6rem;
     }
 
-    .manage-schedule .round-header {
+    .round-header {
         align-items: flex-start;
     }
 
-    .manage-schedule .round-controls,
-    .manage-schedule .round-actions {
+    .round-controls,
+    .round-actions {
         flex-direction: column;
         width: 100%;
     }
 
-    .manage-schedule .generate-buttons {
+    .generate-buttons {
         flex-direction: column;
         align-items: center;
     }
 
-    .manage-schedule .grid-of-rounds {
+    .grid-of-rounds {
         grid-template-columns: 1fr;
     }
 }
 
+/* =================== Tablets =================== */
 @media (min-width: 481px) and (max-width: 768px) {
     .manage-schedule {
         padding: 1.5rem;
@@ -243,27 +244,30 @@
         font-size: 1.8rem;
     }
 
-    .manage-schedule .grid-of-rounds {
+    .grid-of-rounds {
         grid-template-columns: 1fr;
     }
 }
 
+/* =================== Small Laptops =================== */
 @media (min-width: 769px) and (max-width: 1024px) {
     .manage-schedule h2 {
         font-size: 2rem;
     }
 
-    .manage-schedule .grid-of-rounds {
+    .grid-of-rounds {
         grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
     }
 }
 
+/* =================== Desktops =================== */
 @media (min-width: 1025px) and (max-width: 1440px) {
     .manage-schedule h2 {
         font-size: 2rem;
     }
 }
 
+/* =================== XL / 4K Screens =================== */
 @media (min-width: 1441px) {
     .manage-schedule {
         max-width: 1400px;
