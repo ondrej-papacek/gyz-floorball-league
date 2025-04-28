@@ -47,7 +47,7 @@ function GoalScorers() {
         <tr key={index}>
             <td>{scorer.name}</td>
             <td>{scorer.goals}</td>
-            <td>{scorer.team}</td>
+            <td>{scorer.team.name}</td>
         </tr>
     );
 
