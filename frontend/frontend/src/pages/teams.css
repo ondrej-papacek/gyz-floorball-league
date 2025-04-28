@@ -37,7 +37,7 @@
     background-color: #444;
     border-radius: 8px;
     overflow: hidden;
-    min-width: 400px; /* prevent squishing */
+    min-width: 400px;
 }
 
 .teams-table th, .teams-table td {

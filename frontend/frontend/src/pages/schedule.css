@@ -8,18 +8,14 @@
     box-sizing: border-box;
 }
 
-.schedule-title {
+.schedule-page .schedule-title {
     color: #d9a326;
     font-size: 2rem;
     font-weight: bold;
     margin-bottom: 20px;
 }
 
-.schedule-page h2 {
-    color: #d9a326 !important;
-}
-
-.schedule-selector {
+.schedule-page .schedule-selector {
     padding: 8px 12px;
     margin-bottom: 30px;
     font-size: 1rem;
@@ -31,14 +27,14 @@
     width: auto;
 }
 
-.grid-of-rounds {
+.schedule-page .grid-of-rounds {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
     gap: 20px;
     padding: 20px;
 }
 
-.round-card {
+.schedule-page .round-card {
     background: #333;
     padding: 16px;
     border-radius: 12px;
@@ -51,23 +47,25 @@
     transition: transform 0.2s ease;
 }
 
-.round-card:hover {
+.schedule-page .round-card:hover {
     transform: scale(1.01);
 }
 
-.round-title {
+.schedule-page .round-title {
     font-size: 1.2rem;
     font-weight: bold;
-    color: #d9a326 !important;
+    color: #d9a326;
+    text-align: center;
+    margin-bottom: 10px;
 }
 
-.match-grid {
+.schedule-page .match-grid {
     display: flex;
     flex-direction: column;
     gap: 10px;
 }
 
-.match-card {
+.schedule-page .match-card {
     background-color: #444;
     color: #fff;
     padding: 10px;
@@ -76,12 +74,12 @@
     transition: transform 0.2s ease;
 }
 
-.match-card:hover {
+.schedule-page .match-card:hover {
     transform: scale(1.02);
     background-color: #555;
 }
 
-.match-teams {
+.schedule-page .match-teams {
     font-size: 1rem;
     font-weight: 600;
     display: flex;
@@ -89,12 +87,10 @@
     gap: 2px;
 }
 
-.vs-label {
+.schedule-page .vs-label {
     font-size: 0.85rem;
     color: #ccc;
 }
-
-/* =============== Responsive Breakpoints =============== */
 
 /* 📱 Smartphones */
 @media (max-width: 480px) {
@@ -102,58 +98,58 @@
         padding: 1rem;
     }
 
-    .schedule-title {
+    .schedule-page .schedule-title {
         font-size: 1.6rem;
     }
 
-    .schedule-selector {
+    .schedule-page .schedule-selector {
         width: 100%;
         font-size: 0.95rem;
     }
 
-    .round-title {
+    .schedule-page .round-title {
         font-size: 1.1rem;
     }
 
-    .match-teams {
+    .schedule-page .match-teams {
         font-size: 0.9rem;
     }
 
-    .vs-label {
+    .schedule-page .vs-label {
         font-size: 0.8rem;
     }
 
-    .round-card {
+    .schedule-page .round-card {
         padding: 12px;
     }
 }
 
 /* 📱 Tablets */
 @media (min-width: 481px) and (max-width: 768px) {
-    .schedule-title {
+    .schedule-page .schedule-title {
         font-size: 1.8rem;
     }
 
-    .schedule-selector {
+    .schedule-page .schedule-selector {
         font-size: 1rem;
     }
 
-    .round-title {
+    .schedule-page .round-title {
         font-size: 1.2rem;
     }
 
-    .match-teams {
+    .schedule-page .match-teams {
         font-size: 0.95rem;
     }
 }
 
 /* 💻 Small Laptops */
 @media (min-width: 769px) and (max-width: 1024px) {
-    .schedule-title {
+    .schedule-page .schedule-title {
         font-size: 2rem;
     }
 
-    .schedule-selector {
+    .schedule-page .schedule-selector {
         font-size: 1rem;
     }
 }

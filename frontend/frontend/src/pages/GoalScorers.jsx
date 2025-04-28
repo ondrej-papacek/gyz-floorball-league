@@ -13,21 +13,11 @@ function GoalScorers() {
                 const lowerQuerySnapshot = await getDocs(collection(db, "leagues/2025_lower/goalScorers"));
                 const upperQuerySnapshot = await getDocs(collection(db, "leagues/2025_upper/goalScorers"));
 
-                const lowerData = lowerQuerySnapshot.docs.map((doc) => ({
-                    id: doc.id,
-                    ...doc.data(),
-                }));
-                const upperData = upperQuerySnapshot.docs.map((doc) => ({
-                    id: doc.id,
-                    ...doc.data(),
-                }));
+                const lowerData = lowerQuerySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                const upperData = upperQuerySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
 
-                // Sort by goals (descending)
-                lowerData.sort((a, b) => b.goals - a.goals);
-                upperData.sort((a, b) => b.goals - a.goals);
-
-                setScorersLower(lowerData);
-                setScorersUpper(upperData);
+                setScorersLower(mergeGoalScorers(lowerData));
+                setScorersUpper(mergeGoalScorers(upperData));
             } catch (error) {
                 console.error("Error fetching goal scorers:", error);
             }
@@ -36,8 +26,25 @@ function GoalScorers() {
         fetchGoalScorers();
     }, []);
 
-    const renderScorerRow = (scorer) => (
-        <tr key={scorer.id}>
+    const mergeGoalScorers = (scorers) => {
+        const map = new Map();
+
+        for (const scorer of scorers) {
+            const key = `${scorer.name}_${scorer.team}`; // Unique key: name + team
+            if (map.has(key)) {
+                map.get(key).goals += scorer.goals;
+            } else {
+                map.set(key, { ...scorer });
+            }
+        }
+
+        const mergedArray = Array.from(map.values());
+        mergedArray.sort((a, b) => b.goals - a.goals); // Sort descending
+        return mergedArray;
+    };
+
+    const renderScorerRow = (scorer, index) => (
+        <tr key={index}>
             <td>{scorer.name}</td>
             <td>{scorer.goals}</td>
             <td>{scorer.team}</td>

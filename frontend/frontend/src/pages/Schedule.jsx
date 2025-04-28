@@ -108,7 +108,7 @@ function Schedule() {
                 <div className="grid-of-rounds">
                     {mergedMatches.map((roundData) => (
                         <div key={roundData.round} className="round-card">
-                            <h4 className="round-title">{`Kolo ${roundData.round} – ${roundData.date.toLocaleDateString("cs-CZ")}`}</h4>
+                            <div className="round-title">{`Kolo ${roundData.round} – ${roundData.date.toLocaleDateString("cs-CZ")}`}</div>
                             <div className="match-grid">
                                 {roundData.matches.map((match, index) => (
                                     <div className="match-card" key={index}>
