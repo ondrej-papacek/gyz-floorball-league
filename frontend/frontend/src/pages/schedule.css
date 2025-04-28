@@ -86,26 +86,11 @@
     display: flex;
     flex-direction: column;
     gap: 2px;
-    color: white;
-}
-
-.schedule-page .match-teams strong {
-    color: white;
 }
 
 .schedule-page .vs-label {
     font-size: 0.85rem;
     color: #ccc;
-}
-
-/* Final overrides to beat UIkit resets */
-.schedule-page .round-title span,
-.schedule-page .match-teams strong,
-.schedule-page .vs-label {
-    font-family: Poppins, sans-serif;
-    font-style: normal;
-    font-weight: normal;
-    color: inherit;
 }
 
 /* 📱 Smartphones */
@@ -123,7 +108,7 @@
         font-size: 0.95rem;
     }
 
-    .schedule-page .round-title span {
+    .schedule-page .round-title {
         font-size: 1.1rem;
     }
 
@@ -150,7 +135,7 @@
         font-size: 1rem;
     }
 
-    .schedule-page .round-title span {
+    .schedule-page .round-title {
         font-size: 1.2rem;
     }
 
