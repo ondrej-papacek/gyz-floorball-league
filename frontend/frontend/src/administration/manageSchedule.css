@@ -7,6 +7,7 @@
     flex-direction: column;
     align-items: center;
     max-width: 100%;
+    font-family: Poppins, sans-serif;
 }
 
 .manage-schedule h2 {
@@ -28,7 +29,7 @@
     display: block;
 }
 
-.grid-of-rounds {
+.manage-schedule .grid-of-rounds {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
     gap: 20px;
@@ -37,7 +38,7 @@
     max-width: 1200px;
 }
 
-.round-card {
+.manage-schedule .round-card {
     background: #2d2d2d;
     padding: 20px;
     border-radius: 12px;
@@ -47,33 +48,33 @@
     gap: 1rem;
 }
 
-.round-header {
+.manage-schedule .round-header {
     display: flex;
     flex-direction: column;
     gap: 12px;
 }
 
-.round-header h4 {
+.manage-schedule .round-header h4 {
     color: #f0b323;
     font-size: 1.2rem;
 }
 
-.round-controls,
-.round-actions {
+.manage-schedule .round-controls,
+.manage-schedule .round-actions {
     display: flex;
     flex-wrap: wrap;
     gap: 10px;
 }
 
-.round-controls label,
-.match-status-select label {
+.manage-schedule .round-controls label,
+.manage-schedule .match-status-select label {
     font-size: 0.9rem;
     color: #ccc;
 }
 
-.round-controls input[type="date"],
-.match-card input[type="date"],
-.match-status-select select {
+.manage-schedule .round-controls input[type="date"],
+.manage-schedule .match-card input[type="date"],
+.manage-schedule .match-status-select select {
     padding: 8px 12px;
     border-radius: 6px;
     background-color: #444;
@@ -82,7 +83,7 @@
     border: 1px solid #777;
 }
 
-.generate-buttons {
+.manage-schedule .generate-buttons {
     margin: 1.5rem 0;
     display: flex;
     gap: 14px;
@@ -90,7 +91,7 @@
     justify-content: center;
 }
 
-.generate-buttons button {
+.manage-schedule .generate-buttons button {
     background-color: #d9a326;
     color: white;
     padding: 10px 16px;
@@ -101,11 +102,11 @@
     font-family: Poppins, sans-serif;
 }
 
-.generate-buttons button:hover {
+.manage-schedule .generate-buttons button:hover {
     background-color: #b07e1f;
 }
 
-.legend {
+.manage-schedule .legend {
     display: flex;
     gap: 20px;
     justify-content: center;
@@ -114,7 +115,7 @@
     color: #ccc;
 }
 
-.dot {
+.manage-schedule .dot {
     width: 10px;
     height: 10px;
     border-radius: 50%;
@@ -122,18 +123,18 @@
     margin-right: 6px;
 }
 
-.dot-upcoming { background-color: #f0b323; }
-.dot-live { background-color: #ff4444; }
-.dot-finished { background-color: #00cc66; }
-.dot-cancelled { background-color: #888; }
+.manage-schedule .dot-upcoming { background-color: #f0b323; }
+.manage-schedule .dot-live { background-color: #ff4444; }
+.manage-schedule .dot-finished { background-color: #00cc66; }
+.manage-schedule .dot-cancelled { background-color: #888; }
 
-.match-grid {
+.manage-schedule .match-grid {
     display: flex;
     flex-direction: column;
     gap: 12px;
 }
 
-.match-card {
+.manage-schedule .match-card {
     background-color: #3a3a3a;
     padding: 14px;
     border-radius: 10px;
@@ -141,7 +142,7 @@
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
 }
 
-.match-dot {
+.manage-schedule .match-dot {
     position: absolute;
     top: 8px;
     left: 8px;
@@ -150,21 +151,26 @@
     border-radius: 50%;
 }
 
-.match-teams {
+.manage-schedule .match-teams {
     display: flex;
     justify-content: center;
     gap: 10px;
     font-size: 1.1rem;
     font-weight: bold;
     margin-bottom: 12px;
+    color: white;
 }
 
-.vs-label {
+.manage-schedule .match-teams strong {
+    color: white;
+}
+
+.manage-schedule .vs-label {
     font-weight: normal;
     color: #ccc;
 }
 
-.match-status-select {
+.manage-schedule .match-status-select {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -172,14 +178,14 @@
     margin: 10px 0;
 }
 
-.actions {
+.manage-schedule .actions {
     display: flex;
     flex-wrap: wrap;
     gap: 8px;
     justify-content: center;
 }
 
-.actions button {
+.manage-schedule .actions button {
     background-color: #666;
     color: white;
     padding: 8px 12px;
@@ -190,12 +196,12 @@
     font-family: Poppins, sans-serif;
 }
 
-.actions button:hover {
+.manage-schedule .actions button:hover {
     background-color: #f0b323;
     color: black;
 }
 
-.error-msg {
+.manage-schedule .error-msg {
     background-color: #d92d2d;
     color: white;
     padding: 12px;
@@ -214,22 +220,22 @@
         font-size: 1.6rem;
     }
 
-    .round-header {
+    .manage-schedule .round-header {
         align-items: flex-start;
     }
 
-    .round-controls,
-    .round-actions {
+    .manage-schedule .round-controls,
+    .manage-schedule .round-actions {
         flex-direction: column;
         width: 100%;
     }
 
-    .generate-buttons {
+    .manage-schedule .generate-buttons {
         flex-direction: column;
         align-items: center;
     }
 
-    .grid-of-rounds {
+    .manage-schedule .grid-of-rounds {
         grid-template-columns: 1fr;
     }
 }
@@ -244,7 +250,7 @@
         font-size: 1.8rem;
     }
 
-    .grid-of-rounds {
+    .manage-schedule .grid-of-rounds {
         grid-template-columns: 1fr;
     }
 }
@@ -255,7 +261,7 @@
         font-size: 2rem;
     }
 
-    .grid-of-rounds {
+    .manage-schedule .grid-of-rounds {
         grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
     }
 }

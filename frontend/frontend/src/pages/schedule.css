@@ -86,6 +86,11 @@
     display: flex;
     flex-direction: column;
     gap: 2px;
+    color: white; /* Ensure strong override */
+}
+
+.schedule-page .match-teams strong {
+    color: white; /* Added to enforce strong white team names */
 }
 
 .schedule-page .vs-label {
@@ -108,11 +113,15 @@
         font-size: 0.95rem;
     }
 
-    .schedule-page .round-title {
+    .schedule-page .round-title span {
         font-size: 1.1rem;
     }
 
     .schedule-page .match-teams {
+        font-size: 0.9rem;
+    }
+
+    .schedule-page .match-teams strong {
         font-size: 0.9rem;
     }
 
@@ -135,11 +144,15 @@
         font-size: 1rem;
     }
 
-    .schedule-page .round-title {
+    .schedule-page .round-title span {
         font-size: 1.2rem;
     }
 
     .schedule-page .match-teams {
+        font-size: 0.95rem;
+    }
+
+    .schedule-page .match-teams strong {
         font-size: 0.95rem;
     }
 }
