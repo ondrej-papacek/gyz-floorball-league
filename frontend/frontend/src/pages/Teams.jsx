@@ -1,34 +1,60 @@
 ﻿import React, { useState, useEffect } from 'react';
 import '../pages/teams.css';
+import { db } from '../services/firebase';
+import { collection, getDocs } from 'firebase/firestore';
 import { fetchTeams } from '../services/teamService';
 
 function Teams() {
+    const [availableYears, setAvailableYears] = useState([]);
+    const [selectedYear, setSelectedYear] = useState('');
     const [teamsNizsi, setTeamsNizsi] = useState([]);
     const [teamsVyssi, setTeamsVyssi] = useState([]);
     const [expandedTeamsNizsi, setExpandedTeamsNizsi] = useState([]);
     const [expandedTeamsVyssi, setExpandedTeamsVyssi] = useState([]);
 
+    // Load available years from DB
     useEffect(() => {
-        fetchTeams(2025, 'lower').then(nizsi => {
-            console.log("Nižší gymnázium teams (after transformation):", nizsi);
-            setTeamsNizsi(nizsi);
-        }).catch(error => console.error('Error fetching lower teams:', error));
-
-        fetchTeams(2025, 'upper').then(vyssi => {
-            console.log("Vyšší gymnázium teams (after transformation):", vyssi);
-            setTeamsVyssi(vyssi);
-        }).catch(error => console.error('Error fetching upper teams:', error));
+        const fetchYears = async () => {
+            const snapshot = await getDocs(collection(db, 'leagues'));
+            const years = new Set();
+            snapshot.forEach(doc => {
+                const [year] = doc.id.split('_');
+                if (year) years.add(year);
+            });
+            const sortedYears = Array.from(years).sort().reverse();
+            setAvailableYears(sortedYears);
+            if (!selectedYear && sortedYears.length > 0) {
+                setSelectedYear(sortedYears[0]);
+            }
+        };
+        fetchYears();
     }, []);
 
+    // Load and sort teams when year changes
+    useEffect(() => {
+        if (!selectedYear) return;
+
+        fetchTeams(selectedYear, 'lower').then(nizsi => {
+            const sorted = nizsi.sort((a, b) => (b.points ?? 0) - (a.points ?? 0));
+            setTeamsNizsi(sorted);
+        }).catch(error => console.error('Error fetching lower teams:', error));
+
+        fetchTeams(selectedYear, 'upper').then(vyssi => {
+            const sorted = vyssi.sort((a, b) => (b.points ?? 0) - (a.points ?? 0));
+            setTeamsVyssi(sorted);
+        }).catch(error => console.error('Error fetching upper teams:', error));
+    }, [selectedYear]);
+
     const toggleExpand = (teamId, setExpandedTeams, expandedTeams) => {
-        setExpandedTeams((prevExpanded) =>
-            prevExpanded.includes(teamId) ? prevExpanded.filter((id) => id !== teamId) : [...prevExpanded, teamId]
+        setExpandedTeams(prevExpanded =>
+            prevExpanded.includes(teamId)
+                ? prevExpanded.filter(id => id !== teamId)
+                : [...prevExpanded, teamId]
         );
     };
 
     const renderTeamRow = (team, expandedTeams, setExpandedTeams) => (
         <React.Fragment key={team.id}>
-            {console.log("Rendering team:", team)}
             <tr>
                 <td>{team.name}</td>
                 <td>{team?.matchesPlayed ?? 0}</td>
@@ -71,6 +97,17 @@ function Teams() {
     return (
         <div className="teams-page">
             <h2 className="teams-title">Týmy</h2>
+
+            {availableYears.length > 0 && (
+                <div className="year-selector">
+                    <label>Ročník:</label>
+                    <select value={selectedYear} onChange={(e) => setSelectedYear(e.target.value)}>
+                        {availableYears.map(year => (
+                            <option key={year} value={year}>{year}</option>
+                        ))}
+                    </select>
+                </div>
+            )}
 
             {/* Nižší gymnázium Section */}
             <div className="gym-section">
@@ -120,9 +157,7 @@ function Teams() {
                     {teamsVyssi.length > 0 ? (
                         teamsVyssi.map((team) => renderTeamRow(team, expandedTeamsVyssi, setExpandedTeamsVyssi))
                     ) : (
-                        <tr>
-                            <td colSpan="9" style={{textAlign: "center"}}>Žádné týmy nejsou dostupné</td>
-                        </tr>
+                        <tr><td colSpan="9" style={{ textAlign: "center" }}>Žádné týmy nejsou dostupné</td></tr>
                     )}
                     </tbody>
                 </table>

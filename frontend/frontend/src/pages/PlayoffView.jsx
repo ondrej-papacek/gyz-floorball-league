@@ -4,10 +4,40 @@ import PlayoffBracket from '../components/PlayoffBracket';
 import './playoffView.css';
 
 const PlayoffView = ({ year }) => {
-    const [lowerRounds, setLowerRounds] = useState([]);
-    const [upperRounds, setUpperRounds] = useState([]);
+    const [lowerMatches, setLowerMatches] = useState([]);
+    const [upperMatches, setUpperMatches] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
+
+    const transformData = (rounds) => {
+        const allMatches = [];
+        for (const [roundName, matches] of Object.entries(rounds)) {
+            matches.forEach((match, idx) => {
+                allMatches.push({
+                    id: `${roundName}_${idx}`,
+                    name: roundName,
+                    tournamentRoundText: roundName,
+                    startTime: '2025-04-21', // ⚡ you can improve later
+                    state: 'DONE',
+                    participants: [
+                        {
+                            id: match.teamA || 'teamA',
+                            name: match.teamA || '-',
+                            resultText: match.scoreA?.toString() || '-',
+                            isWinner: match.scoreA > match.scoreB
+                        },
+                        {
+                            id: match.teamB || 'teamB',
+                            name: match.teamB || '-',
+                            resultText: match.scoreB?.toString() || '-',
+                            isWinner: match.scoreB > match.scoreA
+                        }
+                    ]
+                });
+            });
+        }
+        return allMatches;
+    };
 
     useEffect(() => {
         const fetchPlayoffs = async () => {
@@ -17,8 +47,8 @@ const PlayoffView = ({ year }) => {
                     getPlayoffRounds(year, 'lower'),
                     getPlayoffRounds(year, 'upper'),
                 ]);
-                setLowerRounds(Object.entries(lower).map(([round, matches]) => ({ round, matches })));
-                setUpperRounds(Object.entries(upper).map(([round, matches]) => ({ round, matches })));
+                setLowerMatches(transformData(lower));
+                setUpperMatches(transformData(upper));
                 setError('');
             } catch (err) {
                 console.error(err);
@@ -40,12 +70,12 @@ const PlayoffView = ({ year }) => {
 
             <div className="bracket-section">
                 <h3 className="division-title">Nižší gymnázium</h3>
-                <PlayoffBracket rounds={lowerRounds} />
+                <PlayoffBracket matches={lowerMatches} />
             </div>
 
             <div className="bracket-section">
                 <h3 className="division-title">Vyšší gymnázium</h3>
-                <PlayoffBracket rounds={upperRounds} />
+                <PlayoffBracket matches={upperMatches} />
             </div>
         </div>
     );

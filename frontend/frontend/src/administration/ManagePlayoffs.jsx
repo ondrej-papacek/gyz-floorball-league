@@ -1,13 +1,7 @@
 ﻿import React, { useEffect, useState } from 'react';
 import { db } from '../services/firebase';
-import {
-    collection, getDocs, doc, getDoc
-} from 'firebase/firestore';
-import {
-    saveRound,
-    updateRound,
-    deleteRound
-} from '../services/playoffService';
+import { collection, getDocs, doc, getDoc, setDoc } from 'firebase/firestore';
+import { saveRound, updateRound, deleteRound } from '../services/playoffService';
 import AdminNavbar from '../components/AdminNavbar';
 import './managePlayoffs.css';
 
@@ -17,9 +11,7 @@ const ManagePlayoffs = () => {
     const [teams, setTeams] = useState([]);
     const [rounds, setRounds] = useState([]);
     const [newRoundName, setNewRoundName] = useState('');
-    const [newMatches, setNewMatches] = useState([
-        { teamA: '', teamB: '', scoreA: 0, scoreB: 0 }
-    ]);
+    const [newMatches, setNewMatches] = useState([{ teamA: '', teamB: '', scoreA: 0, scoreB: 0 }]);
 
     useEffect(() => {
         const fetchLeagues = async () => {
@@ -107,7 +99,40 @@ const ManagePlayoffs = () => {
 
         const [year, division] = selectedLeague.split('_');
         await saveRound(year, division, newRoundName, newMatches);
-        alert(`Kolo "${newRoundName}" bylo uloženo.`);
+
+        // Save bracket matches format
+        const bracketPromises = newMatches.map(async (match, i) => {
+            const bracketMatch = {
+                id: `match_${year}_${division}_${newRoundName}_${i}`,
+                name: `${newRoundName} ${i + 1}`,
+                tournamentRoundText: newRoundName,
+                startTime: new Date().toISOString(),
+                state: "SCHEDULED",
+                participants: [
+                    {
+                        id: match.teamA,
+                        name: match.teamA,
+                        resultText: match.scoreA?.toString() ?? '0',
+                        isWinner: (match.scoreA > match.scoreB)
+                    },
+                    {
+                        id: match.teamB,
+                        name: match.teamB,
+                        resultText: match.scoreB?.toString() ?? '0',
+                        isWinner: (match.scoreB > match.scoreA)
+                    }
+                ]
+            };
+
+            await setDoc(
+                doc(db, `leagues/${year}_${division}/playoff/bracketMatches`, bracketMatch.id),
+                bracketMatch
+            );
+        });
+
+        await Promise.all(bracketPromises);
+
+        alert(`Kolo "${newRoundName}" bylo uloženo a přidáno do bracketu.`);
         setNewRoundName('');
         setNewMatches([{ teamA: '', teamB: '', scoreA: 0, scoreB: 0 }]);
         fetchRounds();
@@ -143,19 +168,15 @@ const ManagePlayoffs = () => {
                         </div>
                         {round.matches.map((match, i) => (
                             <div key={i} className="playoff-match-row">
-                                <select value={match.teamA}
-                                        onChange={(e) => handleChange(round.round, i, 'teamA', e.target.value)}>
+                                <select value={match.teamA} onChange={(e) => handleChange(round.round, i, 'teamA', e.target.value)}>
                                     {teams.map(t => (
                                         <option key={t.id} value={t.name}>{t.name}</option>
                                     ))}
                                 </select>
-                                <input type="number" value={match.scoreA}
-                                       onChange={(e) => handleChange(round.round, i, 'scoreA', parseInt(e.target.value))} />
+                                <input type="number" value={match.scoreA} onChange={(e) => handleChange(round.round, i, 'scoreA', parseInt(e.target.value))} />
                                 <span>vs</span>
-                                <input type="number" value={match.scoreB}
-                                       onChange={(e) => handleChange(round.round, i, 'scoreB', parseInt(e.target.value))} />
-                                <select value={match.teamB}
-                                        onChange={(e) => handleChange(round.round, i, 'teamB', e.target.value)}>
+                                <input type="number" value={match.scoreB} onChange={(e) => handleChange(round.round, i, 'scoreB', parseInt(e.target.value))} />
+                                <select value={match.teamB} onChange={(e) => handleChange(round.round, i, 'teamB', e.target.value)}>
                                     {teams.map(t => (
                                         <option key={t.id} value={t.name}>{t.name}</option>
                                     ))}
@@ -165,12 +186,13 @@ const ManagePlayoffs = () => {
                         ))}
                     </div>
                 ))}
+
+                {/* New Round Form */}
                 <div className="playoff-round">
                     <div className="round-header">
                         <h3>Přidat nové kolo</h3>
                     </div>
                     <input
-
                         type="text"
                         placeholder="Název kola (např. semifinále)"
                         value={newRoundName}
@@ -178,20 +200,16 @@ const ManagePlayoffs = () => {
                     />
                     {newMatches.map((match, i) => (
                         <div key={i} className="playoff-match-row">
-                            <select value={match.teamA}
-                                    onChange={(e) => handleNewMatchChange(i, 'teamA', e.target.value)}>
+                            <select value={match.teamA} onChange={(e) => handleNewMatchChange(i, 'teamA', e.target.value)}>
                                 <option value="">Vyberte tým A</option>
                                 {teams.map(t => (
                                     <option key={t.id} value={t.name}>{t.name}</option>
                                 ))}
                             </select>
-                            <input type="number" value={match.scoreA}
-                                   onChange={(e) => handleNewMatchChange(i, 'scoreA', parseInt(e.target.value))} />
+                            <input type="number" value={match.scoreA} onChange={(e) => handleNewMatchChange(i, 'scoreA', parseInt(e.target.value))} />
                             <span>vs</span>
-                            <input type="number" value={match.scoreB}
-                                   onChange={(e) => handleNewMatchChange(i, 'scoreB', parseInt(e.target.value))} />
-                            <select value={match.teamB}
-                                    onChange={(e) => handleNewMatchChange(i, 'teamB', e.target.value)}>
+                            <input type="number" value={match.scoreB} onChange={(e) => handleNewMatchChange(i, 'scoreB', parseInt(e.target.value))} />
+                            <select value={match.teamB} onChange={(e) => handleNewMatchChange(i, 'teamB', e.target.value)}>
                                 <option value="">Vyberte tým B</option>
                                 {teams.map(t => (
                                     <option key={t.id} value={t.name}>{t.name}</option>
@@ -201,7 +219,6 @@ const ManagePlayoffs = () => {
                     ))}
                     <button className="add-btn" onClick={addNewMatchRow}>+ Přidat zápas</button>
                     <button className="save-btn" onClick={handleSaveNewRound}>💾 Uložit nové kolo</button>
-                    <button className="delete-round-button" onClick={handleDeleteRound}>🗑️ Smazat kolo</button>
                 </div>
             </div>
         </>

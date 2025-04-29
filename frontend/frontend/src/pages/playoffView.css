@@ -28,6 +28,7 @@
     border-radius: 8px;
     background-color: #2d2d2d;
     overflow-x: auto;
+    min-width: 300px;
 }
 
 .error {

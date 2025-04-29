@@ -34,8 +34,8 @@ const ManageLeague = () => {
         if (!trimmedYear || isNaN(trimmedYear)) return;
 
         const leagueId = `${trimmedYear}_${division}`;
-
         const leagueRef = doc(db, 'leagues', leagueId);
+
         await setDoc(leagueRef, {
             year: Number(trimmedYear),
             division,
@@ -45,7 +45,8 @@ const ManageLeague = () => {
         await Promise.all([
             setDoc(doc(db, `leagues/${leagueId}/teams`, 'placeholder'), {}),
             setDoc(doc(db, `leagues/${leagueId}/matches`, 'placeholder'), {}),
-            setDoc(doc(db, `leagues/${leagueId}/playoff`, 'placeholder'), {})
+            setDoc(doc(db, `leagues/${leagueId}/playoff/rounds`), {}),
+            setDoc(doc(db, `leagues/${leagueId}/playoff/bracketMatches`, 'placeholder'), {})
         ]);
 
         setYear('');
@@ -107,7 +108,7 @@ const ManageLeague = () => {
 
                             <button onClick={() => {
                                 setSelectedLeague(league);
-                                navigate('/admin/manage-matches');
+                                navigate('/admin/manage-schedule');
                             }}>Správa Zápasů
                             </button>
 

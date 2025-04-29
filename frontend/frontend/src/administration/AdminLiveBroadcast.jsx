@@ -25,17 +25,14 @@ const normalizeName = (name) =>
 
 const consolidateScorers = (scorers = []) => {
     const map = new Map();
-
     for (const s of scorers) {
         const id = s.id || normalizeName(s.name);
         if (map.has(id)) {
-            const existing = map.get(id);
-            existing.goals += s.goals;
+            map.get(id).goals += s.goals;
         } else {
             map.set(id, { ...s, id });
         }
     }
-
     return Array.from(map.values());
 };
 
@@ -53,15 +50,27 @@ const AdminLiveBroadcast = () => {
         const divisions = ['lower', 'upper'];
         let allMatches = [];
 
-        for (const div of divisions) {
-            const matchRef = collection(db, `leagues/2025_${div}/matches`);
-            const snap = await getDocs(matchRef);
-            const data = snap.docs.map(d => ({
-                id: d.id,
-                ...d.data(),
-                division: div
-            }));
-            allMatches = allMatches.concat(data.filter(m => m.status === 'live'));
+        const leaguesSnapshot = await getDocs(collection(db, 'leagues'));
+        const leagueIds = leaguesSnapshot.docs.map(doc => doc.id);
+
+        for (const leagueId of leagueIds) {
+            const [year, div] = leagueId.split('_');
+            if (!divisions.includes(div)) continue;
+
+            const matchesRef = collection(db, `leagues/${leagueId}/matches`);
+            const matchesSnapshot = await getDocs(matchesRef);
+
+            matchesSnapshot.docs.forEach(docSnap => {
+                const matchData = docSnap.data();
+                if (matchData.status === 'live') {
+                    allMatches.push({
+                        id: docSnap.id,
+                        ...matchData,
+                        division: div,
+                        season: year
+                    });
+                }
+            });
         }
 
         setLiveMatches(allMatches);
@@ -71,12 +80,13 @@ const AdminLiveBroadcast = () => {
         const match = liveMatches.find(m => m.id === matchId);
         if (!match) return;
 
-        const docRef = doc(db, `leagues/2025_${match.division}/matches`, matchId);
+        const year = match.season;
+        const docRef = doc(db, `leagues/${year}_${match.division}/matches`, matchId);
         const snap = await getDoc(docRef);
         const fullMatch = snap.data();
 
-        const teamARef = collection(db, `leagues/2025_${match.division}/teams/${fullMatch.teamA}/players`);
-        const teamBRef = collection(db, `leagues/2025_${match.division}/teams/${fullMatch.teamB}/players`);
+        const teamARef = collection(db, `leagues/${year}_${match.division}/teams/${fullMatch.teamA}/players`);
+        const teamBRef = collection(db, `leagues/${year}_${match.division}/teams/${fullMatch.teamB}/players`);
 
         const teamAData = (await getDocs(teamARef)).docs.map(d => d.data());
         const teamBData = (await getDocs(teamBRef)).docs.map(d => d.data());
@@ -91,8 +101,9 @@ const AdminLiveBroadcast = () => {
             scorerA: [],
             scorerB: [],
             date: new Date(),
-            matchRefPath: `leagues/2025_${match.division}/matches/${matchId}`,
-            division: match.division
+            matchRefPath: `leagues/${year}_${match.division}/matches/${matchId}`,
+            division: match.division,
+            season: year
         };
 
         await setDoc(doc(db, 'liveBroadcast', 'currentMatch'), payload);
@@ -111,11 +122,7 @@ const AdminLiveBroadcast = () => {
                 timerRef.current = setInterval(() => {
                     setLiveData(prev => {
                         const newTime = Math.max(0, prev.timeLeft - 1);
-                        const updated = {
-                            ...prev,
-                            timeLeft: newTime
-                        };
-
+                        const updated = { ...prev, timeLeft: newTime };
                         updateRef.current += 1;
 
                         if (updateRef.current >= 60 || newTime === 0) {
@@ -163,7 +170,6 @@ const AdminLiveBroadcast = () => {
 
         const field = team === 'A' ? 'scorerA' : 'scorerB';
         const players = team === 'A' ? playersA : playersB;
-
         const selected = players.find(p => p.name === scorerName);
         if (!selected) return;
 
@@ -173,18 +179,9 @@ const AdminLiveBroadcast = () => {
             const currentScorers = [...(prev[field] || [])];
             const existing = currentScorers.find(s => s.id === scorerId);
 
-            let updatedScorers;
-            if (existing) {
-                updatedScorers = currentScorers.map(s =>
-                    s.id === scorerId ? { ...s, goals: s.goals + 1 } : s
-                );
-            } else {
-                updatedScorers = [...currentScorers, {
-                    name: selected.name,
-                    id: scorerId,
-                    goals: 1
-                }];
-            }
+            const updatedScorers = existing
+                ? currentScorers.map(s => s.id === scorerId ? { ...s, goals: s.goals + 1 } : s)
+                : [...currentScorers, { name: selected.name, id: scorerId, goals: 1 }];
 
             const updated = {
                 ...prev,
@@ -203,7 +200,7 @@ const AdminLiveBroadcast = () => {
         if (!liveData) return;
 
         try {
-            const year = 2025;
+            const year = liveData.season;
             const division = liveData.division;
             const matchId = liveData.id;
 
@@ -224,29 +221,19 @@ const AdminLiveBroadcast = () => {
             const teamAData = teamASnap.data();
             const teamBData = teamBSnap.data();
 
-            const matchEntryA = {
-                opponent: liveData.teamB_name,
-                score: `${liveData.scoreA}-${liveData.scoreB}`,
-                matchId
-            };
-            const matchEntryB = {
-                opponent: liveData.teamA_name,
-                score: `${liveData.scoreB}-${liveData.scoreA}`,
-                matchId
-            };
+            const matchEntryA = { opponent: liveData.teamB_name, score: `${liveData.scoreA}-${liveData.scoreB}`, matchId };
+            const matchEntryB = { opponent: liveData.teamA_name, score: `${liveData.scoreB}-${liveData.scoreA}`, matchId };
 
             const alreadyExists = teamAData.matches?.some(m => m.matchId === matchId);
             if (alreadyExists) return alert("Zápas již zapsán.");
 
             let pointsA = 0, pointsB = 0, winA = 0, winB = 0, drawA = 0, drawB = 0, lossA = 0, lossB = 0;
-
             if (liveData.scoreA > liveData.scoreB) {
                 pointsA = 3; winA = 1; lossB = 1;
             } else if (liveData.scoreA < liveData.scoreB) {
                 pointsB = 3; winB = 1; lossA = 1;
             } else {
-                pointsA = pointsB = 1;
-                drawA = drawB = 1;
+                pointsA = pointsB = 1; drawA = drawB = 1;
             }
 
             const updatePlayerGoals = async (teamId, scorers) => {
@@ -267,6 +254,9 @@ const AdminLiveBroadcast = () => {
                 const goalScorersRef = collection(db, `leagues/${year}_${division}/goalScorers`);
                 const snapshot = await getDocs(goalScorersRef);
 
+                const teamDoc = await getDoc(doc(db, `leagues/${year}_${division}/teams/${teamId}`));
+                const teamName = teamDoc.exists() ? teamDoc.data().name : teamId;
+
                 for (const scorer of scorers || []) {
                     const scorerId = scorer.id || normalizeName(scorer.name);
                     const existing = snapshot.docs.find(doc => doc.data().id === scorerId);
@@ -280,7 +270,7 @@ const AdminLiveBroadcast = () => {
                             id: scorerId,
                             name: scorer.name,
                             goals: scorer.goals,
-                            team: teamId
+                            team: teamName
                         });
                     }
                 }

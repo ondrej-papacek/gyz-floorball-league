@@ -107,7 +107,7 @@
 .add-btn,
 .save-btn {
     background-color: #d9a326;
-    color: black;
+    color: #1c1c1c;
     padding: 10px 16px;
     border: none;
     border-radius: 6px;
@@ -118,7 +118,7 @@
 
 .add-btn:hover,
 .save-btn:hover {
-    background-color: #b6841d;
+    background-color: #f0b323;
 }
 
 .delete-round-button {
