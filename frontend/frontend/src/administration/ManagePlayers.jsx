@@ -33,15 +33,24 @@ const ManagePlayers = () => {
 
     const fetchLeagues = async () => {
         const snapshot = await getDocs(collection(db, 'leagues'));
-        const data = snapshot.docs.map(doc => {
-            const d = doc.data();
-            return {
-                id: doc.id,
-                label: `${d.division === 'lower' ? 'Nižší' : 'Vyšší'} ${d.year}`
-            };
-        });
-        setLeagues(data);
-        if (data.length > 0) setSelectedLeague(data[0].id);
+        const active = snapshot.docs
+            .filter(doc => doc.data().status !== 'archived')
+            .map(doc => {
+                const d = doc.data();
+                return {
+                    id: doc.id,
+                    label: `${d.division === 'lower' ? 'Nižší' : 'Vyšší'} ${d.year}`
+                };
+            });
+
+        if (active.length === 0) {
+            setLeagues([]);
+            setSelectedLeague('');
+            return;
+        }
+
+        setLeagues(active);
+        setSelectedLeague(active[0].id);
     };
 
     const fetchTeams = async () => {
@@ -132,78 +141,84 @@ const ManagePlayers = () => {
             <div className="manage-players">
                 <h2>Správa hráčů</h2>
 
-                <div className="select-controls">
-                    <label>Vyberte ligu:</label>
-                    <select value={selectedLeague} onChange={(e) => setSelectedLeague(e.target.value)}>
-                        {leagues.map((league) => (
-                            <option key={league.id} value={league.id}>{league.label}</option>
-                        ))}
-                    </select>
-
-                    <label>Vyberte tým:</label>
-                    <select value={selectedTeamId} onChange={(e) => setSelectedTeamId(e.target.value)}>
-                        <option value="">-- Vyber tým --</option>
-                        {teams.map((team) => (
-                            <option key={team.id} value={team.id}>{team.name}</option>
-                        ))}
-                    </select>
-                </div>
-
-                {selectedTeamId && (
+                {leagues.length === 0 ? (
+                    <p>Žádné aktivní ligy nejsou k dispozici.</p>
+                ) : (
                     <>
-                        <div className="add-player-form">
-                            <input
-                                type="text"
-                                placeholder="Zadejte jméno hráče (např. Pavel Řehák)"
-                                value={newPlayerName}
-                                onChange={(e) => setNewPlayerName(e.target.value)}
-                            />
-                            <button onClick={handleAddPlayer}>+ Přidat hráče</button>
+                        <div className="select-controls">
+                            <label>Vyberte ligu:</label>
+                            <select value={selectedLeague} onChange={(e) => setSelectedLeague(e.target.value)}>
+                                {leagues.map((league) => (
+                                    <option key={league.id} value={league.id}>{league.label}</option>
+                                ))}
+                            </select>
+
+                            <label>Vyberte tým:</label>
+                            <select value={selectedTeamId} onChange={(e) => setSelectedTeamId(e.target.value)}>
+                                <option value="">-- Vyber tým --</option>
+                                {teams.map((team) => (
+                                    <option key={team.id} value={team.id}>{team.name}</option>
+                                ))}
+                            </select>
                         </div>
 
-                        {loading ? (
-                            <p>Načítání hráčů...</p>
-                        ) : (
-                            <table>
-                                <thead>
-                                <tr>
-                                    <th>Jméno</th>
-                                    <th>Góly</th>
-                                    <th>Akce</th>
-                                </tr>
-                                </thead>
-                                <tbody>
-                                {players.map(player => (
-                                    <tr key={player.id}>
-                                        <td>
-                                            {editing === player.id ? (
-                                                <input
-                                                    value={editFields.name}
-                                                    onChange={(e) => setEditFields(prev => ({ ...prev, name: e.target.value }))}
-                                                />
-                                            ) : player.name}
-                                        </td>
-                                        <td>
-                                            {editing === player.id ? (
-                                                <input
-                                                    type="number"
-                                                    value={editFields.goals}
-                                                    onChange={(e) => setEditFields(prev => ({ ...prev, goals: e.target.value }))}
-                                                />
-                                            ) : player.goals}
-                                        </td>
-                                        <td>
-                                            {editing === player.id ? (
-                                                <button className={"save-btn"} onClick={() => handleSaveEdit(player)}>💾</button>
-                                            ) : (
-                                                <button className={"edit-btn"} onClick={() => handleEditClick(player)}>✏️</button>
-                                            )}
-                                            <button className={"delete-btn"} onClick={() => handleDeletePlayer(player.id)}>🗑️</button>
-                                        </td>
-                                    </tr>
-                                ))}
-                                </tbody>
-                            </table>
+                        {selectedTeamId && (
+                            <>
+                                <div className="add-player-form">
+                                    <input
+                                        type="text"
+                                        placeholder="Zadejte jméno hráče (např. Pavel Řehák)"
+                                        value={newPlayerName}
+                                        onChange={(e) => setNewPlayerName(e.target.value)}
+                                    />
+                                    <button onClick={handleAddPlayer}>+ Přidat hráče</button>
+                                </div>
+
+                                {loading ? (
+                                    <p>Načítání hráčů...</p>
+                                ) : (
+                                    <table>
+                                        <thead>
+                                        <tr>
+                                            <th>Jméno</th>
+                                            <th>Góly</th>
+                                            <th>Akce</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        {players.map(player => (
+                                            <tr key={player.id}>
+                                                <td>
+                                                    {editing === player.id ? (
+                                                        <input
+                                                            value={editFields.name}
+                                                            onChange={(e) => setEditFields(prev => ({ ...prev, name: e.target.value }))}
+                                                        />
+                                                    ) : player.name}
+                                                </td>
+                                                <td>
+                                                    {editing === player.id ? (
+                                                        <input
+                                                            type="number"
+                                                            value={editFields.goals}
+                                                            onChange={(e) => setEditFields(prev => ({ ...prev, goals: e.target.value }))}
+                                                        />
+                                                    ) : player.goals}
+                                                </td>
+                                                <td>
+                                                    {editing === player.id ? (
+                                                        <button className={"save-btn"} onClick={() => handleSaveEdit(player)}>💾</button>
+                                                    ) : (
+                                                        <button className={"edit-btn"} onClick={() => handleEditClick(player)}>✏️</button>
+                                                    )}
+                                                    <button className={"delete-btn"} onClick={() => handleDeletePlayer(player.id)}>🗑️</button>
+                                                </td>
+                                            </tr>
+                                        ))}
+                                        </tbody>
+                                    </table>
+                                )}
+                            </>
                         )}
                     </>
                 )}

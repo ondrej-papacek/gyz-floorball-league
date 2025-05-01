@@ -16,9 +16,18 @@ const ManagePlayoffs = () => {
     useEffect(() => {
         const fetchLeagues = async () => {
             const leaguesSnap = await getDocs(collection(db, 'leagues'));
-            const ids = leaguesSnap.docs.map(doc => doc.id);
-            setLeagues(ids);
-            setSelectedLeague(ids[0] || '');
+            const active = leaguesSnap.docs
+                .filter(doc => doc.data().status !== 'archived')
+                .map(doc => doc.id);
+
+            if (active.length === 0) {
+                setLeagues([]);
+                setSelectedLeague('');
+                return;
+            }
+
+            setLeagues(active);
+            setSelectedLeague(active[0] || '');
         };
         fetchLeagues();
     }, []);
@@ -217,8 +226,10 @@ const ManagePlayoffs = () => {
                             </select>
                         </div>
                     ))}
-                    <button className="add-btn" onClick={addNewMatchRow}>+ Přidat zápas</button>
-                    <button className="save-btn" onClick={handleSaveNewRound}>💾 Uložit nové kolo</button>
+                    <div className="button-row">
+                        <button className="add-btn" onClick={addNewMatchRow}>+ Přidat zápas</button>
+                        <button className="save-btn" onClick={handleSaveNewRound}>💾 Uložit nové kolo</button>
+                    </div>
                 </div>
             </div>
         </>

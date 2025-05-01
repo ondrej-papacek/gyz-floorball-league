@@ -10,14 +10,32 @@ function GoalScorers() {
     useEffect(() => {
         const fetchGoalScorers = async () => {
             try {
-                const lowerQuerySnapshot = await getDocs(collection(db, "leagues/2025_lower/goalScorers"));
-                const upperQuerySnapshot = await getDocs(collection(db, "leagues/2025_upper/goalScorers"));
+                const leaguesSnapshot = await getDocs(collection(db, 'leagues'));
+                const activeLeagues = leaguesSnapshot.docs
+                    .map(doc => ({ id: doc.id, ...doc.data() }))
+                    .filter(l => l.status !== 'archived');
 
-                const lowerData = lowerQuerySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                const upperData = upperQuerySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                const latestYear = Math.max(
+                    ...activeLeagues.map(l => parseInt(l.year)).filter(Boolean)
+                );
 
-                setScorersLower(mergeGoalScorers(lowerData));
-                setScorersUpper(mergeGoalScorers(upperData));
+                const lower = activeLeagues.find(l => l.year == latestYear && l.division === 'lower');
+                const upper = activeLeagues.find(l => l.year == latestYear && l.division === 'upper');
+
+                if (!lower && !upper) return;
+
+                if (lower) {
+                    const lowerSnap = await getDocs(collection(db, `leagues/${lower.id}/goalScorers`));
+                    const lowerData = lowerSnap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                    setScorersLower(mergeGoalScorers(lowerData));
+                }
+
+                if (upper) {
+                    const upperSnap = await getDocs(collection(db, `leagues/${upper.id}/goalScorers`));
+                    const upperData = upperSnap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                    setScorersUpper(mergeGoalScorers(upperData));
+                }
+
             } catch (error) {
                 console.error("Error fetching goal scorers:", error);
             }

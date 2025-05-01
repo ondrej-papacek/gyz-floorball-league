@@ -24,9 +24,7 @@ const ManageLeague = () => {
     };
 
     useEffect(() => {
-        (async () => {
-            await fetchLeagues();
-        })();
+        fetchLeagues();
     }, []);
 
     const createLeague = async () => {
@@ -74,6 +72,12 @@ const ManageLeague = () => {
         await fetchLeagues();
     };
 
+    const handleReactivateLeague = async (id) => {
+        const leagueRef = doc(db, 'leagues', id);
+        await setDoc(leagueRef, { status: 'active' }, { merge: true });
+        await fetchLeagues();
+    };
+
     return (
         <>
             <AdminNavbar />
@@ -100,29 +104,47 @@ const ManageLeague = () => {
                             <h2>{`${league.division === 'lower' ? 'Nižší' : 'Vyšší'} Gymnázium - ${league.year}`}</h2>
                             <p>Status: {league.status}</p>
 
-                            <button onClick={() => {
-                                setSelectedLeague(league);
-                                navigate('/admin/manage-teams');
-                            }}>Správa Týmů
+                            <button
+                                disabled={league.status === 'archived'}
+                                onClick={() => {
+                                    setSelectedLeague(league);
+                                    navigate('/admin/manage-teams');
+                                }}
+                            >
+                                Správa Týmů
                             </button>
 
-                            <button onClick={() => {
-                                setSelectedLeague(league);
-                                navigate('/admin/manage-schedule');
-                            }}>Správa Zápasů
+                            <button
+                                disabled={league.status === 'archived'}
+                                onClick={() => {
+                                    setSelectedLeague(league);
+                                    navigate('/admin/manage-schedule');
+                                }}
+                            >
+                                Správa Zápasů
                             </button>
 
-                            <button onClick={() => {
-                                setSelectedLeague(league);
-                                navigate('/admin/manage-playoffs');
-                            }}>Správa Playoff
+                            <button
+                                disabled={league.status === 'archived'}
+                                onClick={() => {
+                                    setSelectedLeague(league);
+                                    navigate('/admin/manage-playoffs');
+                                }}
+                            >
+                                Správa Playoff
                             </button>
 
-                            <button onClick={() => handleArchiveLeague(league.id)}>Archivovat Ligu</button>
+                            {league.status === 'archived' ? (
+                                <button onClick={() => handleReactivateLeague(league.id)}>Obnovit Ligu</button>
+                            ) : (
+                                <button onClick={() => handleArchiveLeague(league.id)}>Archivovat Ligu</button>
+                            )}
+
                             <button
                                 className="delete-league-btn"
                                 onClick={() => handleDeleteLeague(league.id)}
-                            >Odstranit Ligu
+                            >
+                                Odstranit Ligu
                             </button>
                         </div>
                     ))}

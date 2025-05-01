@@ -8,7 +8,7 @@ import {
     updateTeam,
     fetchMatchesForTeam
 } from '../services/teamService';
-import { deleteDoc, doc, getDocs, collection } from 'firebase/firestore';
+import { getDoc, deleteDoc, doc, getDocs, collection } from 'firebase/firestore';
 import { db } from '../services/firebase';
 
 const ManageTeams = () => {
@@ -24,19 +24,26 @@ const ManageTeams = () => {
             const d = doc.data();
             return {
                 id: doc.id,
-                label: `${d.division === 'lower' ? 'Nižší' : 'Vyšší'} ${d.year}`
+                label: `${d.division === 'lower' ? 'Nižší' : 'Vyšší'} ${d.year}`,
+                status: d.status
             };
         });
-        setLeagues(data);
-        if (data.length > 0) setSelectedLeagueId(data[0].id);
+
+        const activeLeagues = data.filter(l => l.status !== 'archived');
+        setLeagues(activeLeagues);
+        if (activeLeagues.length > 0) setSelectedLeagueId(activeLeagues[0].id);
     };
 
     const loadTeams = async () => {
         if (!selectedLeagueId) return;
+
+        const leagueExists = leagues.find(l => l.id === selectedLeagueId);
+        if (!leagueExists) return;
+
         const [year, division] = selectedLeagueId.split('_');
         const data = await fetchTeams(year, division);
         const filtered = data.filter(t => t.id !== '__init__');
-        const sorted = filtered.sort((a, b) => (b.points ?? 0) - (a.points ?? 0)); // 🔥 Sort by points descending
+        const sorted = filtered.sort((a, b) => (b.points ?? 0) - (a.points ?? 0));
         setTeams(sorted);
         setExpanded([]);
     };

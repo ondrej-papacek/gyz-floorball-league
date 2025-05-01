@@ -43,11 +43,14 @@ exports.generateSchedule = async (req, res, next) => {
 
         const matchesRef = db.collection("leagues").doc(`${year}_${division}`).collection("matches");
         const batch = db.batch();
-        let currentDate = new Date(year, 2, 21); // Start from March 21, 2025
+        let baseDay = new Date(`${year}-03-21T14:15:00+01:00`);
 
         schedule.forEach((round, roundIndex) => {
-            round.forEach((match) => {
+            round.forEach((match, matchIndex) => {
                 const matchRef = matchesRef.doc();
+                const matchDate = new Date(baseDay);
+                matchDate.setMinutes(baseDay.getMinutes() + matchIndex * 30);
+
                 batch.set(matchRef, {
                     round: roundIndex + 1,
                     teamA: match.teamA,
@@ -57,11 +60,10 @@ exports.generateSchedule = async (req, res, next) => {
                     status: "upcoming",
                     scoreA: 0,
                     scoreB: 0,
-                    date: Timestamp.fromDate(new Date(currentDate)),
+                    date: Timestamp.fromDate(matchDate)
                 });
             });
-
-            currentDate.setDate(currentDate.getDate() + 7);
+            baseDay.setDate(baseDay.getDate() + 7);
         });
 
         await batch.commit();

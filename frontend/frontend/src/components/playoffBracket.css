@@ -1,11 +1,14 @@
 ﻿.playoff-bracket {
-    display: flex;
-    flex-direction: column;
-    gap: 25px;
-    margin-top: 20px;
-    width: 100%;
-    box-sizing: border-box;
+    overflow-x: auto;
+    background-color: #2d2d2d;
+    padding: 20px;
+    border-radius: 8px;
 }
+
+.bracket-svg-wrapper {
+    background-color: #2d2d2d;
+}
+
 
 .playoff-bracket h2 {
     color: #d9a326;

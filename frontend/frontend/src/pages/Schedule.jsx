@@ -14,8 +14,11 @@ function Schedule() {
     useEffect(() => {
         const fetchLeagues = async () => {
             const snapshot = await getDocs(collection(db, 'leagues'));
-            const ids = snapshot.docs.map(doc => doc.id);
-            const years = Array.from(new Set(ids.map(id => id.split('_')[0])));
+            const leaguesData = snapshot.docs
+                .map(doc => ({ id: doc.id, ...doc.data() }))
+                .filter(league => league.status !== 'archived');
+
+            const years = Array.from(new Set(leaguesData.map(l => l.year.toString())));
             setLeagues(years.sort());
             setSelectedOption(`Základní rozpis ${years[0]}`);
         };
@@ -109,7 +112,17 @@ function Schedule() {
                     {mergedMatches.map((roundData) => (
                         <div key={roundData.round} className="round-card">
                             <div className="round-title">
-                                <span>{`Kolo ${roundData.round} – ${roundData.date.toLocaleDateString("cs-CZ")}`}</span>
+                                <span>
+                                    {`Kolo ${roundData.round} – ${roundData.date.toLocaleString('cs-CZ', {
+                                        day: '2-digit',
+                                        month: '2-digit',
+                                        year: 'numeric',
+                                        hour: '2-digit',
+                                        minute: '2-digit',
+                                        hour12: false,
+                                        timeZone: 'Europe/Prague'
+                                    })}`}
+                                </span>
                             </div>
                             <div className="match-grid">
                                 {roundData.matches.map((match, index) => (

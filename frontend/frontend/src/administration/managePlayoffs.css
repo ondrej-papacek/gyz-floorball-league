@@ -14,7 +14,7 @@
     color: #d9a326;
     text-align: center;
     margin-bottom: 1.5rem;
-    font-size: 2rem; /* Default for desktops */
+    font-size: 2rem;
 }
 
 .playoff-controls {
@@ -49,10 +49,22 @@
     box-sizing: border-box;
 }
 
+.playoff-round input[type="text"] {
+    width: 100%;
+    max-width: 400px;
+    padding: 10px 12px;
+    font-size: 1rem;
+    border: 2px solid #999;
+    border-radius: 6px;
+    margin-bottom: 10px;
+    background-color: #222;
+    color: #fff;
+}
+
 .round-header {
     display: flex;
     justify-content: space-between;
-    align-items: center;
+    align-items: start;
     margin-bottom: 1rem;
     flex-wrap: wrap;
 }
@@ -102,6 +114,13 @@
 .playoff-match-row button:hover {
     background-color: #d9a326;
     color: black;
+}
+
+.button-row {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-top: 1rem;
 }
 
 .add-btn,

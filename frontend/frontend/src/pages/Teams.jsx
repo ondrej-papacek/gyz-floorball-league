@@ -12,17 +12,22 @@ function Teams() {
     const [expandedTeamsNizsi, setExpandedTeamsNizsi] = useState([]);
     const [expandedTeamsVyssi, setExpandedTeamsVyssi] = useState([]);
 
-    // Load available years from DB
     useEffect(() => {
         const fetchYears = async () => {
             const snapshot = await getDocs(collection(db, 'leagues'));
-            const years = new Set();
+            const activeYears = new Set();
+
             snapshot.forEach(doc => {
+                const data = doc.data();
                 const [year] = doc.id.split('_');
-                if (year) years.add(year);
+                if (data.status !== 'archived' && year) {
+                    activeYears.add(year);
+                }
             });
-            const sortedYears = Array.from(years).sort().reverse();
+
+            const sortedYears = Array.from(activeYears).sort().reverse();
             setAvailableYears(sortedYears);
+
             if (!selectedYear && sortedYears.length > 0) {
                 setSelectedYear(sortedYears[0]);
             }
@@ -30,7 +35,6 @@ function Teams() {
         fetchYears();
     }, []);
 
-    // Load and sort teams when year changes
     useEffect(() => {
         if (!selectedYear) return;
 

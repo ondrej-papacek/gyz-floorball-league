@@ -53,7 +53,9 @@ const ManageSchedule = () => {
             const years = new Set();
             snapshot.forEach(doc => {
                 const data = doc.data();
-                if (data.year) years.add(data.year.toString());
+                if (data.status !== 'archived' && data.year) {
+                    years.add(data.year.toString());
+                }
             });
             const sorted = Array.from(years).sort();
             setAvailableYears(sorted);
@@ -205,17 +207,28 @@ const ManageSchedule = () => {
                             {mergedMatches.map((round) => (
                                 <div key={round.round} className="round-card">
                                     <div className="round-header">
-                                        <h4>{`Kolo ${round.round} – ${round.date.toLocaleDateString("cs-CZ")}`}</h4>
+                                        <h4>{`Kolo ${round.round} – ${round.date.toLocaleString("cs-CZ", {
+                                            day: "2-digit",
+                                            month: "2-digit",
+                                            year: "numeric",
+                                            hour: "2-digit",
+                                            minute: "2-digit"
+                                        })}`}</h4>
+
                                         <div className="round-controls">
                                             <label>Změna data celého kola:</label>
-                                            <input type="date"
-                                                   onChange={(e) => handleRoundAction(round, 'updateDate', e.target.value)}/>
+                                            <input
+                                                type="datetime-local"
+                                                onChange={(e) => handleRoundAction(round, 'updateDate', e.target.value)}
+                                            />
                                         </div>
+
                                         <div className="round-actions">
                                             <button onClick={() => handleRoundAction(round, 'cancel')}>Zrušit kolo</button>
                                             <button onClick={() => handleRoundAction(round, 'delete')}>Smazat kolo</button>
                                         </div>
                                     </div>
+
                                     <div className="match-grid">
                                         {round.matches.map((match, index) => (
                                             <div className="match-card" key={index}>
@@ -225,13 +238,18 @@ const ManageSchedule = () => {
                                                     <span className="vs-label">vs</span>
                                                     <strong>{match.teamB_name}</strong>
                                                 </div>
-                                                <input type="date" onChange={(e) =>
-                                                    handleMatchAction(match, 'updateDate', {date: e.target.value})}/>
+                                                <input
+                                                    type="datetime-local"
+                                                    value={new Date(match.date.seconds * 1000).toISOString().slice(0, 16)}
+                                                    onChange={(e) =>
+                                                        handleMatchAction(match, 'updateDate', { date: e.target.value })
+                                                    }
+                                                />
                                                 <div className="match-status-select">
                                                     <label>Status:</label>
                                                     <select value={match.status}
                                                             onChange={(e) =>
-                                                                handleMatchAction(match, 'setStatus', {status: e.target.value})}>
+                                                                handleMatchAction(match, 'setStatus', { status: e.target.value })}>
                                                         <option value="upcoming">nadcházející</option>
                                                         <option value="live">živě</option>
                                                         <option value="finished">odehraný</option>

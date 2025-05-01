@@ -1,5 +1,6 @@
 ﻿import React, { useEffect, useState } from 'react';
-import { getPlayoffRounds } from '../services/playoffService';
+import { db } from '../services/firebase';
+import { collection, getDocs } from 'firebase/firestore';
 import PlayoffBracket from '../components/PlayoffBracket';
 import './playoffView.css';
 
@@ -9,49 +10,26 @@ const PlayoffView = ({ year }) => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
 
-    const transformData = (rounds) => {
-        const allMatches = [];
-        for (const [roundName, matches] of Object.entries(rounds)) {
-            matches.forEach((match, idx) => {
-                allMatches.push({
-                    id: `${roundName}_${idx}`,
-                    name: roundName,
-                    tournamentRoundText: roundName,
-                    startTime: '2025-04-21', // ⚡ you can improve later
-                    state: 'DONE',
-                    participants: [
-                        {
-                            id: match.teamA || 'teamA',
-                            name: match.teamA || '-',
-                            resultText: match.scoreA?.toString() || '-',
-                            isWinner: match.scoreA > match.scoreB
-                        },
-                        {
-                            id: match.teamB || 'teamB',
-                            name: match.teamB || '-',
-                            resultText: match.scoreB?.toString() || '-',
-                            isWinner: match.scoreB > match.scoreA
-                        }
-                    ]
-                });
-            });
-        }
-        return allMatches;
+    const fetchBracketMatches = async (year, division) => {
+        const path = `leagues/${year}_${division}/playoff/bracketMatches`;
+        const snap = await getDocs(collection(db, path));
+        return snap.docs.map(doc => doc.data());
     };
 
     useEffect(() => {
         const fetchPlayoffs = async () => {
+            setLoading(true);
             try {
-                setLoading(true);
                 const [lower, upper] = await Promise.all([
-                    getPlayoffRounds(year, 'lower'),
-                    getPlayoffRounds(year, 'upper'),
+                    fetchBracketMatches(year, 'lower'),
+                    fetchBracketMatches(year, 'upper')
                 ]);
-                setLowerMatches(transformData(lower));
-                setUpperMatches(transformData(upper));
+
+                setLowerMatches(lower);
+                setUpperMatches(upper);
                 setError('');
             } catch (err) {
-                console.error(err);
+                console.error('Error fetching playoff bracket matches:', err);
                 setError('Nepodařilo se načíst data playoff.');
             } finally {
                 setLoading(false);

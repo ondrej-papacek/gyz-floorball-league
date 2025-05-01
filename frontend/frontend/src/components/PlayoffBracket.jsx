@@ -6,12 +6,12 @@ const PlayoffBracket = ({ matches }) => {
     if (!matches?.length) return <p>Žádné zápasy zatím nejsou dostupné.</p>;
 
     return (
-        <div style={{ overflowX: 'auto', backgroundColor: '#2d2d2d', padding: '20px', borderRadius: '8px' }}>
+        <div className="playoff-bracket">
             <SingleEliminationBracket
                 matches={matches}
                 matchComponent={Match}
                 roundSeparatorWidth={64}
-                svgWrapperProps={{ style: { background: '#2d2d2d' } }}
+                svgWrapperProps={{ className: 'bracket-svg-wrapper' }}
             />
         </div>
     );

@@ -9,6 +9,13 @@
     font-family: Poppins, sans-serif;
 }
 
+.manage-players p {
+    text-align: center;
+    margin-top: 20px;
+    font-size: 1.1rem;
+    color: #ccc;
+}
+
 .manage-players h2 {
     color: #f0b323;
     text-align: center;

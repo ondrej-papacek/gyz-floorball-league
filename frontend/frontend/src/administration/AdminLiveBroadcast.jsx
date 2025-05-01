@@ -51,7 +51,9 @@ const AdminLiveBroadcast = () => {
         let allMatches = [];
 
         const leaguesSnapshot = await getDocs(collection(db, 'leagues'));
-        const leagueIds = leaguesSnapshot.docs.map(doc => doc.id);
+        const leagueIds = leaguesSnapshot.docs
+            .filter(doc => doc.data().status !== 'archived')
+            .map(doc => doc.id);
 
         for (const leagueId of leagueIds) {
             const [year, div] = leagueId.split('_');
