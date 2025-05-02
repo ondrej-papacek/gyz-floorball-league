@@ -90,6 +90,10 @@ function Schedule() {
         setSelectedYear(year);
     };
 
+    const isMidnight = (date) => {
+        return date.getHours() === 0 && date.getMinutes() === 0;
+    };
+
     return (
         <div className="schedule-page">
             <h2 className="schedule-title">Rozpis zápasů</h2>
@@ -113,33 +117,32 @@ function Schedule() {
                         <div key={roundData.round} className="round-card">
                             <div className="round-title">
                                 <span>
-                                    {`Kolo ${roundData.round} – ${roundData.date.toLocaleString('cs-CZ', {
+                                    {`Kolo ${roundData.round} – `}
+                                    {roundData.date.toLocaleDateString('cs-CZ', {
                                         day: '2-digit',
                                         month: '2-digit',
-                                        year: 'numeric',
-                                        hour: '2-digit',
-                                        minute: '2-digit',
-                                        hour12: false,
-                                        timeZone: 'Europe/Prague'
-                                    })}`}
+                                        year: 'numeric'
+                                    })}
+                                    {!isMidnight(roundData.date) && (
+                                        <> {roundData.date.toLocaleTimeString('cs-CZ', {
+                                            hour: '2-digit',
+                                            minute: '2-digit',
+                                            hour12: false
+                                        })}</>
+                                    )}
                                 </span>
                             </div>
                             <div className="match-grid">
                                 {roundData.matches.map((match, index) => (
                                     <div className="match-card" key={index}>
-                                        <div className="match-teams">
-                                            <strong>
-                                                {match.teamA_name}
-                                                {typeof match.scoreA === 'number' ? ` ${match.scoreA}` : ''}
-                                            </strong>
-                                            <span className="vs-label">
-                                                {typeof match.scoreA === 'number' && typeof match.scoreB === 'number'
-                                                    ? ' : '
-                                                    : 'vs'}
-                                            </span>
-                                            <strong>
-                                                {typeof match.scoreB === 'number' ? `${match.scoreB} ` : ''}{match.teamB_name}
-                                            </strong>
+                                        <div className="match-score-line">
+                                            <span className="team-name">{match.teamA_name}</span>
+                                            {typeof match.scoreA === 'number' && typeof match.scoreB === 'number' ? (
+                                                <span className="match-score">{match.scoreA} : {match.scoreB}</span>
+                                            ) : (
+                                                <span className="vs-label">vs</span>
+                                            )}
+                                            <span className="team-name">{match.teamB_name}</span>
                                         </div>
                                     </div>
                                 ))}

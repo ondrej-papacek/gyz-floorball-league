@@ -49,7 +49,7 @@ exports.generateSchedule = async (req, res, next) => {
             round.forEach((match, matchIndex) => {
                 const matchRef = matchesRef.doc();
                 const matchDate = new Date(baseDay);
-                matchDate.setMinutes(baseDay.getMinutes() + matchIndex * 30);
+                matchDate.setHours(14, 15 + matchIndex * 30, 0);
 
                 batch.set(matchRef, {
                     round: roundIndex + 1,

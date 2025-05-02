@@ -8,7 +8,6 @@
     box-sizing: border-box;
 }
 
-/* Fix the H2 title */
 .schedule-page .schedule-title {
     color: #d9a326 !important;
     font-family: 'Poppins', sans-serif !important;
@@ -18,7 +17,6 @@
     text-align: center;
 }
 
-/* Fix the select (dropdown) */
 .schedule-page select {
     padding: 12px 16px;
     margin-bottom: 30px;
@@ -29,10 +27,9 @@
     border: 1px solid #777;
     font-family: 'Poppins', sans-serif !important;
     width: auto;
-    appearance: none; /* Clean native select styles */
+    appearance: none;
 }
 
-/* Fix the yellow round title */
 .schedule-page .round-title span {
     font-size: 1.2rem;
     font-weight: bold;
@@ -106,6 +103,25 @@
     font-size: 0.85rem;
     color: #ccc;
     font-family: 'Poppins', sans-serif !important;
+}
+
+.match-score-line {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    font-size: 1.05rem;
+}
+
+.match-score {
+    color: #f0b323; /* gold */
+    font-weight: bold;
+    min-width: 50px;
+    text-align: center;
+}
+.team-name {
+    font-weight: 600;
+    color: white;
 }
 
 /* RESPONSIVE PART (same as before) */
