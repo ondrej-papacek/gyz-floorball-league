@@ -9,6 +9,7 @@ import {
     cancelRound,
     deleteRound
 } from '../services/scheduleService';
+import { generateRoundPreview } from '../services/docxService';
 import { collection, getDocs, doc, setDoc } from 'firebase/firestore';
 import { db } from '../services/firebase';
 import './manageSchedule.css';
@@ -34,8 +35,6 @@ const updateLiveBroadcast = async (match, selectedYear) => {
             date: match.date,
             division: match.division,
         });
-
-        console.log("Match set in liveBroadcast/currentMatch");
     } catch (error) {
         console.error("Failed to update live broadcast match:", error);
     }
@@ -84,17 +83,11 @@ const ManageSchedule = () => {
             const lower = await fetchMatches(selectedYear, 'lower');
             const upper = await fetchMatches(selectedYear, 'upper');
 
-            if (lower.length === 0 && upper.length === 0) {
-                setMergedMatches([]);
-                setError('Rozpis zatím neexistuje. Vygenerujte ho pro každou ligu.');
-                return;
-            }
-
             const lowerData = lower.filter(m => m.id !== 'placeholder');
             const upperData = upper.filter(m => m.id !== 'placeholder');
 
             const merged = [];
-            const baseDate = new Date(parseInt(selectedYear), 2, 21); // March 21
+            const baseDate = new Date(parseInt(selectedYear), 2, 21);
             const totalRounds = Math.max(lowerData.length, upperData.length);
 
             for (let i = 0; i < totalRounds; i++) {
@@ -129,7 +122,6 @@ const ManageSchedule = () => {
             if (action === 'updateDate') await updateMatch(selectedYear, division, id, { date: new Date(payload.date) });
             if (action === 'setStatus') {
                 await updateMatch(selectedYear, division, id, { status: payload.status });
-
                 if (payload.status === 'live') {
                     await updateLiveBroadcast({ ...match, id }, selectedYear);
                 }
@@ -227,47 +219,80 @@ const ManageSchedule = () => {
                                             <button onClick={() => handleRoundAction(round, 'cancel')}>Zrušit kolo</button>
                                             <button onClick={() => handleRoundAction(round, 'delete')}>Smazat kolo</button>
                                         </div>
+
+                                        <div className="docx-generate">
+                                            <button
+                                                className="docx-btn"
+                                                onClick={() =>
+                                                    generateRoundPreview({
+                                                        round: round.round,
+                                                        date: round.date,
+                                                        matches: round.matches.map(m => ({
+                                                            teamA: m.teamA_name,
+                                                            teamB: m.teamB_name
+                                                        }))
+                                                    })
+                                                }
+                                            >Generovat rozpis kola
+                                            </button>
+                                        </div>
                                     </div>
 
                                     <div className="match-grid">
-                                        {round.matches.map((match, index) => (
-                                            <div className="match-card" key={index}>
-                                                <span className={`match-dot ${getStatusDotClass(match.status)}`}></span>
-                                                <div className="match-teams">
-                                                    <strong>{match.teamA_name}</strong>
-                                                    <span className="vs-label">vs</span>
-                                                    <strong>{match.teamB_name}</strong>
+                                        {round.matches.map((match, index) => {
+                                            let matchDate = match.date;
+                                            if (matchDate?.seconds) {
+                                                matchDate = new Date(matchDate.seconds * 1000).toISOString().slice(0, 16);
+                                            } else {
+                                                matchDate = '';
+                                            }
+
+                                            return (
+                                                <div className="match-card" key={index}>
+                                                    <span className={`match-dot ${getStatusDotClass(match.status)}`}></span>
+                                                    <div className="match-teams">
+                                                        <strong>{match.teamA_name}</strong>
+                                                        <span className="vs-label">
+                                                            {typeof match.scoreA === 'number' && typeof match.scoreB === 'number'
+                                                                ? ` ${match.scoreA} : ${match.scoreB} `
+                                                                : ' vs '}
+                                                        </span>
+                                                        <strong>{match.teamB_name}</strong>
+                                                    </div>
+
+                                                    <input
+                                                        type="datetime-local"
+                                                        value={matchDate}
+                                                        onChange={(e) =>
+                                                            handleMatchAction(match, 'updateDate', { date: e.target.value })
+                                                        }
+                                                    />
+
+                                                    <div className="match-status-select">
+                                                        <label>Status:</label>
+                                                        <select value={match.status}
+                                                                onChange={(e) =>
+                                                                    handleMatchAction(match, 'setStatus', { status: e.target.value })}>
+                                                            <option value="upcoming">nadcházející</option>
+                                                            <option value="live">živě</option>
+                                                            <option value="finished">odehraný</option>
+                                                            <option value="cancelled">zrušený</option>
+                                                        </select>
+                                                    </div>
+
+                                                    <div className="actions">
+                                                        <button onClick={() => handleMatchAction(match, 'cancel')}>Zrušit</button>
+                                                        <button onClick={() => handleMatchAction(match, 'defaultWin', {
+                                                            status: 'finished', scoreA: 3, scoreB: 0
+                                                        })}>Kontumační výhra {match.teamA_name}</button>
+                                                        <button onClick={() => handleMatchAction(match, 'defaultWin', {
+                                                            status: 'finished', scoreA: 0, scoreB: 3
+                                                        })}>Kontumační výhra {match.teamB_name}</button>
+                                                        <button onClick={() => handleMatchAction(match, 'delete')}>Smazat</button>
+                                                    </div>
                                                 </div>
-                                                <input
-                                                    type="datetime-local"
-                                                    value={new Date(match.date.seconds * 1000).toISOString().slice(0, 16)}
-                                                    onChange={(e) =>
-                                                        handleMatchAction(match, 'updateDate', { date: e.target.value })
-                                                    }
-                                                />
-                                                <div className="match-status-select">
-                                                    <label>Status:</label>
-                                                    <select value={match.status}
-                                                            onChange={(e) =>
-                                                                handleMatchAction(match, 'setStatus', { status: e.target.value })}>
-                                                        <option value="upcoming">nadcházející</option>
-                                                        <option value="live">živě</option>
-                                                        <option value="finished">odehraný</option>
-                                                        <option value="cancelled">zrušený</option>
-                                                    </select>
-                                                </div>
-                                                <div className="actions">
-                                                    <button onClick={() => handleMatchAction(match, 'cancel')}>Zrušit</button>
-                                                    <button onClick={() => handleMatchAction(match, 'defaultWin', {
-                                                        status: 'finished', scoreA: 3, scoreB: 0
-                                                    })}>Kontumační výhra {match.teamA_name}</button>
-                                                    <button onClick={() => handleMatchAction(match, 'defaultWin', {
-                                                        status: 'finished', scoreA: 0, scoreB: 3
-                                                    })}>Kontumační výhra {match.teamB_name}</button>
-                                                    <button onClick={() => handleMatchAction(match, 'delete')}>Smazat</button>
-                                                </div>
-                                            </div>
-                                        ))}
+                                            );
+                                        })}
                                     </div>
                                 </div>
                             ))}

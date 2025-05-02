@@ -58,6 +58,23 @@
     font-size: 1.2rem;
 }
 
+.docx-btn {
+    background-color: #d9a326;
+    color: white;
+    border: none;
+    padding: 8px 14px;
+    border-radius: 6px;
+    font-weight: bold;
+    cursor: pointer;
+    margin-top: 6px;
+    font-family: Poppins, sans-serif;
+    transition: background 0.2s ease;
+}
+
+.docx-btn:hover {
+    background-color: #b2861e;
+}
+
 .round-controls,
 .round-actions {
     display: flex;

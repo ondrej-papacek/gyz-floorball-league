@@ -17,6 +17,7 @@ const goalScorerRoutes = require('./routes/goalScorerRoutes');
 const newsRoutes = require('./routes/newsRoutes');
 // const matchesRoutes = require('./routes/matchesRoutes');
 const createUserRoute = require('./routes/createUser');
+const docxRoutes = require('./routes/docxRoutes');
 const errorHandler = require("./middleware/errorHandler");
 
 app.use('/api/leagues', leagueRoutes);
@@ -29,6 +30,7 @@ app.use('/api/goalScorers', goalScorerRoutes);
 app.use('/api/news', newsRoutes);
 // app.use('/api/matches', matchesRoutes);
 app.use('/api', createUserRoute);
+app.use('/api/docx', docxRoutes);
 app.use(errorHandler);
 
 const PORT = process.env.PORT || 5000;

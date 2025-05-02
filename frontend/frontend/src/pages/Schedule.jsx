@@ -128,9 +128,18 @@ function Schedule() {
                                 {roundData.matches.map((match, index) => (
                                     <div className="match-card" key={index}>
                                         <div className="match-teams">
-                                            <strong>{match.teamA_name}</strong>
-                                            <span className="vs-label">vs</span>
-                                            <strong>{match.teamB_name}</strong>
+                                            <strong>
+                                                {match.teamA_name}
+                                                {typeof match.scoreA === 'number' ? ` ${match.scoreA}` : ''}
+                                            </strong>
+                                            <span className="vs-label">
+                                                {typeof match.scoreA === 'number' && typeof match.scoreB === 'number'
+                                                    ? ' : '
+                                                    : 'vs'}
+                                            </span>
+                                            <strong>
+                                                {typeof match.scoreB === 'number' ? `${match.scoreB} ` : ''}{match.teamB_name}
+                                            </strong>
                                         </div>
                                     </div>
                                 ))}

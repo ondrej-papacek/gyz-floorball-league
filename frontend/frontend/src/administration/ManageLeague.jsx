@@ -5,6 +5,7 @@ import AdminNavbar from "../components/AdminNavbar.jsx";
 import { db } from '../services/firebase';
 import { deleteDoc, collection, doc, setDoc, getDocs } from 'firebase/firestore';
 import { useLeague } from '../services/leagueContext';
+import { generateSeasonSummary } from '../services/docxService';
 
 const ManageLeague = () => {
     const navigate = useNavigate();
@@ -140,12 +141,20 @@ const ManageLeague = () => {
                                 <button onClick={() => handleArchiveLeague(league.id)}>Archivovat Ligu</button>
                             )}
 
+                            <button onClick={() => generateSeasonSummary({
+                                year: league.year,
+                                division: league.division
+                            })}>
+                                Generovat souhrn
+                            </button>
+
                             <button
                                 className="delete-league-btn"
                                 onClick={() => handleDeleteLeague(league.id)}
                             >
                                 Odstranit Ligu
                             </button>
+
                         </div>
                     ))}
                 </div>
