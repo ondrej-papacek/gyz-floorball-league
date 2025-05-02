@@ -74,71 +74,6 @@ exports.generateSchedule = async (req, res, next) => {
     }
 };
 
-exports.getMatches = async (req, res, next) => {
-    try {
-        const { year, division } = req.params;
-        const matchesSnapshot = await db
-            .collection("leagues")
-            .doc(`${year}_${division}`)
-            .collection("matches")
-            .get();
-
-        const matches = matchesSnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
-        res.status(200).json(matches);
-    } catch (error) {
-        next(new Error("Failed to load matches."));
-    }
-};
-
-exports.updateMatch = async (req, res, next) => {
-    try {
-        const { year, division, matchId } = req.params;
-        const matchData = req.body;
-        await db
-            .collection("leagues")
-            .doc(`${year}_${division}`)
-            .collection("matches")
-            .doc(matchId)
-            .update(matchData);
-
-        res.status(200).json({ message: "Match successfully updated." });
-    } catch (error) {
-        next(new Error("Failed to update match."));
-    }
-};
-
-exports.deleteMatch = async (req, res, next) => {
-    try {
-        const { year, division, matchId } = req.params;
-        await db
-            .collection("leagues")
-            .doc(`${year}_${division}`)
-            .collection("matches")
-            .doc(matchId)
-            .delete();
-
-        res.status(200).json({ message: "Match successfully deleted." });
-    } catch (error) {
-        next(new Error("Failed to delete match."));
-    }
-};
-
-exports.deleteAllMatches = async (req, res, next) => {
-    try {
-        const { year, division } = req.params;
-        const matchesRef = db.collection("leagues").doc(`${year}_${division}`).collection("matches");
-        const matchesSnapshot = await matchesRef.get();
-
-        const batch = db.batch();
-        matchesSnapshot.docs.forEach((doc) => batch.delete(doc.ref));
-        await batch.commit();
-
-        res.status(200).json({ message: "All matches successfully deleted." });
-    } catch (error) {
-        next(new Error("Failed to delete all matches."));
-    }
-};
-
 exports.getUpcomingMatch = async (req, res, next) => {
     try {
         const { year } = req.query;
@@ -181,8 +116,12 @@ exports.getUpcomingMatch = async (req, res, next) => {
             const lowerMatch = lowerDoc.data();
             const upperMatch = upperDoc.data();
 
+            const lowerDate = lowerMatch.date.toDate();
+            const upperDate = upperMatch.date.toDate();
+            const roundDate = lowerDate < upperDate ? lowerDate : upperDate;
+
             rounds.push({
-                date: lowerMatch.date.toDate().toISOString(),
+                date: roundDate.toISOString(), // ✅ fixed here
                 lowerMatch: {
                     teamA_name: lowerMatch.teamA_name,
                     teamB_name: lowerMatch.teamB_name,
@@ -198,6 +137,74 @@ exports.getUpcomingMatch = async (req, res, next) => {
     } catch (error) {
         console.error("Error in getUpcomingMatch:", error);
         next(new Error("Failed to fetch upcoming matches."));
+    }
+};
+
+exports.getMatches = async (req, res, next) => {
+    try {
+        const { year, division } = req.params;
+        const matchesSnapshot = await db
+            .collection("leagues")
+            .doc(`${year}_${division}`)
+            .collection("matches")
+            .get();
+
+        const matches = matchesSnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+        res.status(200).json(matches);
+    } catch (error) {
+        next(new Error("Failed to load matches."));
+    }
+};
+
+exports.updateMatch = async (req, res, next) => {
+    try {
+        const { year, division, matchId } = req.params;
+        const matchData = req.body;
+        if (matchData.date) {
+            matchData.date = Timestamp.fromDate(new Date(matchData.date));
+        }
+        await db
+            .collection("leagues")
+            .doc(`${year}_${division}`)
+            .collection("matches")
+            .doc(matchId)
+            .update(matchData);
+
+        res.status(200).json({ message: "Match successfully updated." });
+    } catch (error) {
+        next(new Error("Failed to update match."));
+    }
+};
+
+exports.deleteMatch = async (req, res, next) => {
+    try {
+        const { year, division, matchId } = req.params;
+        await db
+            .collection("leagues")
+            .doc(`${year}_${division}`)
+            .collection("matches")
+            .doc(matchId)
+            .delete();
+
+        res.status(200).json({ message: "Match successfully deleted." });
+    } catch (error) {
+        next(new Error("Failed to delete match."));
+    }
+};
+
+exports.deleteAllMatches = async (req, res, next) => {
+    try {
+        const { year, division } = req.params;
+        const matchesRef = db.collection("leagues").doc(`${year}_${division}`).collection("matches");
+        const matchesSnapshot = await matchesRef.get();
+
+        const batch = db.batch();
+        matchesSnapshot.docs.forEach((doc) => batch.delete(doc.ref));
+        await batch.commit();
+
+        res.status(200).json({ message: "All matches successfully deleted." });
+    } catch (error) {
+        next(new Error("Failed to delete all matches."));
     }
 };
 
@@ -248,38 +255,6 @@ exports.startLiveMatch = async (req, res, next) => {
     } catch (error) {
         console.error("Error starting live match:", error);
         next(new Error("Failed to start live match."));
-    }
-};
-
-exports.updateMatch = async (req, res, next) => {
-    try {
-        const { year, division, matchId } = req.params;
-        const data = req.body;
-        if (data.date) {
-            data.date = Timestamp.fromDate(new Date(data.date));
-        }
-        await db.collection('leagues')
-            .doc(`${year}_${division}`)
-            .collection('matches')
-            .doc(matchId)
-            .update(data);
-        res.status(200).json({ message: 'Match updated' });
-    } catch (error) {
-        next(new Error('Failed to update match'));
-    }
-};
-
-exports.deleteMatch = async (req, res, next) => {
-    try {
-        const { year, division, matchId } = req.params;
-        await db.collection('leagues')
-            .doc(`${year}_${division}`)
-            .collection('matches')
-            .doc(matchId)
-            .delete();
-        res.status(200).json({ message: 'Match deleted' });
-    } catch (error) {
-        next(new Error('Failed to delete match'));
     }
 };
 
