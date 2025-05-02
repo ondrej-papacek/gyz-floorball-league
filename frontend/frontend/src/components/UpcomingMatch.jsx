@@ -11,7 +11,8 @@ const UpcomingMatch = () => {
         try {
             const dateObj = rawDate?.seconds
                 ? new Date(rawDate.seconds * 1000)
-                : new Date(rawDate);
+                : new Date(new Date(rawDate).toLocaleString("en-US", { timeZone: "Europe/Prague" }));
+
             return dateObj.toLocaleString('cs-CZ', {
                 day: '2-digit',
                 month: '2-digit',

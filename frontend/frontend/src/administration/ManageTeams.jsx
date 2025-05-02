@@ -172,16 +172,19 @@ const ManageTeams = () => {
             <div className="manage-teams">
                 <h2>Správa týmů</h2>
 
-                <select
-                    value={selectedLeagueId}
-                    onChange={(e) => setSelectedLeagueId(e.target.value)}
-                >
-                    {leagues.map((l, i) => (
-                        <option key={i} value={l.id}>
-                            {l.label}
-                        </option>
-                    ))}
-                </select>
+                <div className="manage-year-selector">
+                    <label>Ročník:</label>
+                    <select
+                        value={selectedLeagueId}
+                        onChange={(e) => setSelectedLeagueId(e.target.value)}
+                    >
+                        {leagues.map((l, i) => (
+                            <option key={i} value={l.id}>
+                                {l.label}
+                            </option>
+                        ))}
+                    </select>
+                </div>
 
                 <div className="add-team">
                     <input

@@ -163,56 +163,48 @@ const ManageSchedule = () => {
         <>
             <AdminNavbar />
             <div className="manage-schedule">
-                <h2>Správa rozpisu zápasů</h2>
+                <h2 className="manage-schedule-title">Správa rozpisu zápasů</h2>
 
-                <select value={selectedYear} onChange={(e) => setSelectedYear(e.target.value)}>
+                <select className="manage-schedule-select" value={selectedYear} onChange={(e) => setSelectedYear(e.target.value)}>
                     {availableYears.map((year) => (
                         <option key={year} value={year}>{year}</option>
                     ))}
                 </select>
 
-                {error && (
-                    <div className="error-msg">
+                {error ? (
+                    <div className="manage-schedule-error-msg">
                         {error}
-                        <div className="generate-buttons">
+                        <div className="manage-schedule-generate-buttons">
                             <button onClick={() => handleGenerateSchedule('lower')}>Vygenerovat nižší {selectedYear}</button>
                             <button onClick={() => handleGenerateSchedule('upper')}>Vygenerovat vyšší {selectedYear}</button>
                         </div>
                     </div>
-                )}
-
-                {!error && (
+                ) : (
                     <>
-                        <div className="generate-buttons">
+                        <div className="manage-schedule-generate-buttons">
                             <button onClick={() => handleGenerateSchedule('lower')}>Vygenerovat nižší {selectedYear}</button>
                             <button onClick={() => handleGenerateSchedule('upper')}>Vygenerovat vyšší {selectedYear}</button>
                         </div>
 
-                        <div className="legend">
+                        <div className="manage-schedule-legend">
                             <span><span className="dot dot-upcoming"></span> Nadcházející</span>
                             <span><span className="dot dot-live"></span> Probíhá</span>
                             <span><span className="dot dot-finished"></span> Dokončeno</span>
                             <span><span className="dot dot-cancelled"></span> Zrušeno</span>
                         </div>
 
-                        <div className="grid-of-rounds">
+                        <div className="manage-schedule-grid-of-rounds">
                             {mergedMatches.map((round) => (
-                                <div key={round.round} className="round-card">
-                                    <div className="round-header">
+                                <div key={round.round} className="manage-schedule-round-card">
+                                    <div className="manage-schedule-round-header">
                                         <h4>{`Kolo ${round.round} – ${round.date.toLocaleString("cs-CZ", {
-                                            day: "2-digit",
-                                            month: "2-digit",
-                                            year: "numeric",
-                                            hour: "2-digit",
-                                            minute: "2-digit"
+                                            day: "2-digit", month: "2-digit", year: "numeric", hour: "2-digit", minute: "2-digit"
                                         })}`}</h4>
 
                                         <div className="round-controls">
                                             <label>Změna data celého kola:</label>
-                                            <input
-                                                type="datetime-local"
-                                                onChange={(e) => handleRoundAction(round, 'updateDate', e.target.value)}
-                                            />
+                                            <input type="datetime-local"
+                                                   onChange={(e) => handleRoundAction(round, 'updateDate', e.target.value)} />
                                         </div>
 
                                         <div className="round-actions">
@@ -221,31 +213,24 @@ const ManageSchedule = () => {
                                         </div>
 
                                         <div className="docx-generate">
-                                            <button
-                                                className="docx-btn"
-                                                onClick={() =>
-                                                    generateRoundPreview({
-                                                        round: round.round,
-                                                        date: round.date,
-                                                        matches: round.matches.map(m => ({
-                                                            teamA: m.teamA_name,
-                                                            teamB: m.teamB_name
-                                                        }))
-                                                    })
-                                                }
-                                            >Generovat rozpis kola
+                                            <button className="docx-btn" onClick={() => generateRoundPreview({
+                                                round: round.round,
+                                                date: round.date,
+                                                matches: round.matches.map(m => ({
+                                                    teamA: m.teamA_name,
+                                                    teamB: m.teamB_name
+                                                }))
+                                            })}>
+                                                Generovat rozpis kola
                                             </button>
                                         </div>
                                     </div>
 
                                     <div className="match-grid">
                                         {round.matches.map((match, index) => {
-                                            let matchDate = match.date;
-                                            if (matchDate?.seconds) {
-                                                matchDate = new Date(matchDate.seconds * 1000).toISOString().slice(0, 16);
-                                            } else {
-                                                matchDate = '';
-                                            }
+                                            let matchDate = match.date?.seconds
+                                                ? new Date(match.date.seconds * 1000).toISOString().slice(0, 16)
+                                                : '';
 
                                             return (
                                                 <div className="match-card" key={index}>
@@ -253,20 +238,16 @@ const ManageSchedule = () => {
                                                     <div className="match-teams">
                                                         <strong>{match.teamA_name}</strong>
                                                         <span className="vs-label">
-                                                            {typeof match.scoreA === 'number' && typeof match.scoreB === 'number'
-                                                                ? ` ${match.scoreA} : ${match.scoreB} `
-                                                                : ' vs '}
-                                                        </span>
+                                                        {typeof match.scoreA === 'number' && typeof match.scoreB === 'number'
+                                                            ? ` ${match.scoreA} : ${match.scoreB} `
+                                                            : ' vs '}
+                                                    </span>
                                                         <strong>{match.teamB_name}</strong>
                                                     </div>
 
-                                                    <input
-                                                        type="datetime-local"
-                                                        value={matchDate}
-                                                        onChange={(e) =>
-                                                            handleMatchAction(match, 'updateDate', { date: e.target.value })
-                                                        }
-                                                    />
+                                                    <input type="datetime-local"
+                                                           value={matchDate}
+                                                           onChange={(e) => handleMatchAction(match, 'updateDate', { date: e.target.value })} />
 
                                                     <div className="match-status-select">
                                                         <label>Status:</label>

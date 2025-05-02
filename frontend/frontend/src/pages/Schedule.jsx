@@ -112,10 +112,10 @@ function Schedule() {
             {isPlayoff ? (
                 <PlayoffView year={selectedYear} />
             ) : (
-                <div className="grid-of-rounds">
+                <div className="schedule-grid-of-rounds">
                     {mergedMatches.map((roundData) => (
-                        <div key={roundData.round} className="round-card">
-                            <div className="round-title">
+                        <div key={roundData.round} className="schedule-round-card">
+                            <div className="schedule-round-title">
                                 <span>
                                     {`Kolo ${roundData.round} – `}
                                     {roundData.date.toLocaleDateString('cs-CZ', {
@@ -132,17 +132,17 @@ function Schedule() {
                                     )}
                                 </span>
                             </div>
-                            <div className="match-grid">
+                            <div className="schedule-match-grid">
                                 {roundData.matches.map((match, index) => (
-                                    <div className="match-card" key={index}>
-                                        <div className="match-score-line">
-                                            <span className="team-name">{match.teamA_name}</span>
+                                    <div className="schedule-match-card" key={index}>
+                                        <div className="schedule-match-score-line">
+                                            <span className="schedule-team-name">{match.teamA_name}</span>
                                             {typeof match.scoreA === 'number' && typeof match.scoreB === 'number' ? (
-                                                <span className="match-score">{match.scoreA} : {match.scoreB}</span>
+                                                <span className="schedule-match-score">{match.scoreA} : {match.scoreB}</span>
                                             ) : (
-                                                <span className="vs-label">vs</span>
+                                                <span className="schedule-vs-label">vs</span>
                                             )}
-                                            <span className="team-name">{match.teamB_name}</span>
+                                            <span className="schedule-team-name">{match.teamB_name}</span>
                                         </div>
                                     </div>
                                 ))}

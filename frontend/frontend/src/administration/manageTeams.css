@@ -10,15 +10,33 @@
     margin-bottom: 20px;
 }
 
-.manage-teams select {
-    display: block;
-    margin: 0 auto 20px;
-    padding: 8px 12px;
-    border-radius: 6px;
+.manage-year-selector select {
+    padding: 10px 16px;
+    font-size: 1rem;
     background-color: #444;
     color: white;
-    font-size: 1rem;
+    border-radius: 6px;
     border: 1px solid #777;
+    font-family: 'Poppins', sans-serif;
+    appearance: none;
+    outline: none;
+    transition: all 0.2s ease-in-out;
+    text-align: center;
+    min-width: 140px;
+}
+
+.manage-year-selector label {
+    margin-right: 10px;
+    font-weight: bold;
+    color: #f0b323;
+}
+
+.manage-year-selector {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    gap: 10px;
 }
 
 .add-team {

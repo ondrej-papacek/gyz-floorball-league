@@ -3,21 +3,19 @@
     text-align: center;
     min-height: 100vh;
     background-color: #1c1c1c;
-    font-family: 'Poppins', sans-serif !important;
+    font-family: 'Poppins', sans-serif;
     color: white;
     box-sizing: border-box;
 }
 
-.schedule-page .schedule-title {
-    color: #d9a326 !important;
-    font-family: 'Poppins', sans-serif !important;
-    font-size: 2rem !important;
-    font-weight: bold !important;
+.schedule-title {
+    color: #d9a326;
+    font-size: 2rem;
+    font-weight: bold;
     margin-bottom: 20px;
-    text-align: center;
 }
 
-.schedule-page select {
+.schedule-selector {
     padding: 12px 16px;
     margin-bottom: 30px;
     font-size: 1rem;
@@ -25,29 +23,28 @@
     color: white;
     border-radius: 6px;
     border: 1px solid #777;
-    font-family: 'Poppins', sans-serif !important;
-    width: auto;
+    font-family: 'Poppins', sans-serif;
     appearance: none;
 }
 
-.schedule-page .round-title span {
+.schedule-round-title span {
     font-size: 1.2rem;
     font-weight: bold;
-    color: #d9a326 !important;
+    color: #d9a326;
     text-align: center;
     margin-bottom: 10px;
     display: block;
-    font-family: 'Poppins', sans-serif !important;
+    font-family: 'Poppins', sans-serif;
 }
 
-.schedule-page .grid-of-rounds {
+.schedule-grid-of-rounds {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
     gap: 20px;
     padding: 20px;
 }
 
-.schedule-page .round-card {
+.schedule-round-card {
     background: #333;
     padding: 16px;
     border-radius: 12px;
@@ -60,17 +57,17 @@
     transition: transform 0.2s ease;
 }
 
-.schedule-page .round-card:hover {
+.schedule-round-card:hover {
     transform: scale(1.01);
 }
 
-.schedule-page .match-grid {
+.schedule-match-grid {
     display: flex;
     flex-direction: column;
     gap: 10px;
 }
 
-.schedule-page .match-card {
+.schedule-match-card {
     background-color: #444;
     color: white;
     padding: 10px;
@@ -79,33 +76,12 @@
     transition: transform 0.2s ease;
 }
 
-.schedule-page .match-card:hover {
+.schedule-match-card:hover {
     transform: scale(1.02);
     background-color: #555;
 }
 
-.schedule-page .match-teams {
-    font-size: 1rem;
-    font-weight: 600;
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-    font-family: 'Poppins', sans-serif !important;
-    color: white;
-}
-
-.schedule-page .match-teams strong {
-    color: white;
-    font-family: 'Poppins', sans-serif !important;
-}
-
-.schedule-page .vs-label {
-    font-size: 0.85rem;
-    color: #ccc;
-    font-family: 'Poppins', sans-serif !important;
-}
-
-.match-score-line {
+.schedule-match-score-line {
     display: flex;
     justify-content: center;
     align-items: center;
@@ -113,73 +89,79 @@
     font-size: 1.05rem;
 }
 
-.match-score {
-    color: #f0b323; /* gold */
+.schedule-match-score {
+    color: #f0b323;
     font-weight: bold;
     min-width: 50px;
     text-align: center;
 }
-.team-name {
+
+.schedule-team-name {
     font-weight: 600;
     color: white;
 }
 
-/* RESPONSIVE PART (same as before) */
+.schedule-vs-label {
+    font-size: 0.85rem;
+    color: #ccc;
+}
+
+/* ===== Responsive ===== */
 @media (max-width: 480px) {
     .schedule-page {
         padding: 1rem;
     }
 
-    .schedule-page .schedule-title {
+    .schedule-title {
         font-size: 1.6rem;
     }
 
-    .schedule-page select {
+    .schedule-selector {
         width: 100%;
         font-size: 0.95rem;
     }
 
-    .schedule-page .round-title span {
+    .schedule-round-title span {
         font-size: 1.1rem;
     }
 
-    .schedule-page .match-teams {
-        font-size: 0.9rem;
+    .schedule-match-score-line {
+        font-size: 0.95rem;
     }
 
-    .schedule-page .vs-label {
+    .schedule-vs-label {
         font-size: 0.8rem;
     }
 
-    .schedule-page .round-card {
+    .schedule-round-card {
         padding: 12px;
     }
 }
 
 @media (min-width: 481px) and (max-width: 768px) {
-    .schedule-page .schedule-title {
+    .schedule-title {
         font-size: 1.8rem;
     }
 
-    .schedule-page select {
+    .schedule-selector {
         font-size: 1rem;
     }
 
-    .schedule-page .round-title span {
+    .schedule-round-title span {
         font-size: 1.2rem;
     }
 
-    .schedule-page .match-teams {
-        font-size: 0.95rem;
+    .schedule-match-score-line {
+        font-size: 1rem;
     }
 }
 
 @media (min-width: 769px) and (max-width: 1024px) {
-    .schedule-page .schedule-title {
+    .schedule-title {
         font-size: 2rem;
     }
 
-    .schedule-page select {
+    .schedule-selector {
         font-size: 1rem;
     }
 }
