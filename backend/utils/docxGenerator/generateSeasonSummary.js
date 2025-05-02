@@ -1,9 +1,8 @@
 ﻿const { generateDocxFromTemplate } = require('./docxUtils');
-const { getDocs, collection } = require('firebase/firestore');
 const { db } = require('../../firebase');
 
 async function getGoalScorers(year, division) {
-    const snap = await getDocs(collection(db, `leagues/${year}_${division}/goalScorers`));
+    const snap = await db.collection(`leagues/${year}_${division}/goalScorers`).get();
     return snap.docs.map(doc => doc.data());
 }
 
