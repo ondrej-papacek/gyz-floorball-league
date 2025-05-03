@@ -11,8 +11,9 @@ const PlayoffView = ({ year }) => {
     const [error, setError] = useState('');
 
     const fetchBracketMatches = async (year, division) => {
-        const path = `leagues/${year}_${division}/playoff/bracketMatches`;
-        const snap = await getDocs(collection(db, path));
+        const snap = await getDocs(
+            collection(db, 'leagues', `${year}_${division}`, 'playoff', 'bracketMatches')
+        );
         return snap.docs.map(doc => doc.data());
     };
 

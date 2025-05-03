@@ -109,7 +109,6 @@ const ManagePlayoffs = () => {
         const [year, division] = selectedLeague.split('_');
         await saveRound(year, division, newRoundName, newMatches);
 
-        // Save bracket matches format
         const bracketPromises = newMatches.map(async (match, i) => {
             const bracketMatch = {
                 id: `match_${year}_${division}_${newRoundName}_${i}`,
@@ -142,9 +141,9 @@ const ManagePlayoffs = () => {
         await Promise.all(bracketPromises);
 
         alert(`Kolo "${newRoundName}" bylo uloženo a přidáno do bracketu.`);
+        await fetchRounds();
         setNewRoundName('');
         setNewMatches([{ teamA: '', teamB: '', scoreA: 0, scoreB: 0 }]);
-        fetchRounds();
     };
 
     return (
