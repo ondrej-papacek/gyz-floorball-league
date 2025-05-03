@@ -103,7 +103,7 @@ function Teams() {
             <h2 className="teams-title">Týmy</h2>
 
             {availableYears.length > 0 && (
-                <div className="team-year-selector">
+                <div className="teams-year-selector">
                     <label>Ročník:</label>
                     <select value={selectedYear} onChange={(e) => setSelectedYear(e.target.value)}>
                         {availableYears.map(year => (
