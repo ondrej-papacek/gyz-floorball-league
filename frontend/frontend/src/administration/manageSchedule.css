@@ -13,6 +13,7 @@
     color: #d9a326;
     font-size: 2rem;
     margin-bottom: 1.5rem;
+    font-weight: 700;
 }
 
 .manage-schedule-select {
@@ -90,6 +91,7 @@
 
 .manage-schedule-round-header h4 {
     font-size: 1.3rem;
+    font-weight: bold;
     color: #f0b323;
     margin-bottom: 10px;
 }
