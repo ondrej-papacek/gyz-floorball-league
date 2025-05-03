@@ -105,9 +105,21 @@ const ManagePlayoffs = () => {
 
     const handleDeleteRound = async (roundName) => {
         const [year, division] = selectedLeague.split('_');
+        const bracketRef = collection(db, `leagues/${year}_${division}/playoff/rounds/bracketMatches`);
+
         if (!window.confirm(`Opravdu chcete smazat celé kolo "${roundName}"?`)) return;
-        await deleteRound(year, division, roundName);
-        fetchRounds();
+
+        const snapshot = await getDocs(bracketRef);
+        const matchesToDelete = snapshot.docs.filter(doc =>
+            doc.data().tournamentRoundText === roundName
+        );
+
+        const deletePromises = matchesToDelete.map(docSnap =>
+            deleteDoc(doc(db, `leagues/${year}_${division}/playoff/rounds/bracketMatches`, docSnap.id))
+        );
+
+        await Promise.all(deletePromises);
+        await fetchRounds(); // Refresh UI
         alert(`Kolo "${roundName}" bylo smazáno.`);
     };
 
@@ -163,7 +175,7 @@ const ManagePlayoffs = () => {
 
         await Promise.all(bracketPromises);
 
-        alert(`Kolo "${newRoundName}" bylo uloženo a přidáno do bracketu.`);
+        alert(`Kolo "${newRoundName}" bylo uloženo a přidáno do Playoff pavouka.`);
         await fetchRounds();
         setNewRoundName('');
         setNewMatches([{ teamA: '', teamB: '', scoreA: 0, scoreB: 0 }]);
