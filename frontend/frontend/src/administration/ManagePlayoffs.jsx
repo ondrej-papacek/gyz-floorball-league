@@ -1,7 +1,13 @@
 ﻿import React, { useEffect, useState } from 'react';
 import { db } from '../services/firebase';
-import { collection, getDocs, doc, getDoc, setDoc } from 'firebase/firestore';
-import { saveRound, updateRound, deleteRound } from '../services/playoffService';
+import {
+    collection,
+    getDocs,
+    doc,
+    setDoc,
+    deleteDoc
+} from 'firebase/firestore';
+import { saveRound, updateRound, deleteRound as deleteRoundAPI } from '../services/playoffService';
 import AdminNavbar from '../components/AdminNavbar';
 import './managePlayoffs.css';
 
@@ -19,12 +25,6 @@ const ManagePlayoffs = () => {
             const active = leaguesSnap.docs
                 .filter(doc => doc.data().status !== 'archived')
                 .map(doc => doc.id);
-
-            if (active.length === 0) {
-                setLeagues([]);
-                setSelectedLeague('');
-                return;
-            }
 
             setLeagues(active);
             setSelectedLeague(active[0] || '');
@@ -53,7 +53,6 @@ const ManagePlayoffs = () => {
 
         const matches = snap.docs.map(doc => doc.data());
 
-        // Group by round name
         const grouped = matches.reduce((acc, match) => {
             const round = match.tournamentRoundText || 'Neznámé kolo';
             if (!acc[round]) acc[round] = [];
@@ -88,7 +87,7 @@ const ManagePlayoffs = () => {
         const match = rounds.find(r => r.round === roundName)?.matches?.[matchIndex];
         if (!match) return alert("Chyba při ukládání zápasu.");
 
-        const bracketMatch = {
+        const updated = {
             ...match,
             tournamentRoundText: roundName,
             startTime: new Date().toISOString(),
@@ -97,9 +96,10 @@ const ManagePlayoffs = () => {
 
         await setDoc(
             doc(db, `leagues/${year}_${division}/playoff/rounds/bracketMatches`, match.id),
-            bracketMatch
+            updated
         );
 
+        await updateRound(year, division, roundName, rounds.find(r => r.round === roundName)?.matches || []);
         alert("Zápas uložen.");
     };
 
@@ -119,7 +119,8 @@ const ManagePlayoffs = () => {
         );
 
         await Promise.all(deletePromises);
-        await fetchRounds(); // Refresh UI
+        await deleteRoundAPI(year, division, roundName);
+        await fetchRounds();
         alert(`Kolo "${roundName}" bylo smazáno.`);
     };
 
@@ -143,12 +144,11 @@ const ManagePlayoffs = () => {
 
         const [year, division] = selectedLeague.split('_');
         const bracketMatchesRef = collection(db, `leagues/${year}_${division}/playoff/rounds/bracketMatches`);
-
         const cleanRoundId = newRoundName.trim().replace(/\s+/g, '_');
 
-        const bracketPromises = newMatches.map(async (match, i) => {
+        const enrichedMatches = newMatches.map((match, i) => {
             const id = `match_${year}_${division}_${cleanRoundId}_${i}`;
-            const bracketMatch = {
+            return {
                 id,
                 name: `${newRoundName} ${i + 1}`,
                 tournamentRoundText: newRoundName,
@@ -167,18 +167,24 @@ const ManagePlayoffs = () => {
                         resultText: match.scoreB?.toString() ?? '0',
                         isWinner: match.scoreB > match.scoreA
                     }
-                ]
+                ],
+                teamA: match.teamA,
+                teamB: match.teamB,
+                scoreA: match.scoreA,
+                scoreB: match.scoreB
             };
-
-            await setDoc(doc(bracketMatchesRef, id), bracketMatch);
         });
 
-        await Promise.all(bracketPromises);
+        const savePromises = enrichedMatches.map(match =>
+            setDoc(doc(bracketMatchesRef, match.id), match)
+        );
 
-        alert(`Kolo "${newRoundName}" bylo uloženo a přidáno do Playoff pavouka.`);
+        await Promise.all(savePromises);
+        await saveRound(year, division, newRoundName, enrichedMatches);
         await fetchRounds();
         setNewRoundName('');
         setNewMatches([{ teamA: '', teamB: '', scoreA: 0, scoreB: 0 }]);
+        alert(`Kolo "${newRoundName}" bylo uloženo.`);
     };
 
     return (
@@ -186,7 +192,6 @@ const ManagePlayoffs = () => {
             <AdminNavbar />
             <div className="manage-playoffs-page">
                 <h2>Správa Playoff</h2>
-
                 <div className="playoff-controls">
                     <label>Vyberte ligu:</label>
                     <select value={selectedLeague} onChange={(e) => setSelectedLeague(e.target.value)}>
@@ -202,24 +207,21 @@ const ManagePlayoffs = () => {
                     <div key={round.round} className="playoff-round">
                         <div className="round-header">
                             <h3>{round.round.replace('_', ' ').toUpperCase()}</h3>
-                            <button
-                                className="delete-round-button"
-                                onClick={() => handleDeleteRound(round.round)}
-                            >
+                            <button className="delete-round-button" onClick={() => handleDeleteRound(round.round)}>
                                 🗑️ Smazat kolo
                             </button>
                         </div>
                         {round.matches.map((match, i) => (
-                            <div key={i} className="playoff-match-row">
-                                <select value={match.teamA} onChange={(e) => handleChange(round.round, i, 'teamA', e.target.value)}>
+                            <div key={match.id} className="playoff-match-row">
+                                <select value={match.teamA || ''} onChange={(e) => handleChange(round.round, i, 'teamA', e.target.value)}>
                                     {teams.map(t => (
                                         <option key={t.id} value={t.name}>{t.name}</option>
                                     ))}
                                 </select>
-                                <input type="number" value={match.scoreA} onChange={(e) => handleChange(round.round, i, 'scoreA', parseInt(e.target.value))} />
+                                <input type="number" value={match.scoreA ?? 0} onChange={(e) => handleChange(round.round, i, 'scoreA', parseInt(e.target.value))} />
                                 <span>vs</span>
-                                <input type="number" value={match.scoreB} onChange={(e) => handleChange(round.round, i, 'scoreB', parseInt(e.target.value))} />
-                                <select value={match.teamB} onChange={(e) => handleChange(round.round, i, 'teamB', e.target.value)}>
+                                <input type="number" value={match.scoreB ?? 0} onChange={(e) => handleChange(round.round, i, 'scoreB', parseInt(e.target.value))} />
+                                <select value={match.teamB || ''} onChange={(e) => handleChange(round.round, i, 'teamB', e.target.value)}>
                                     {teams.map(t => (
                                         <option key={t.id} value={t.name}>{t.name}</option>
                                     ))}
@@ -230,7 +232,6 @@ const ManagePlayoffs = () => {
                     </div>
                 ))}
 
-                {/* New Round Form */}
                 <div className="playoff-round">
                     <div className="round-header">
                         <h3>Přidat nové kolo</h3>
