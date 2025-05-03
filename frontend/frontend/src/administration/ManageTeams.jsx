@@ -117,18 +117,19 @@ const ManageTeams = () => {
         await loadTeams();
     };
 
-    const toggleExpand = async (id) => {
+    const toggleExpand = async (teamId) => {
         const [year, division] = selectedLeagueId.split('_');
-        if (expanded.includes(id)) {
-            setExpanded(expanded.filter(e => e !== id));
+        const team = teams.find(t => t.id === teamId);
+        if (!team) return;
+
+        if (expanded.includes(teamId)) {
+            setExpanded(expanded.filter(e => e !== teamId));
         } else {
-            const matches = await fetchMatchesForTeam(year, division, id);
+            const matches = await fetchMatchesForTeam(year, division, teamId);
             setTeams(prev =>
-                prev.map(team =>
-                    team.id === id ? { ...team, matches } : team
-                )
+                prev.map(t => t.id === teamId ? { ...t, matches } : t)
             );
-            setExpanded([...expanded, id]);
+            setExpanded([...expanded, teamId]);
         }
     };
 
@@ -215,15 +216,7 @@ const ManageTeams = () => {
                         {teams.map(team => (
                             <React.Fragment key={team.id}>
                                 <tr>
-                                    <td className="team-name-cell">
-                                        <img
-                                            className="team-logo"
-                                            src={`/images/team-logos/${team.name?.toLowerCase?.() || 'placeholder'}.png`}
-                                            alt={team.name || 'Tým'}
-                                            onError={(e) => (e.target.style.display = 'none')}
-                                        />
-                                        {team.name}
-                                    </td>
+                                    <td>{team.name}</td>
                                     <td><input type="number" value={team.wins ?? 0} onChange={e => handleStatChange(team.id, 'wins', e.target.value)} /></td>
                                     <td><input type="number" value={team.draws ?? 0} onChange={e => handleStatChange(team.id, 'draws', e.target.value)} /></td>
                                     <td><input type="number" value={team.losses ?? 0} onChange={e => handleStatChange(team.id, 'losses', e.target.value)} /></td>

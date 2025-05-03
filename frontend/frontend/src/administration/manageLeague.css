@@ -5,6 +5,7 @@
     background-color: #1f1f1f;
     min-height: 75vh;
     box-sizing: border-box;
+    max-width: 1400px;
 }
 
 .manage-league-page h1 {
@@ -174,7 +175,7 @@
 /* ==================== 🖥️ Desktops ==================== */
 @media (min-width: 1025px) {
     .manage-league-page {
-        max-width: 1200px;
+        max-width: 1400px;
         margin: 0 auto;
     }
 }

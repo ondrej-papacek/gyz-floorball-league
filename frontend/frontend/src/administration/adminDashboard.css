@@ -5,6 +5,7 @@
     text-align: center;
     min-height: 30vh;
     box-sizing: border-box;
+    max-width: 1400px;
 }
 
 .admin-title {
@@ -106,7 +107,7 @@
 /* 🖥️ XL Screens */
 @media (min-width: 1440px) {
     .admin-dashboard {
-        max-width: 1200px;
+        max-width: 1400px;
         margin: 0 auto;
     }
 }
