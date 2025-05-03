@@ -1,5 +1,5 @@
 ﻿import axios from 'axios';
-import { doc, setDoc } from 'firebase/firestore';
+import { doc, setDoc, collection, getDocs, query, where } from 'firebase/firestore';
 import { db } from './firebase';
 
 const BASE_URL = `${import.meta.env.VITE_API_URL}/api/teams`;
@@ -28,10 +28,18 @@ export const updateTeam = async (year, division, id, data) => {
 
 export const fetchMatchesForTeam = async (year, division, teamId) => {
     try {
-        const res = await axios.get(`${import.meta.env.VITE_API_URL}/api/matches/${year}/${division}/team/${teamId}`);
-        return res.data;
+        const leagueId = `${year}_${division}`;
+        const matchesRef = collection(db, `leagues/${leagueId}/matches`);
+
+        const q = query(matchesRef, where('status', '==', 'finished'));
+        const snapshot = await getDocs(q);
+
+        return snapshot.docs
+            .map(doc => doc.data())
+            .filter(match => match.teamA_id === teamId || match.teamB_id === teamId);
     } catch (e) {
-        console.error("Failed to fetch team matches", e);
+        console.error("Failed to fetch team matches from Firestore", e);
         return [];
     }
 };
+
