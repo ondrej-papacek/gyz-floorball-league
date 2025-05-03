@@ -256,12 +256,16 @@ const AdminLiveBroadcast = () => {
                 const goalScorersRef = collection(db, `leagues/${year}_${division}/goalScorers`);
                 const snapshot = await getDocs(goalScorersRef);
 
-                const teamDoc = await getDoc(doc(db, `leagues/${year}_${division}/teams/${teamId}`));
-                const teamName = teamDoc.exists() ? teamDoc.data().name : teamId;
-
                 for (const scorer of scorers || []) {
-                    const scorerId = scorer.id || normalizeName(scorer.name);
-                    const existing = snapshot.docs.find(doc => doc.data().id === scorerId);
+                    const playerId = scorer.id || normalizeName(scorer.name);
+                    const playerRef = doc(db, `leagues/${year}_${division}/teams/${teamId}/players/${playerId}`);
+                    const playerSnap = await getDoc(playerRef);
+                    if (!playerSnap.exists()) continue;
+
+                    const playerData = playerSnap.data();
+                    const existing = snapshot.docs.find(doc =>
+                        doc.data().id === playerId && doc.data().team === teamId
+                    );
 
                     if (existing) {
                         await updateDoc(doc(db, `leagues/${year}_${division}/goalScorers/${existing.id}`), {
@@ -269,10 +273,10 @@ const AdminLiveBroadcast = () => {
                         });
                     } else {
                         await setDoc(doc(goalScorersRef), {
-                            id: scorerId,
-                            name: scorer.name,
+                            id: playerId,
+                            name: playerData.name,
                             goals: scorer.goals,
-                            team: teamName
+                            team: teamId
                         });
                     }
                 }
