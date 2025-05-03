@@ -109,6 +109,8 @@ const ManagePlayoffs = () => {
         const [year, division] = selectedLeague.split('_');
         await saveRound(year, division, newRoundName, newMatches);
 
+        const bracketMatchesRef = collection(db, `leagues/${year}_${division}/playoff/bracketMatches`);
+
         const bracketPromises = newMatches.map(async (match, i) => {
             const bracketMatch = {
                 id: `match_${year}_${division}_${newRoundName}_${i}`,
@@ -133,7 +135,7 @@ const ManagePlayoffs = () => {
             };
 
             await setDoc(
-                doc(db, `leagues/${year}_${division}/playoff/bracketMatches`, bracketMatch.id),
+                doc(bracketMatchesRef, bracketMatch.id),
                 bracketMatch
             );
         });
