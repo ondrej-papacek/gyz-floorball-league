@@ -109,7 +109,7 @@ const ManagePlayoffs = () => {
         const [year, division] = selectedLeague.split('_');
         await saveRound(year, division, newRoundName, newMatches);
 
-        const bracketMatchesRef = collection(db, `leagues/${year}_${division}/playoff/bracketMatches`);
+        const bracketMatchesRef = collection(db, `leagues/${year}_${division}/playoff/rounds/bracketMatches`);
 
         const bracketPromises = newMatches.map(async (match, i) => {
             const bracketMatch = {

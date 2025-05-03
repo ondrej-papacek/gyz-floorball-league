@@ -41,17 +41,23 @@ const ManageLeague = () => {
             status: 'active'
         });
 
+        const teamsRef = doc(db, `leagues/${leagueId}/teams`, 'placeholder');
+        const matchesRef = doc(db, `leagues/${leagueId}/matches`, 'placeholder');
+        const roundsDocRef = doc(db, `leagues/${leagueId}/playoff`, 'rounds');
+        const bracketMatchRef = doc(db, `leagues/${leagueId}/playoff/rounds/bracketMatches`, 'placeholder');
+
         await Promise.all([
-            setDoc(doc(db, `leagues/${leagueId}/teams`, 'placeholder'), {}),
-            setDoc(doc(db, `leagues/${leagueId}/matches`, 'placeholder'), {}),
-            setDoc(doc(db, `leagues/${leagueId}/playoff`, 'rounds'), {}),
-            setDoc(doc(db, `leagues/${leagueId}/playoff/bracketMatches`, 'placeholder'), { id: 'placeholder' })
+            setDoc(teamsRef, {}),
+            setDoc(matchesRef, {}),
+            setDoc(roundsDocRef, {}),
+            setDoc(bracketMatchRef, { id: 'placeholder' })
         ]);
 
         setYear('');
         setDivision('lower');
         await fetchLeagues();
     };
+
 
     const handleDeleteLeague = async (id) => {
         const confirmed = window.confirm("Opravdu chcete odstranit tuto ligu? Tento krok je nevratný.");
