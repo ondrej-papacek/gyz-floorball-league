@@ -197,8 +197,8 @@ const ManageSchedule = () => {
                             {mergedMatches.map((round) => (
                                 <div key={round.round} className="manage-schedule-round-card">
                                     <div className="manage-schedule-round-header">
-                                        <h4>{`Kolo ${round.round} – ${round.date.toLocaleString("cs-CZ", {
-                                            day: "2-digit", month: "2-digit", year: "numeric", hour: "2-digit", minute: "2-digit"
+                                        <h4>{`Kolo ${round.round} – ${round.date.toLocaleDateString("cs-CZ", {
+                                            day: "2-digit", month: "2-digit", year: "numeric"
                                         })}`}</h4>
 
                                         <div className="round-controls">

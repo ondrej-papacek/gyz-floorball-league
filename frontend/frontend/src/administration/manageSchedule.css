@@ -36,7 +36,7 @@
 
 .manage-schedule-generate-buttons button {
     background-color: #d9a326;
-    color: black;
+    color: #fff;
     font-weight: bold;
     border: none;
     border-radius: 6px;
@@ -55,12 +55,12 @@
     gap: 25px;
     margin-bottom: 20px;
     font-size: 0.9rem;
-    color: #ccc;
+    color: #fff;
 }
 
 .manage-schedule .dot {
-    width: 10px;
-    height: 10px;
+    width: 18px;
+    height: 18px;
     border-radius: 50%;
     display: inline-block;
     margin-right: 6px;
@@ -112,9 +112,11 @@
     margin-bottom: 10px;
 }
 
+
 .round-actions,
 .docx-generate {
     display: flex;
+    justify-content: center;
     gap: 10px;
     flex-wrap: wrap;
 }
@@ -135,7 +137,11 @@
 .round-actions button:hover,
 .docx-btn:hover {
     background-color: #f0b323;
-    color: black;
+    color: #fff;
+}
+
+.docx-generate {
+    margin-top: 10px;
 }
 
 .match-grid {
@@ -172,9 +178,9 @@
 }
 
 .vs-label {
-    font-weight: normal;
-    color: #ccc;
-    font-size: 0.9rem;
+    font-weight: 700;
+    color: #f0b323;
+    font-size: 1rem;
 }
 
 .match-card input[type="datetime-local"] {
@@ -223,7 +229,7 @@
 }
 .actions button:hover {
     background-color: #f0b323;
-    color: black;
+    color: #fff;
 }
 
 .manage-schedule-error-msg {
