@@ -6,7 +6,7 @@ import {
     updatePlayer
 } from '../services/playerService';
 import { db } from '../services/firebase';
-import { collection, getDocs, doc, deleteDoc } from 'firebase/firestore';
+import { collection, getDocs, doc, deleteDoc, updateDoc } from 'firebase/firestore';
 import './managePlayers.css';
 import AdminNavbar from '../components/AdminNavbar';
 
@@ -70,8 +70,23 @@ const ManagePlayers = () => {
         const [year, division] = selectedLeague.split('_');
         if (!selectedTeamId) return;
         setLoading(true);
+
         const data = await getPlayers(year, division, selectedTeamId);
-        setPlayers(data);
+        const goalScorersSnap = await getDocs(collection(db, `leagues/${year}_${division}/goalScorers`));
+        const goalScorers = goalScorersSnap.docs.map(doc => doc.data());
+
+        const enriched = data.map(player => {
+            const scorer = goalScorers.find(s =>
+                normalizeName(s.name) === normalizeName(player.name) &&
+                s.team === selectedTeamId
+            );
+            return {
+                ...player,
+                goals: scorer ? scorer.goals : player.goals || 0
+            };
+        });
+
+        setPlayers(enriched);
         setLoading(false);
     };
 
@@ -130,7 +145,22 @@ const ManagePlayers = () => {
             goals: Number(editFields.goals) || 0,
         };
 
-        await updatePlayer(year, division, selectedTeamId, player.id, updatedData);
+        await updatePlayer(year, division, selectedTeamId, player.id, {
+            ...updatedData,
+            team_id: selectedTeamId
+        });
+
+        const goalScorersSnap = await getDocs(collection(db, `leagues/${year}_${division}/goalScorers`));
+        const normalizedId = normalizeName(updatedData.name);
+        const scorerDoc = goalScorersSnap.docs.find(
+            doc => normalizeName(doc.data().name) === normalizedId && doc.data().team === selectedTeamId
+        );
+
+        if (scorerDoc) {
+            const scorerRef = doc(db, `leagues/${year}_${division}/goalScorers/${scorerDoc.id}`);
+            await updateDoc(scorerRef, { goals: updatedData.goals });
+        }
+
         setEditing(null);
         await fetchPlayers();
     };
