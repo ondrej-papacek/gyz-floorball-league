@@ -117,12 +117,30 @@ const ManageTeams = () => {
         await loadTeams();
     };
 
-    const toggleExpand = (teamId) => {
-        setExpanded(prev =>
-            prev.includes(teamId)
-                ? prev.filter(id => id !== teamId)
-                : [...prev, teamId]
-        );
+    const toggleExpand = async (teamId) => {
+        const [year, division] = selectedLeagueId.split('_');
+        const team = teams.find(t => t.id === teamId);
+        if (!team) return;
+
+        if (expanded.includes(teamId)) {
+            setExpanded(prev => prev.filter(id => id !== teamId));
+        } else {
+            const rawMatches = await fetchMatchesForTeam(year, division, teamId);
+
+            const matches = rawMatches.map(match => {
+                const isA = match.teamA_id === teamId;
+                const opponent = isA ? match.teamB_name : match.teamA_name;
+                const score = `${isA ? match.scoreA : match.scoreB}–${isA ? match.scoreB : match.scoreA}`;
+                return { opponent, score };
+            });
+
+            setTeams(prev =>
+                prev.map(t =>
+                    t.id === teamId ? { ...t, matches } : t
+                )
+            );
+            setExpanded(prev => [...prev, teamId]);
+        }
     };
 
     const recalculateTeam = async (team) => {
@@ -235,7 +253,7 @@ const ManageTeams = () => {
                                                     {team.matches?.length > 0 ? (
                                                         team.matches.map((match, i) => (
                                                             <li key={i}>
-                                                                {match.teamA_name} {match.scoreA}:{match.scoreB} {match.teamB_name}
+                                                                {match.opponent} ({match.score})
                                                             </li>
                                                         ))
                                                     ) : (
