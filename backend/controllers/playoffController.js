@@ -4,18 +4,17 @@ const db = admin.firestore();
 exports.getPlayoffRounds = async (req, res, next) => {
     try {
         const { year, division } = req.params;
-        const roundsSnapshot = await db
+        const snapshot = await db
             .collection('leagues')
             .doc(`${year}_${division}`)
             .collection('playoff')
             .doc('rounds')
+            .collection('bracketMatches')
             .get();
 
-        if (!roundsSnapshot.exists) {
-            return res.status(404).json({ error: 'Žádná kola playoff nenalezena.' });
-        }
+        const matches = snapshot.docs.map(doc => doc.data());
 
-        res.status(200).json(roundsSnapshot.data());
+        res.status(200).json(matches);
     } catch (error) {
         next(new Error('Nepodařilo se načíst kola playoff.'));
     }
@@ -23,17 +22,23 @@ exports.getPlayoffRounds = async (req, res, next) => {
 
 exports.addPlayoffRound = async (req, res, next) => {
     try {
-        const { year, division, round } = req.params;
+        const { year, division } = req.params;
         const matches = req.body.matches;
 
-        const roundRef = db
+        const bracketRef = db
             .collection('leagues')
             .doc(`${year}_${division}`)
             .collection('playoff')
-            .doc('rounds');
-        await roundRef.set({ [round]: matches }, { merge: true });
+            .doc('rounds')
+            .collection('bracketMatches');
 
-        res.status(201).json({ message: `Kolo ${round} bylo úspěšně přidáno do playoff.` });
+        const writePromises = matches.map(match =>
+            bracketRef.doc(match.id).set(match)
+        );
+
+        await Promise.all(writePromises);
+
+        res.status(201).json({ message: `Kolo bylo úspěšně přidáno do bracketMatches.` });
     } catch (error) {
         next(new Error('Nepodařilo se vytvořit kolo playoff.'));
     }
@@ -41,22 +46,27 @@ exports.addPlayoffRound = async (req, res, next) => {
 
 exports.updatePlayoffRound = async (req, res, next) => {
     try {
-        const { year, division, round } = req.params;
+        const { year, division } = req.params;
         const matches = req.body.matches;
 
         if (!Array.isArray(matches)) {
             return res.status(400).json({ error: 'Chybný formát zápasů.' });
         }
 
-        const roundRef = db
+        const bracketRef = db
             .collection('leagues')
             .doc(`${year}_${division}`)
             .collection('playoff')
-            .doc('rounds');
+            .doc('rounds')
+            .collection('bracketMatches');
 
-        await roundRef.set({ [round]: matches }, { merge: true });
+        const updatePromises = matches.map(match =>
+            bracketRef.doc(match.id).set(match, { merge: true })
+        );
 
-        res.status(200).json({ message: `Kolo ${round} bylo úspěšně aktualizováno.` });
+        await Promise.all(updatePromises);
+
+        res.status(200).json({ message: `Kolo bylo úspěšně aktualizováno.` });
     } catch (error) {
         next(new Error('Nepodařilo se aktualizovat kolo playoff.'));
     }
@@ -66,12 +76,20 @@ exports.deletePlayoffRound = async (req, res, next) => {
     try {
         const { year, division, round } = req.params;
 
-        const roundRef = db
+        const bracketRef = db
             .collection('leagues')
             .doc(`${year}_${division}`)
             .collection('playoff')
-            .doc('rounds');
-        await roundRef.set({ [round]: admin.firestore.FieldValue.delete() }, { merge: true });
+            .doc('rounds')
+            .collection('bracketMatches');
+
+        const snapshot = await bracketRef.get();
+
+        const deletePromises = snapshot.docs
+            .filter(doc => doc.data().tournamentRoundText === round)
+            .map(doc => bracketRef.doc(doc.id).delete());
+
+        await Promise.all(deletePromises);
 
         res.status(200).json({ message: `Kolo ${round} bylo úspěšně smazáno z playoff.` });
     } catch (error) {

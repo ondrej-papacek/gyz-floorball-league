@@ -176,7 +176,10 @@ const ManagePlayoffs = () => {
         });
 
         const savePromises = enrichedMatches.map(match =>
-            setDoc(doc(bracketMatchesRef, match.id), match)
+            setDoc(
+                doc(db, `leagues/${year}_${division}/playoff/rounds/bracketMatches`, match.id),
+                match
+            )
         );
 
         await Promise.all(savePromises);
