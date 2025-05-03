@@ -44,8 +44,8 @@ const ManageLeague = () => {
         await Promise.all([
             setDoc(doc(db, `leagues/${leagueId}/teams`, 'placeholder'), {}),
             setDoc(doc(db, `leagues/${leagueId}/matches`, 'placeholder'), {}),
-            setDoc(doc(db, `leagues/${leagueId}/playoff/rounds`), {}),
-            setDoc(doc(db, `leagues/${leagueId}/playoff/bracketMatches`, 'placeholder'), {})
+            setDoc(doc(db, `leagues/${leagueId}/playoff`, 'rounds'), {}),
+            setDoc(doc(db, `leagues/${leagueId}/playoff/bracketMatches`, 'placeholder'), { id: 'placeholder' })
         ]);
 
         setYear('');
