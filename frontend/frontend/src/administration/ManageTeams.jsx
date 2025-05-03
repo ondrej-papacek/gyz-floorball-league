@@ -117,25 +117,18 @@ const ManageTeams = () => {
         await loadTeams();
     };
 
-    const toggleExpand = async (teamId) => {
-        const [year, division] = selectedLeagueId.split('_');
-        const team = teams.find(t => t.id === teamId);
-        if (!team) return;
-
-        if (expanded.includes(teamId)) {
-            setExpanded(expanded.filter(e => e !== teamId));
-        } else {
-            const matches = await fetchMatchesForTeam(year, division, teamId);
-            setTeams(prev =>
-                prev.map(t => t.id === teamId ? { ...t, matches } : t)
-            );
-            setExpanded([...expanded, teamId]);
-        }
+    const toggleExpand = (teamId) => {
+        setExpanded(prev =>
+            prev.includes(teamId)
+                ? prev.filter(id => id !== teamId)
+                : [...prev, teamId]
+        );
     };
 
     const recalculateTeam = async (team) => {
         const [year, division] = selectedLeagueId.split('_');
         const matches = await fetchMatchesForTeam(year, division, team.id);
+
         let wins = 0, draws = 0, losses = 0, scored = 0, conceded = 0, points = 0;
         matches.forEach(match => {
             const isA = match.teamA_id === team.id;
@@ -147,6 +140,7 @@ const ManageTeams = () => {
             else if (teamGoals === opponentGoals) { draws++; points += 1; }
             else { losses++; }
         });
+
         const updated = {
             ...team,
             wins,
@@ -157,6 +151,7 @@ const ManageTeams = () => {
             matchesPlayed: matches.length,
             points
         };
+
         await updateTeam(year, division, team.id, updated);
         await loadTeams();
     };
