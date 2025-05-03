@@ -47,15 +47,26 @@ const ManagePlayoffs = () => {
     };
 
     const fetchRounds = async () => {
-        const ref = doc(db, `leagues/${selectedLeague}/playoff/rounds`);
-        const snap = await getDoc(ref);
-        if (!snap.exists()) return setRounds([]);
-        const data = snap.data();
-        const list = Object.entries(data).map(([round, matches]) => ({
+        const [year, division] = selectedLeague.split('_');
+        const bracketRef = collection(db, `leagues/${year}_${division}/playoff/rounds/bracketMatches`);
+        const snap = await getDocs(bracketRef);
+
+        const matches = snap.docs.map(doc => doc.data());
+
+        // Group by round name
+        const grouped = matches.reduce((acc, match) => {
+            const round = match.tournamentRoundText || 'Neznámé kolo';
+            if (!acc[round]) acc[round] = [];
+            acc[round].push(match);
+            return acc;
+        }, {});
+
+        const roundsArray = Object.entries(grouped).map(([round, matches]) => ({
             round,
             matches
         }));
-        setRounds(list);
+
+        setRounds(roundsArray);
     };
 
     const handleChange = (round, index, field, value) => {
@@ -74,9 +85,24 @@ const ManagePlayoffs = () => {
 
     const saveMatch = async (roundName, matchIndex) => {
         const [year, division] = selectedLeague.split('_');
-        const roundData = rounds.find(r => r.round === roundName);
-        const matches = [...roundData.matches];
-        await updateRound(year, division, roundName, matches);
+        const match = rounds
+            .find(r => r.round === roundName)
+            ?.matches?.[matchIndex];
+
+        if (!match) return alert("Chyba při ukládání zápasu.");
+
+        const bracketMatch = {
+            ...match,
+            tournamentRoundText: roundName,
+            startTime: new Date().toISOString(),
+            state: "SCHEDULED"
+        };
+
+        await setDoc(
+            doc(db, `leagues/${year}_${division}/playoff/rounds/bracketMatches`, match.id),
+            bracketMatch
+        );
+
         alert("Zápas uložen.");
     };
 
@@ -107,7 +133,6 @@ const ManagePlayoffs = () => {
         }
 
         const [year, division] = selectedLeague.split('_');
-        await saveRound(year, division, newRoundName, newMatches);
 
         const bracketMatchesRef = collection(db, `leagues/${year}_${division}/playoff/rounds/bracketMatches`);
 

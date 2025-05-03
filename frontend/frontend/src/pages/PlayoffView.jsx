@@ -12,7 +12,7 @@ const PlayoffView = ({ year }) => {
 
     const fetchBracketMatches = async (year, division) => {
         const snap = await getDocs(
-            collection(db, 'leagues', `${year}_${division}`, 'playoff', 'bracketMatches')
+            collection(db, 'leagues', `${year}_${division}`, 'playoff', 'rounds', 'bracketMatches')
         );
         return snap.docs.map(doc => doc.data());
     };
