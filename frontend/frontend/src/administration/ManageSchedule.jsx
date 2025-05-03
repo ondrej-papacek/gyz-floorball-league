@@ -159,6 +159,16 @@ const ManageSchedule = () => {
         }
     };
 
+    const safeGenerateRoundPreview = async (roundInfo) => {
+        try {
+            await generateRoundPreview(roundInfo);
+        } catch (err) {
+            console.error('Failed to generate DOCX:', err);
+            alert('Chyba při generování dokumentu.');
+        }
+    };
+
+
     return (
         <>
             <AdminNavbar />
@@ -213,7 +223,7 @@ const ManageSchedule = () => {
                                         </div>
 
                                         <div className="docx-generate">
-                                            <button className="docx-btn" onClick={() => generateRoundPreview({
+                                            <button className="docx-btn" onClick={() => safeGenerateRoundPreview({
                                                 round: round.round,
                                                 date: round.date,
                                                 matches: round.matches.map(m => ({
