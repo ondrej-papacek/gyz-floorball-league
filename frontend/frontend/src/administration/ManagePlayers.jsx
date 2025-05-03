@@ -78,13 +78,17 @@ const ManagePlayers = () => {
         const enriched = data.map(player => {
             const scorer = goalScorers.find(s =>
                 s?.id === player?.id ||
-                (normalizeName(s?.name) === normalizeName(player?.name) && s?.team === selectedTeamId)
+                (s?.name && player?.name &&
+                    normalizeName(s.name) === normalizeName(player.name) &&
+                    s.team === selectedTeamId)
             );
             return {
                 ...player,
                 goals: scorer ? scorer.goals : player.goals || 0
             };
         });
+
+        enriched.sort((a, b) => b.goals - a.goals);
 
         setPlayers(enriched);
         setLoading(false);

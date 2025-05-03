@@ -48,7 +48,7 @@ function GoalScorers() {
         const map = new Map();
 
         for (const scorer of scorers) {
-            const key = `${scorer.name}_${scorer.team}`; // Unique key: name + team
+            const key = `${scorer.name}_${scorer.team}`;
             if (map.has(key)) {
                 map.get(key).goals += scorer.goals;
             } else {
@@ -57,7 +57,7 @@ function GoalScorers() {
         }
 
         const mergedArray = Array.from(map.values());
-        mergedArray.sort((a, b) => b.goals - a.goals); // Sort descending
+        mergedArray.sort((a, b) => b.goals - a.goals);
         return mergedArray;
     };
 
