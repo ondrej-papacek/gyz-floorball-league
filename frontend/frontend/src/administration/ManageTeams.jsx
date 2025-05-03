@@ -172,12 +172,14 @@ const ManageTeams = () => {
 
         await updateTeam(year, division, team.id, updated);
         await loadTeams();
+        window.alert(`Tým "${team.name}" byl úspěšně přepočítán.`);
     };
 
     const recalculateAll = async () => {
         for (const team of teams) {
             await recalculateTeam(team);
         }
+        window.alert('Všechny týmy byly úspěšně přepočítány.');
     };
 
     return (
