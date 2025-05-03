@@ -85,10 +85,7 @@ const ManagePlayoffs = () => {
 
     const saveMatch = async (roundName, matchIndex) => {
         const [year, division] = selectedLeague.split('_');
-        const match = rounds
-            .find(r => r.round === roundName)
-            ?.matches?.[matchIndex];
-
+        const match = rounds.find(r => r.round === roundName)?.matches?.[matchIndex];
         if (!match) return alert("Chyba při ukládání zápasu.");
 
         const bracketMatch = {
@@ -133,12 +130,14 @@ const ManagePlayoffs = () => {
         }
 
         const [year, division] = selectedLeague.split('_');
-
         const bracketMatchesRef = collection(db, `leagues/${year}_${division}/playoff/rounds/bracketMatches`);
 
+        const cleanRoundId = newRoundName.trim().replace(/\s+/g, '_');
+
         const bracketPromises = newMatches.map(async (match, i) => {
+            const id = `match_${year}_${division}_${cleanRoundId}_${i}`;
             const bracketMatch = {
-                id: `match_${year}_${division}_${newRoundName}_${i}`,
+                id,
                 name: `${newRoundName} ${i + 1}`,
                 tournamentRoundText: newRoundName,
                 startTime: new Date().toISOString(),
@@ -148,21 +147,18 @@ const ManagePlayoffs = () => {
                         id: match.teamA,
                         name: match.teamA,
                         resultText: match.scoreA?.toString() ?? '0',
-                        isWinner: (match.scoreA > match.scoreB)
+                        isWinner: match.scoreA > match.scoreB
                     },
                     {
                         id: match.teamB,
                         name: match.teamB,
                         resultText: match.scoreB?.toString() ?? '0',
-                        isWinner: (match.scoreB > match.scoreA)
+                        isWinner: match.scoreB > match.scoreA
                     }
                 ]
             };
 
-            await setDoc(
-                doc(bracketMatchesRef, bracketMatch.id),
-                bracketMatch
-            );
+            await setDoc(doc(bracketMatchesRef, id), bracketMatch);
         });
 
         await Promise.all(bracketPromises);
