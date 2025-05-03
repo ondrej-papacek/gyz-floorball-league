@@ -11,130 +11,48 @@
 
 .manage-schedule-title {
     color: #d9a326;
-    text-align: center;
-    margin-bottom: 1.5rem;
     font-size: 2rem;
+    margin-bottom: 1.5rem;
 }
 
 .manage-schedule-select {
-    margin: 10px auto 20px;
     padding: 10px 14px;
     font-size: 1rem;
     border-radius: 6px;
     background-color: #444;
     color: white;
     border: 1px solid #777;
-    font-family: Poppins, sans-serif;
-    display: block;
+    font-family: 'Poppins', sans-serif;
+    margin-bottom: 20px;
 }
 
-.manage-schedule-grid-of-rounds {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-    gap: 20px;
-    padding: 1rem 0;
-    width: 100%;
-    max-width: 1200px;
-}
-
-.manage-schedule-round-card {
-    background: #2d2d2d;
-    padding: 20px;
-    border-radius: 12px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.4);
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-}
-
-.manage-schedule-round-header {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-}
-
-.manage-schedule-round-header h4 {
-    color: #f0b323;
-    font-size: 1.2rem;
-}
-
-.manage-schedule input[type="datetime-local"] {
-    padding: 10px 14px;
-    border-radius: 6px;
-    font-size: 1rem;
-    background-color: #444;
-    color: white;
-    border: 1px solid #777;
-    font-family: Poppins, sans-serif;
-    width: 100%;
-    max-width: 260px;
-    box-sizing: border-box;
-}
-
-.manage-schedule .docx-btn {
-    background-color: #d9a326;
-    color: white;
-    border: none;
-    padding: 8px 14px;
-    border-radius: 6px;
-    font-weight: bold;
-    cursor: pointer;
-    margin-top: 6px;
-    font-family: Poppins, sans-serif;
-    transition: background 0.2s ease;
-}
-
-.manage-schedule .docx-btn:hover {
-    background-color: #b2861e;
-}
-
-.manage-schedule-round-controls {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 10px;
-}
-
-.manage-schedule-round-actions {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-}
-
-.manage-schedule-round-controls label,
-.manage-schedule-match-status-select label {
-    font-size: 0.9rem;
-    color: #ccc;
-}
-
-.manage-schedule .generate-buttons,
 .manage-schedule-generate-buttons {
-    margin: 1.5rem 0;
     display: flex;
-    gap: 14px;
+    gap: 12px;
     flex-wrap: wrap;
     justify-content: center;
+    margin-bottom: 1.5rem;
 }
 
 .manage-schedule-generate-buttons button {
     background-color: #d9a326;
-    color: white;
-    padding: 10px 16px;
-    border-radius: 6px;
+    color: black;
     font-weight: bold;
-    cursor: pointer;
     border: none;
-    font-family: Poppins, sans-serif;
+    border-radius: 6px;
+    padding: 10px 18px;
+    font-family: 'Poppins', sans-serif;
+    cursor: pointer;
+    transition: background 0.2s ease;
 }
-
 .manage-schedule-generate-buttons button:hover {
-    background-color: #b07e1f;
+    background-color: #b0861a;
 }
 
 .manage-schedule-legend {
     display: flex;
-    gap: 20px;
     justify-content: center;
+    gap: 25px;
     margin-bottom: 20px;
     font-size: 0.9rem;
     color: #ccc;
@@ -147,102 +65,187 @@
     display: inline-block;
     margin-right: 6px;
 }
+.manage-schedule .dot-upcoming { background-color: #f0b323; }
+.manage-schedule .dot-live { background-color: #ff4444; }
+.manage-schedule .dot-finished { background-color: #00cc66; }
+.manage-schedule .dot-cancelled { background-color: #999; }
 
-.dot-upcoming { background-color: #f0b323; }
-.dot-live { background-color: #ff4444; }
-.dot-finished { background-color: #00cc66; }
-.dot-cancelled { background-color: #888; }
+.manage-schedule-grid-of-rounds {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+    gap: 20px;
+    width: 100%;
+    max-width: 1400px;
+}
 
-.manage-schedule-match-grid {
+.manage-schedule-round-card {
+    background: #2c2c2c;
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.4);
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: 1.2rem;
 }
 
-.manage-schedule-match-card {
-    background-color: #3a3a3a;
-    padding: 14px;
-    border-radius: 10px;
-    position: relative;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-}
-
-.manage-schedule-match-card input[type="datetime-local"] {
-    display: block;
-    margin: 0 auto 10px auto;
-}
-
-.manage-schedule .match-dot {
-    position: absolute;
-    top: 8px;
-    left: 8px;
-    width: 14px;
-    height: 14px;
-    border-radius: 50%;
-}
-
-.manage-schedule-match-teams {
-    display: flex;
-    justify-content: center;
-    gap: 10px;
-    font-size: 1.1rem;
-    font-weight: bold;
-    margin-bottom: 12px;
-}
-
-.manage-schedule-match-teams .match-score {
+.manage-schedule-round-header h4 {
+    font-size: 1.3rem;
     color: #f0b323;
-    font-weight: bold;
-    padding: 0 6px;
+    margin-bottom: 10px;
 }
 
-.manage-schedule .vs-label {
-    font-weight: normal;
+.round-controls label {
+    font-size: 0.85rem;
     color: #ccc;
+    margin-bottom: 4px;
+    display: block;
 }
 
-.manage-schedule-match-status-select {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 6px;
-    margin: 10px 30px;
+.round-controls input[type="datetime-local"] {
+    width: 100%;
+    padding: 10px;
+    background: #444;
+    border: 1px solid #777;
+    color: white;
+    border-radius: 6px;
+    font-family: 'Poppins', sans-serif;
+    margin-bottom: 10px;
 }
 
-.manage-schedule-actions {
+.round-actions,
+.docx-generate {
     display: flex;
+    gap: 10px;
     flex-wrap: wrap;
-    gap: 8px;
-    justify-content: center;
 }
 
-.manage-schedule-actions button {
+.round-actions button,
+.docx-btn {
     background-color: #666;
     color: white;
     padding: 8px 12px;
     border-radius: 6px;
-    font-weight: bold;
     border: none;
     cursor: pointer;
-    font-family: Poppins, sans-serif;
+    font-family: 'Poppins', sans-serif;
+    font-weight: bold;
+    transition: background 0.2s ease;
 }
 
-.manage-schedule-actions button:hover {
+.round-actions button:hover,
+.docx-btn:hover {
+    background-color: #f0b323;
+    color: black;
+}
+
+.match-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+
+.match-card {
+    background: #3a3a3a;
+    padding: 16px;
+    border-radius: 10px;
+    position: relative;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+}
+
+.match-dot {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+}
+
+.match-teams {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    font-weight: bold;
+    font-size: 1rem;
+    margin-bottom: 8px;
+}
+
+.vs-label {
+    font-weight: normal;
+    color: #ccc;
+    font-size: 0.9rem;
+}
+
+.match-card input[type="datetime-local"] {
+    display: block;
+    width: 100%;
+    max-width: 240px;
+    margin: 8px auto 12px;
+    padding: 8px;
+    border-radius: 6px;
+    background: #444;
+    border: 1px solid #777;
+    color: white;
+    font-family: 'Poppins', sans-serif;
+}
+
+.match-status-select {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin-bottom: 12px;
+}
+.match-status-select select {
+    padding: 6px 10px;
+    border-radius: 6px;
+    background: #444;
+    color: white;
+    border: 1px solid #777;
+    font-family: 'Poppins', sans-serif;
+}
+
+.actions {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+.actions button {
+    background-color: #555;
+    color: white;
+    padding: 8px;
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+    font-family: 'Poppins', sans-serif;
+    transition: background 0.2s ease;
+}
+.actions button:hover {
     background-color: #f0b323;
     color: black;
 }
 
 .manage-schedule-error-msg {
-    background-color: #d92d2d;
+    background-color: #c62828;
     color: white;
-    padding: 12px;
-    border-radius: 8px;
-    margin-bottom: 20px;
+    padding: 1rem;
     text-align: center;
+    border-radius: 8px;
+    margin-bottom: 1.5rem;
 }
 
 /* ===== Smartphones ===== */
 @media (max-width: 480px) {
+    .match-status-select {
+        flex-direction: column;
+    }
+
+    .actions {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
     .manage-schedule {
         padding: 1rem;
     }
