@@ -102,6 +102,16 @@
     stroke-width: 2px;
 }
 
+/* Hide the timestamp above the match */
+.bracket-svg-wrapper .match > text:first-of-type {
+    display: none;
+}
+
+/* Hide the match name (like "Kolo 1 1") below the match box */
+.bracket-svg-wrapper .match > text:last-of-type {
+    display: none;
+}
+
 /* ============ Responsive Breakpoints ============ */
 
 /* 📱 Smartphones */
