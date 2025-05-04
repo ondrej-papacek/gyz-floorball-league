@@ -76,6 +76,10 @@
     font-family: 'Poppins', sans-serif;
 }
 
+div p {
+    display: none;
+}
+
 .playoff-bracket-reset svg {
     display: block;
     width: 100%;
