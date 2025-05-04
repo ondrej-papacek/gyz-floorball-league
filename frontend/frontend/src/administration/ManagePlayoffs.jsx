@@ -39,8 +39,11 @@ const ManagePlayoffs = () => {
 
     useEffect(() => {
         if (!selectedLeague) return;
-        fetchTeams();
-        fetchRounds();
+        const loadData = async () => {
+            await fetchTeams();
+            await fetchRounds();
+        };
+        loadData();
     }, [selectedLeague]);
 
     const fetchTeams = async () => {
@@ -57,6 +60,17 @@ const ManagePlayoffs = () => {
         const snap = await getDocs(bracketRef);
 
         const matches = snap.docs.map(doc => doc.data());
+
+        const allTeamNames = new Set();
+        matches.forEach(m => {
+            if (m.teamA) allTeamNames.add(m.teamA);
+            if (m.teamB) allTeamNames.add(m.teamB);
+        });
+
+        for (const name of allTeamNames) {
+            const teamId = teams.find(t => t.name === name)?.id;
+            if (teamId) await fetchPlayersForTeam(teamId);
+        }
 
         const grouped = matches.reduce((acc, match) => {
             const round = match.tournamentRoundText || 'Neznámé kolo';
@@ -88,7 +102,11 @@ const ManagePlayoffs = () => {
     };
 
     const fetchPlayersForTeam = async (teamId) => {
-        if (!teamId || players[teamId]) return;
+        if (!teamId) {
+            console.warn("fetchPlayersForTeam called with undefined teamId");
+            return;
+        }
+        if (players[teamId]) return;
 
         const [year, division] = selectedLeague.split('_');
         const ref = collection(db, `leagues/${year}_${division}/teams/${teamId}/players`);
@@ -127,9 +145,14 @@ const ManagePlayoffs = () => {
 
         const teamA = typeof match.teamA === 'object' ? match.teamA.name : match.teamA;
         const teamB = typeof match.teamB === 'object' ? match.teamB.name : match.teamB;
+
         const teamAId = teams.find(t => t.name === teamA)?.id;
         const teamBId = teams.find(t => t.name === teamB)?.id;
 
+        if (!teamAId || !teamBId) {
+            console.warn("Team ID missing for scorer update", { teamA, teamAId, teamB, teamBId });
+            return alert("Nepodařilo se uložit střelce – chyba v identifikaci týmu. Zkontrolujte názvy týmů.");
+        }
 
         const scoreA = match.scoreA ?? 0;
         const scoreB = match.scoreB ?? 0;
@@ -186,10 +209,10 @@ const ManagePlayoffs = () => {
             }
         );
 
-        const updatePlayerGoals = async (teamName, scorers) => {
+        const updatePlayerGoals = async (teamId, scorers) => {
             for (const scorer of scorers) {
                 const playerId = scorer.id;
-                const ref = doc(db, `leagues/${year}_${division}/teams/${teamName}/players/${playerId}`);
+                const ref = doc(db, `leagues/${year}_${division}/teams/${teamId}/players/${playerId}`);
                 const snap = await getDoc(ref);
                 const prevData = snap.exists() ? snap.data() : {};
                 await setDoc(ref, {
@@ -200,14 +223,14 @@ const ManagePlayoffs = () => {
             }
         };
 
-        const updateGoalScorersCollection = async (teamName, scorers) => {
+        const updateGoalScorersCollection = async (teamId, scorers) => {
             const goalScorersRef = collection(db, `leagues/${year}_${division}/goalScorers`);
             const snapshot = await getDocs(goalScorersRef);
 
             for (const scorer of scorers) {
                 const playerId = scorer.id;
                 const existing = snapshot.docs.find(doc =>
-                    doc.data().id === playerId && doc.data().team === teamName
+                    doc.data().id === playerId && doc.data().team === teamId
                 );
 
                 if (existing) {
@@ -219,7 +242,7 @@ const ManagePlayoffs = () => {
                         id: playerId,
                         name: scorer.name,
                         goals: scorer.goals,
-                        team: teamName
+                        team: teamId
                     });
                 }
             }
