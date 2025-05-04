@@ -9,25 +9,18 @@ const CustomMatch = ({ startTime, ...rest }) => {
     return <DefaultMatch {...rest} />;
 };
 
-// const safeTheme = {
-//     textColor: '#ffffff',
-//     backgroundColor: '#2d2d2d',
-//     borderColor: '#777',
-//     lineColor: '#d9a326',
-//     roundHeader: {
-//         backgroundColor: '#2d2d2d',
-//         textColor: '#f0b323'
-//     },
-//     match: {
-//         background: '#333',
-//         borderColor: '#777',
-//         textColor: '#ffffff'
-//     },
-//     score: {
-//         background: '#1c1c1c',
-//         textColor: '#f0b323'
-//     }
-// };
+const safeTheme = {
+    match: {
+        background: '#333',
+    },
+    score: {
+        background: '#1c1c1c'
+    },
+    roundHeader: {
+        backgroundColor: '#2d2d2d',
+        textColor: '#f0b323'
+    }
+};
 
 const PlayoffBracket = ({ matches }) => {
     if (!matches?.length) return <p>Žádné zápasy zatím nejsou dostupné.</p>;
@@ -39,7 +32,7 @@ const PlayoffBracket = ({ matches }) => {
                 matchComponent={CustomMatch}
                 roundSeparatorWidth={64}
                 svgWrapperProps={{ className: 'bracket-svg-wrapper' }}
-                // theme={safeTheme}
+                theme={safeTheme}
             />
         </div>
     );

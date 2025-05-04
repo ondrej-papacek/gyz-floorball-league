@@ -175,7 +175,9 @@ const ManagePlayoffs = () => {
         const [year, division] = selectedLeague.split('_');
         const cleanRoundId = newRoundName.trim().replace(/\s+/g, '_');
 
-        const nextRoundId = `Next_${cleanRoundId}`;
+        const roundNumber = parseInt(cleanRoundId.match(/\d+/)?.[0], 10);
+        const nextRoundNumber = isNaN(roundNumber) ? 2 : roundNumber + 1;
+        const nextRoundId = `Kolo_${nextRoundNumber}`;
         const nextMatchesCount = Math.floor(newMatches.length / 2);
 
         const enrichedMatches = newMatches.map((match, i) => {
