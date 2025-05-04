@@ -175,8 +175,13 @@ const ManagePlayoffs = () => {
         const [year, division] = selectedLeague.split('_');
         const cleanRoundId = newRoundName.trim().replace(/\s+/g, '_');
 
+        const nextRoundId = `Next_${cleanRoundId}`;
+        const nextMatchesCount = Math.floor(newMatches.length / 2);
+
         const enrichedMatches = newMatches.map((match, i) => {
             const matchId = `match_${year}_${division}_${cleanRoundId}_${i}`;
+            const nextMatchIndex = Math.floor(i / 2);
+            const nextMatchId = `match_${year}_${division}_${nextRoundId}_${nextMatchIndex}`;
 
             const teamA = typeof match.teamA === 'object' ? match.teamA.name : match.teamA;
             const teamB = typeof match.teamB === 'object' ? match.teamB.name : match.teamB;
@@ -204,11 +209,33 @@ const ManagePlayoffs = () => {
                 teamA,
                 teamB,
                 scoreA: match.scoreA,
-                scoreB: match.scoreB
+                scoreB: match.scoreB,
+                nextMatchId
             };
         });
 
-        const savePromises = enrichedMatches.map(match =>
+        const placeholderMatches = Array.from({ length: nextMatchesCount }).map((_, i) => {
+            const matchId = `match_${year}_${division}_${nextRoundId}_${i}`;
+            return {
+                id: matchId,
+                name: `${nextRoundId.replace('_', ' ')} ${i + 1}`,
+                tournamentRoundText: nextRoundId.replace('_', ' '),
+                startTime: new Date().toISOString(),
+                state: "SCHEDULED",
+                participants: [
+                    { id: "", name: "", resultText: "0", isWinner: false },
+                    { id: "", name: "", resultText: "0", isWinner: false }
+                ],
+                teamA: "",
+                teamB: "",
+                scoreA: 0,
+                scoreB: 0
+            };
+        });
+
+        const allMatches = [...enrichedMatches, ...placeholderMatches];
+
+        const savePromises = allMatches.map(match =>
             setDoc(
                 doc(db, `leagues/${year}_${division}/playoff/rounds/bracketMatches`, match.id),
                 match
@@ -216,7 +243,7 @@ const ManagePlayoffs = () => {
         );
 
         await Promise.all(savePromises);
-        await saveRound(year, division, newRoundName, enrichedMatches);
+        await saveRound(year, division, newRoundName, enrichedMatches); // only save real ones in app structure
         await fetchRounds();
         setNewRoundName('');
         setNewMatches([{ teamA: '', teamB: '', scoreA: 0, scoreB: 0 }]);
