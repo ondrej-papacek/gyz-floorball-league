@@ -61,6 +61,13 @@
     color: #fff;
 }
 
+.team-block {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    min-width: 120px;
+}
+
 .round-header {
     display: flex;
     justify-content: space-between;
@@ -114,6 +121,14 @@
 .playoff-match-row button:hover {
     background-color: #d9a326;
     color: black;
+}
+
+.scorer-entry {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 4px;
+    font-size: 0.9rem;
 }
 
 .button-row {

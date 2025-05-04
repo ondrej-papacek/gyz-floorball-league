@@ -12,16 +12,7 @@ import {
 } from 'firebase/firestore';
 import './adminLiveBroadcast.css';
 import AdminNavbar from '../components/AdminNavbar';
-import { sanitizeTeamName } from '../utils/teamUtils';
-
-const normalizeName = (name) =>
-    name
-        .normalize('NFD')
-        .replace(/[\u0300-\u036f]/g, '')
-        .toLowerCase()
-        .split(' ')
-        .reverse()
-        .join('_');
+import { sanitizeTeamName, normalizeName } from '../utils/teamUtils';
 
 const consolidateScorers = (scorers = []) => {
     const map = new Map();

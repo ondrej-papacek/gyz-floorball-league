@@ -19,23 +19,32 @@ function GoalScorers() {
                     ...activeLeagues.map(l => parseInt(l.year)).filter(Boolean)
                 );
 
-                const lower = activeLeagues.find(l => l.year == latestYear && l.division === 'lower');
-                const upper = activeLeagues.find(l => l.year == latestYear && l.division === 'upper');
+                const divisions = ['lower', 'upper'];
 
-                if (!lower && !upper) return;
+                for (const div of divisions) {
+                    const league = activeLeagues.find(l => l.year == latestYear && l.division === div);
+                    if (!league) continue;
 
-                if (lower) {
-                    const lowerSnap = await getDocs(collection(db, `leagues/${lower.id}/goalScorers`));
-                    const lowerData = lowerSnap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                    setScorersLower(mergeGoalScorers(lowerData));
+                    const seasonPath = `leagues/${league.id}`;
+                    const seasonScorersSnap = await getDocs(collection(db, `${seasonPath}/goalScorers`));
+                    const seasonScorers = seasonScorersSnap.docs.map(doc => doc.data());
+
+                    const playoffScorersSnap = await getDocs(collection(db, `${seasonPath}/playoff/rounds/goalScorers`));
+                    const playoffMatches = playoffScorersSnap.docs.map(doc => doc.data());
+
+                    const playoffScorers = [];
+
+                    for (const match of playoffMatches) {
+                        for (const s of [...(match.teamA || []), ...(match.teamB || [])]) {
+                            playoffScorers.push(s);
+                        }
+                    }
+
+                    const combined = mergeGoalScorers([...seasonScorers, ...playoffScorers]);
+
+                    if (div === 'lower') setScorersLower(combined);
+                    if (div === 'upper') setScorersUpper(combined);
                 }
-
-                if (upper) {
-                    const upperSnap = await getDocs(collection(db, `leagues/${upper.id}/goalScorers`));
-                    const upperData = upperSnap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                    setScorersUpper(mergeGoalScorers(upperData));
-                }
-
             } catch (error) {
                 console.error("Error fetching goal scorers:", error);
             }

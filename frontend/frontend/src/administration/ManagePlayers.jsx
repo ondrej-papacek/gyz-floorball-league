@@ -9,16 +9,7 @@ import { db } from '../services/firebase';
 import { collection, getDocs, doc, deleteDoc, updateDoc } from 'firebase/firestore';
 import './managePlayers.css';
 import AdminNavbar from '../components/AdminNavbar';
-
-const normalizeName = (name) => {
-    return name
-        .normalize('NFD')
-        .replace(/[\u0300-\u036f]/g, '')
-        .toLowerCase()
-        .split(' ')
-        .reverse()
-        .join('_');
-};
+import { normalizeName } from '../utils/teamUtils';
 
 const ManagePlayers = () => {
     const [leagues, setLeagues] = useState([]);
@@ -154,15 +145,28 @@ const ManagePlayers = () => {
             team_id: selectedTeamId
         });
 
-        const goalScorersSnap = await getDocs(collection(db, `leagues/${year}_${division}/goalScorers`));
+        const goalScorersRef = collection(db, `leagues/${year}_${division}/goalScorers`);
+        const goalScorersSnap = await getDocs(goalScorersRef);
         const normalizedId = normalizeName(updatedData.name);
-        const scorerDoc = goalScorersSnap.docs.find(
-            doc => normalizeName(doc.data().name) === normalizedId && doc.data().team === selectedTeamId
+
+        const existingScorerDoc = goalScorersSnap.docs.find(
+            doc => doc.data().id === normalizedId && doc.data().team === selectedTeamId
         );
 
-        if (scorerDoc) {
-            const scorerRef = doc(db, `leagues/${year}_${division}/goalScorers/${scorerDoc.id}`);
-            await updateDoc(scorerRef, { goals: updatedData.goals });
+        if (existingScorerDoc) {
+            const scorerRef = doc(db, `leagues/${year}_${division}/goalScorers/${existingScorerDoc.id}`);
+            await updateDoc(scorerRef, {
+                goals: updatedData.goals,
+                name: updatedData.name
+            });
+        } else {
+            const newScorerRef = doc(goalScorersRef);
+            await setDoc(newScorerRef, {
+                id: normalizedId,
+                name: updatedData.name,
+                goals: updatedData.goals,
+                team: selectedTeamId
+            });
         }
 
         setEditing(null);
