@@ -32,7 +32,7 @@ const DarkGoldTheme = createTheme({
         highlightedColor: '#d9a326'
     },
     roundHeader: {
-        background: '#2d2d2d',
+        backgroundColor: '#2d2d2d',
         fontColor: '#f0b323'
     },
     connectorColor: '#d9a326',
@@ -50,6 +50,16 @@ const PlayoffBracket = ({ matches }) => {
                 matchComponent={CustomMatch}
                 roundSeparatorWidth={64}
                 theme={DarkGoldTheme}
+                options={{
+                    style: {
+                        roundHeader: {
+                            backgroundColor: DarkGoldTheme.roundHeader.backgroundColor,
+                            fontColor: DarkGoldTheme.roundHeader.fontColor
+                        },
+                        connectorColor: DarkGoldTheme.connectorColor,
+                        connectorColorHighlight: DarkGoldTheme.connectorColorHighlight
+                    }
+                }}
                 svgWrapper={({ children, ...props }) => (
                     <SVGViewer
                         background={DarkGoldTheme.svgBackground}
