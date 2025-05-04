@@ -73,6 +73,7 @@
     background-color: #1a1a1a;
     border-radius: 12px;
     overflow-x: auto;
+    font-family: 'Poppins', sans-serif;
 }
 
 .playoff-bracket-reset svg {
