@@ -52,23 +52,20 @@ const CustomMatch = ({
             style={{
                 display: 'flex',
                 flexDirection: 'column',
-                padding: '6px',
+                padding: '6px 8px',
                 background: computedStyles.backgroundColor,
                 border: `1px solid ${computedStyles.borderColor}`,
                 color: computedStyles.textColor,
                 fontSize: 14,
-                borderRadius: 4,
-                minWidth: 120
+                borderRadius: 6,
+                width: 150,
+                boxShadow: '0 0 4px rgba(0,0,0,0.2)'
             }}
         >
             <div
                 onMouseEnter={() => onMouseEnter(topParty.id)}
                 onMouseLeave={onMouseLeave}
-                style={{
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    paddingBottom: 2
-                }}
+                style={{ display: 'flex', justifyContent: 'space-between', paddingBottom: 2 }}
             >
                 <span>{topParty.name || teamNameFallback}</span>
                 <span>{topParty.resultText ?? resultFallback(topParty)}</span>
@@ -76,10 +73,7 @@ const CustomMatch = ({
             <div
                 onMouseEnter={() => onMouseEnter(bottomParty.id)}
                 onMouseLeave={onMouseLeave}
-                style={{
-                    display: 'flex',
-                    justifyContent: 'space-between'
-                }}
+                style={{ display: 'flex', justifyContent: 'space-between' }}
             >
                 <span>{bottomParty.name || teamNameFallback}</span>
                 <span>{bottomParty.resultText ?? resultFallback(bottomParty)}</span>
