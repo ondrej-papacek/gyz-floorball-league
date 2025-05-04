@@ -32,7 +32,7 @@ const DarkGoldTheme = createTheme({
         highlightedColor: '#d9a326'
     },
     roundHeader: {
-        backgroundColor: '#2d2d2d',
+        background: '#2d2d2d',
         fontColor: '#f0b323'
     },
     connectorColor: '#d9a326',
