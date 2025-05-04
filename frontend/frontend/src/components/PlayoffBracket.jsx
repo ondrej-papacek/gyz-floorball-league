@@ -50,16 +50,6 @@ const PlayoffBracket = ({ matches }) => {
                 matchComponent={CustomMatch}
                 roundSeparatorWidth={64}
                 theme={DarkGoldTheme}
-                options={{
-                    style: {
-                        roundHeader: {
-                            backgroundColor: DarkGoldTheme.roundHeader.backgroundColor,
-                            fontColor: DarkGoldTheme.roundHeader.fontColor
-                        },
-                        connectorColor: DarkGoldTheme.connectorColor,
-                        connectorColorHighlight: DarkGoldTheme.connectorColorHighlight
-                    }
-                }}
                 svgWrapper={({ children, ...props }) => (
                     <SVGViewer
                         background={DarkGoldTheme.svgBackground}
