@@ -22,6 +22,7 @@ const ManagePlayoffs = () => {
     const [players, setPlayers] = useState({});
     const [scorers, setScorers] = useState({});
     const [scorerGoals, setScorerGoals] = useState({});
+    const [selectedScorer, setSelectedScorer] = useState({});
 
     useEffect(() => {
         const fetchLeagues = async () => {
@@ -483,22 +484,38 @@ const ManagePlayoffs = () => {
                                         ))}
                                     </select>
 
-                                    {/* TEAM B SCORERS */}
+                                    {/* --- TEAM B SCORERS --- */}
                                     <div className="team-block">
-                                        <label style={{ fontSize: '0.9rem' }}>Střelci B</label>
+                                        <label style={{ fontSize: '0.9rem' }}>Střelec B</label>
                                         <select
-                                            multiple
-                                            value={scorers[match.id]?.teamB || []}
-                                            onChange={(e) => {
-                                                const selected = Array.from(e.target.selectedOptions).map(opt => opt.value);
-                                                handleScorerChange(match.id, 'teamB', selected);
-                                            }}
-                                            onFocus={() => fetchPlayersForTeam(match.teamB)}
+                                            value={selectedScorer[match.id]?.teamB || ''}
+                                            onChange={(e) =>
+                                                setSelectedScorer(prev => ({
+                                                    ...prev,
+                                                    [match.id]: {
+                                                        ...prev[match.id],
+                                                        teamB: e.target.value
+                                                    }
+                                                }))
+                                            }
                                         >
+                                            <option value="">Vyber hráče</option>
                                             {(players[match.teamB] || []).map(name => (
                                                 <option key={name} value={name}>{name}</option>
                                             ))}
                                         </select>
+                                        <button
+                                            onClick={() => {
+                                                const name = selectedScorer[match.id]?.teamB;
+                                                if (!name) return;
+                                                handleScorerChange(match.id, 'teamB', [
+                                                    ...(scorers[match.id]?.teamB || []),
+                                                    name
+                                                ]);
+                                            }}
+                                        >
+                                            ➕
+                                        </button>
                                         {(scorers[match.id]?.teamB || []).map(name => (
                                             <div key={name} className="scorer-entry">
                                                 <span>{name}</span>
