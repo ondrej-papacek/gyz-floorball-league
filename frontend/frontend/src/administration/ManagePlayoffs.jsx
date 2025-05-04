@@ -465,7 +465,7 @@ const ManagePlayoffs = () => {
                                                 handleGoalCountChange(match.id, 'teamA', name, 1);
                                             }}
                                         >
-                                            ➕
+                                            +
                                         </button>
                                     </div>
 
@@ -527,7 +527,7 @@ const ManagePlayoffs = () => {
                                                 handleGoalCountChange(match.id, 'teamB', name, 1);
                                             }}
                                         >
-                                            ➕
+                                            +
                                         </button>
                                     </div>
 
