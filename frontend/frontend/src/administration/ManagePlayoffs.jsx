@@ -87,21 +87,26 @@ const ManagePlayoffs = () => {
         const match = rounds.find(r => r.round === roundName)?.matches?.[matchIndex];
         if (!match) return alert("Chyba při ukládání zápasu.");
 
+        const teamA = typeof match.teamA === 'object' ? match.teamA.name : match.teamA;
+        const teamB = typeof match.teamB === 'object' ? match.teamB.name : match.teamB;
+
         const updated = {
             ...match,
             tournamentRoundText: roundName,
             startTime: new Date().toISOString(),
             state: "SCHEDULED",
+            teamA,
+            teamB,
             participants: [
                 {
-                    id: match.teamA,
-                    name: match.teamA,
+                    id: teamA,
+                    name: teamA,
                     resultText: (match.scoreA ?? 0).toString(),
                     isWinner: match.scoreA > match.scoreB
                 },
                 {
-                    id: match.teamB,
-                    name: match.teamB,
+                    id: teamB,
+                    name: teamB,
                     resultText: (match.scoreB ?? 0).toString(),
                     isWinner: match.scoreB > match.scoreA
                 }
@@ -157,7 +162,6 @@ const ManagePlayoffs = () => {
         }
 
         const [year, division] = selectedLeague.split('_');
-        const bracketMatchesRef = collection(db, `leagues/${year}_${division}/playoff/rounds/bracketMatches`);
         const cleanRoundId = newRoundName.trim().replace(/\s+/g, '_');
 
         const enrichedMatches = newMatches.map((match, i) => {
@@ -165,6 +169,9 @@ const ManagePlayoffs = () => {
             const nextMatchIndex = Math.floor(i / 2);
             const nextRoundId = cleanRoundId.replace(/\d+$/, '') + 'Next';
             const nextMatchId = `match_${year}_${division}_${nextRoundId}_${nextMatchIndex}`;
+
+            const teamA = typeof match.teamA === 'object' ? match.teamA.name : match.teamA;
+            const teamB = typeof match.teamB === 'object' ? match.teamB.name : match.teamB;
 
             return {
                 id: matchId,
@@ -174,20 +181,20 @@ const ManagePlayoffs = () => {
                 state: "SCHEDULED",
                 participants: [
                     {
-                        id: match.teamA,
-                        name: match.teamA,
-                        resultText: match.scoreA?.toString() ?? '0',
+                        id: teamA,
+                        name: teamA,
+                        resultText: (match.scoreA ?? 0).toString(),
                         isWinner: match.scoreA > match.scoreB
                     },
                     {
-                        id: match.teamB,
-                        name: match.teamB,
-                        resultText: match.scoreB?.toString() ?? '0',
+                        id: teamB,
+                        name: teamB,
+                        resultText: (match.scoreB ?? 0).toString(),
                         isWinner: match.scoreB > match.scoreA
                     }
                 ],
-                teamA: match.teamA,
-                teamB: match.teamB,
+                teamA,
+                teamB,
                 scoreA: match.scoreA,
                 scoreB: match.scoreB,
                 nextMatchId
@@ -208,6 +215,7 @@ const ManagePlayoffs = () => {
         setNewMatches([{ teamA: '', teamB: '', scoreA: 0, scoreB: 0 }]);
         alert(`Kolo "${newRoundName}" bylo uloženo.`);
     };
+
 
     return (
         <>
