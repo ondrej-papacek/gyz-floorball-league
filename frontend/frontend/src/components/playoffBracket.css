@@ -65,26 +65,38 @@
 }
 
 /* Styling the SVG-rendered bracket */
-/*.bracket-svg-wrapper text {*/
-/*    font-family: 'Poppins', sans-serif;*/
-/*    font-size: 14px;*/
-/*    fill: white;*/
-/*}*/
+.playoff-bracket-reset * {
+    all: unset;
+    box-sizing: border-box;
+    font-family: inherit;
+}
 
-/*.bracket-svg-wrapper .score-text {*/
-/*    fill: #d9a326 !important;*/
-/*    font-weight: bold;*/
-/*}*/
+.playoff-bracket-reset svg {
+    display: block;
+    width: 100%;
+    height: auto;
+}
 
-/*.bracket-svg-wrapper .match {*/
-/*    stroke: #777;*/
-/*    fill: #333;*/
-/*}*/
+.bracket-svg-wrapper text {
+    font-family: 'Poppins', sans-serif;
+    font-size: 14px;
+    fill: #ffffff;
+}
 
-/*.bracket-svg-wrapper .connector {*/
-/*    stroke: #d9a326;*/
-/*    stroke-width: 2px;*/
-/*}*/
+.bracket-svg-wrapper .score-text {
+    fill: #d9a326 !important;
+    font-weight: bold;
+}
+
+.bracket-svg-wrapper .match {
+    stroke: #777;
+    fill: #333;
+}
+
+.bracket-svg-wrapper .connector {
+    stroke: #d9a326;
+    stroke-width: 2px;
+}
 
 /* ============ Responsive Breakpoints ============ */
 
