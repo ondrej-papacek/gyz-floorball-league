@@ -68,6 +68,10 @@
     min-width: 120px;
 }
 
+.team-block button {
+    color: #fff;
+}
+
 .round-header {
     display: flex;
     justify-content: space-between;
