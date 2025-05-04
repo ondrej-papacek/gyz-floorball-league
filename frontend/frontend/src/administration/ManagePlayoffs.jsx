@@ -90,6 +90,9 @@ const ManagePlayoffs = () => {
         const teamA = typeof match.teamA === 'object' ? match.teamA.name : match.teamA;
         const teamB = typeof match.teamB === 'object' ? match.teamB.name : match.teamB;
 
+        const scoreA = match.scoreA ?? 0;
+        const scoreB = match.scoreB ?? 0;
+
         const updated = {
             ...match,
             tournamentRoundText: roundName,
@@ -97,18 +100,20 @@ const ManagePlayoffs = () => {
             state: "SCHEDULED",
             teamA,
             teamB,
+            scoreA,
+            scoreB,
             participants: [
                 {
                     id: teamA,
                     name: teamA,
-                    resultText: (match.scoreA ?? 0).toString(),
-                    isWinner: match.scoreA > match.scoreB
+                    resultText: scoreA.toString(),
+                    isWinner: scoreA > scoreB
                 },
                 {
                     id: teamB,
                     name: teamB,
-                    resultText: (match.scoreB ?? 0).toString(),
-                    isWinner: match.scoreB > match.scoreA
+                    resultText: scoreB.toString(),
+                    isWinner: scoreB > scoreA
                 }
             ]
         };
@@ -118,7 +123,28 @@ const ManagePlayoffs = () => {
             updated
         );
 
-        await updateRound(year, division, roundName, rounds.find(r => r.round === roundName)?.matches || []);
+        setRounds(prev =>
+            prev.map(r =>
+                r.round === roundName
+                    ? {
+                        ...r,
+                        matches: r.matches.map((m, i) =>
+                            i === matchIndex ? updated : m
+                        )
+                    }
+                    : r
+            )
+        );
+
+        const roundMatches = rounds.find(r => r.round === roundName)?.matches || [];
+        const updatedMatches = [
+            ...roundMatches.slice(0, matchIndex),
+            updated,
+            ...roundMatches.slice(matchIndex + 1)
+        ];
+
+        await updateRound(year, division, roundName, updatedMatches);
+
         alert("Zápas uložen.");
     };
 
@@ -155,6 +181,7 @@ const ManagePlayoffs = () => {
         setNewMatches(prev => [...prev, { teamA: '', teamB: '', scoreA: 0, scoreB: 0 }]);
     };
 
+
     const handleSaveNewRound = async () => {
         if (!newRoundName || newMatches.length === 0) {
             alert("Zadejte název kola a alespoň jeden zápas.");
@@ -188,6 +215,9 @@ const ManagePlayoffs = () => {
             const teamA = typeof match.teamA === 'object' ? match.teamA.name : match.teamA;
             const teamB = typeof match.teamB === 'object' ? match.teamB.name : match.teamB;
 
+            const scoreA = match.scoreA ?? 0;
+            const scoreB = match.scoreB ?? 0;
+
             return {
                 id: matchId,
                 name: `${newRoundName} ${i + 1}`,
@@ -198,20 +228,20 @@ const ManagePlayoffs = () => {
                     {
                         id: teamA,
                         name: teamA,
-                        resultText: (match.scoreA ?? 0).toString(),
-                        isWinner: false
+                        resultText: scoreA.toString(),
+                        isWinner: scoreA > scoreB
                     },
                     {
                         id: teamB,
                         name: teamB,
-                        resultText: (match.scoreB ?? 0).toString(),
-                        isWinner: false
+                        resultText: scoreB.toString(),
+                        isWinner: scoreB > scoreA
                     }
                 ],
                 teamA,
                 teamB,
-                scoreA: match.scoreA,
-                scoreB: match.scoreB,
+                scoreA,
+                scoreB,
                 nextMatchId
             };
         });
@@ -245,7 +275,7 @@ const ManagePlayoffs = () => {
         );
 
         await Promise.all(savePromises);
-        await saveRound(year, division, newRoundName, enrichedMatches); // only save real ones in app structure
+        await saveRound(year, division, newRoundName, enrichedMatches);
         await fetchRounds();
         setNewRoundName('');
         setNewMatches([{ teamA: '', teamB: '', scoreA: 0, scoreB: 0 }]);
