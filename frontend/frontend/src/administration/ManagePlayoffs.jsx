@@ -426,36 +426,39 @@ const ManagePlayoffs = () => {
                                         ))}
                                     </select>
 
-                                    {/* TEAM A SCORERS */}
-                                    <div className="team-block">
-                                        <label style={{ fontSize: '0.9rem' }}>Střelci A</label>
+                                    <div className="scorer-form">
                                         <select
-                                            multiple
-                                            value={scorers[match.id]?.teamA || []}
-                                            onChange={(e) => {
-                                                const selected = Array.from(e.target.selectedOptions).map(opt => opt.value);
-                                                handleScorerChange(match.id, 'teamA', selected);
-                                            }}
-                                            onFocus={() => fetchPlayersForTeam(match.teamA)}
+                                            value={selectedScorer[match.id]?.teamA || ''}
+                                            onChange={(e) => setSelectedScorer(prev => ({
+                                                ...prev,
+                                                [match.id]: {
+                                                    ...prev[match.id],
+                                                    teamA: e.target.value
+                                                }
+                                            }))}
                                         >
+                                            <option value="">Vyberte hráče</option>
                                             {(players[match.teamA] || []).map(name => (
                                                 <option key={name} value={name}>{name}</option>
                                             ))}
                                         </select>
-                                        {(scorers[match.id]?.teamA || []).map(name => (
-                                            <div key={name} className="scorer-entry">
-                                                <span>{name}</span>
-                                                <input
-                                                    type="number"
-                                                    min={1}
-                                                    value={scorerGoals[match.id]?.teamA?.[name] || 1}
-                                                    onChange={(e) =>
-                                                        handleGoalCountChange(match.id, 'teamA', name, parseInt(e.target.value, 10) || 1)
-                                                    }
-                                                    style={{ width: '50px', marginLeft: '8px' }}
-                                                />
-                                            </div>
-                                        ))}
+                                        <button
+                                            onClick={() => {
+                                                const name = selectedScorer[match.id]?.teamA;
+                                                if (!name) return;
+                                                const existing = (scorers[match.id]?.teamA || []).find(n => n === name);
+                                                if (existing) return;
+
+                                                handleScorerChange(match.id, 'teamA', [
+                                                    ...(scorers[match.id]?.teamA || []),
+                                                    name
+                                                ]);
+
+                                                handleGoalCountChange(match.id, 'teamA', name, 1);
+                                            }}
+                                        >
+                                            ➕
+                                        </button>
                                     </div>
 
                                 </div>
@@ -484,22 +487,18 @@ const ManagePlayoffs = () => {
                                         ))}
                                     </select>
 
-                                    {/* --- TEAM B SCORERS --- */}
-                                    <div className="team-block">
-                                        <label style={{ fontSize: '0.9rem' }}>Střelec B</label>
+                                    <div className="scorer-form">
                                         <select
                                             value={selectedScorer[match.id]?.teamB || ''}
-                                            onChange={(e) =>
-                                                setSelectedScorer(prev => ({
-                                                    ...prev,
-                                                    [match.id]: {
-                                                        ...prev[match.id],
-                                                        teamB: e.target.value
-                                                    }
-                                                }))
-                                            }
+                                            onChange={(e) => setSelectedScorer(prev => ({
+                                                ...prev,
+                                                [match.id]: {
+                                                    ...prev[match.id],
+                                                    teamB: e.target.value
+                                                }
+                                            }))}
                                         >
-                                            <option value="">Vyber hráče</option>
+                                            <option value="">Vyberte hráče</option>
                                             {(players[match.teamB] || []).map(name => (
                                                 <option key={name} value={name}>{name}</option>
                                             ))}
@@ -508,28 +507,19 @@ const ManagePlayoffs = () => {
                                             onClick={() => {
                                                 const name = selectedScorer[match.id]?.teamB;
                                                 if (!name) return;
+                                                const existing = (scorers[match.id]?.teamB || []).find(n => n === name);
+                                                if (existing) return;
+
                                                 handleScorerChange(match.id, 'teamB', [
                                                     ...(scorers[match.id]?.teamB || []),
                                                     name
                                                 ]);
+
+                                                handleGoalCountChange(match.id, 'teamB', name, 1);
                                             }}
                                         >
                                             ➕
                                         </button>
-                                        {(scorers[match.id]?.teamB || []).map(name => (
-                                            <div key={name} className="scorer-entry">
-                                                <span>{name}</span>
-                                                <input
-                                                    type="number"
-                                                    min={1}
-                                                    value={scorerGoals[match.id]?.teamB?.[name] || 1}
-                                                    onChange={(e) =>
-                                                        handleGoalCountChange(match.id, 'teamB', name, parseInt(e.target.value, 10) || 1)
-                                                    }
-                                                    style={{ width: '50px', marginLeft: '8px' }}
-                                                />
-                                            </div>
-                                        ))}
                                     </div>
 
                                 </div>
