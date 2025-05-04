@@ -65,10 +65,14 @@
 }
 
 /* Styling the SVG-rendered bracket */
-.playoff-bracket-reset * {
-    all: unset;
-    box-sizing: border-box;
-    font-family: inherit;
+.playoff-bracket-reset {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 2rem;
+    background-color: #1a1a1a;
+    border-radius: 12px;
+    overflow-x: auto;
 }
 
 .playoff-bracket-reset svg {
@@ -84,7 +88,7 @@
 }
 
 .bracket-svg-wrapper .score-text {
-    fill: #d9a326 !important;
+    fill: #f0b323 !important;
     font-weight: bold;
 }
 
