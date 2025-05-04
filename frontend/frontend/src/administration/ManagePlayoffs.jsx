@@ -161,6 +161,17 @@ const ManagePlayoffs = () => {
             return;
         }
 
+        const invalidMatch = newMatches.find(
+            m =>
+                !m.teamA || typeof m.teamA !== 'string' || m.teamA.trim() === '' ||
+                !m.teamB || typeof m.teamB !== 'string' || m.teamB.trim() === ''
+        );
+
+        if (invalidMatch) {
+            alert("Každý zápas musí mít vyplněné oba týmy.");
+            return;
+        }
+
         const [year, division] = selectedLeague.split('_');
         const cleanRoundId = newRoundName.trim().replace(/\s+/g, '_');
 
@@ -215,7 +226,6 @@ const ManagePlayoffs = () => {
         setNewMatches([{ teamA: '', teamB: '', scoreA: 0, scoreB: 0 }]);
         alert(`Kolo "${newRoundName}" bylo uloženo.`);
     };
-
 
     return (
         <>

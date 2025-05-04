@@ -18,18 +18,26 @@ const PlayoffView = ({ year }) => {
     };
 
     const sanitizeMatches = (matches) =>
-        matches.filter(
-            m =>
+        matches.filter(m => {
+            const valid =
                 m &&
                 typeof m.id === 'string' &&
                 typeof m.name === 'string' &&
                 Array.isArray(m.participants) &&
                 m.participants.length === 2 &&
                 typeof m.participants[0]?.name === 'string' &&
-                typeof m.participants[1]?.name === 'string'
-        );
+                typeof m.participants[1]?.name === 'string';
+
+            if (!valid) {
+                console.warn('Invalid match skipped:', m);
+            }
+
+            return valid;
+        });
 
     useEffect(() => {
+        let isMounted = true;
+
         const fetchPlayoffs = async () => {
             setLoading(true);
             try {
@@ -38,18 +46,24 @@ const PlayoffView = ({ year }) => {
                     fetchBracketMatches(year, 'upper')
                 ]);
 
+                if (!isMounted) return;
+
                 setLowerMatches(sanitizeMatches(lower));
                 setUpperMatches(sanitizeMatches(upper));
                 setError('');
             } catch (err) {
                 console.error('Error fetching playoff bracket matches:', err);
-                setError('Nepodařilo se načíst data playoff.');
+                if (isMounted) setError('Nepodařilo se načíst data playoff.');
             } finally {
-                setLoading(false);
+                if (isMounted) setLoading(false);
             }
         };
 
         fetchPlayoffs();
+
+        return () => {
+            isMounted = false;
+        };
     }, [year]);
 
     if (loading) return <div className="playoff-view-page"><p>Načítání...</p></div>;
