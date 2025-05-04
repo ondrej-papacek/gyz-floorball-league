@@ -50,6 +50,7 @@ const PlayoffBracket = ({ matches }) => {
                 matchComponent={CustomMatch}
                 roundSeparatorWidth={64}
                 theme={DarkGoldTheme}
+                renderTitle={() => null}
                 renderMatchLabel={() => null}
                 options={{
                     style: {
