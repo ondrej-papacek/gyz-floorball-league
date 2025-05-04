@@ -9,22 +9,19 @@ const PlayoffBracket = ({ matches }) => {
         textColor: '#ffffff',
         backgroundColor: '#2d2d2d',
         borderColor: '#777',
-        scoreBackground: '#1c1c1c',
-        matchBackground: '#333',
-        lineColor: '#d9a326',
-        roundHeader: {
-            backgroundColor: '#2d2d2d',
-            textColor: '#f0b323'
-        },
-        connectorColor: '#d9a326',
-        score: {
-            background: '#1c1c1c',
-            color: '#f0b323'
-        },
         match: {
             background: '#333',
             borderColor: '#777',
             textColor: '#ffffff'
+        },
+        score: {
+            background: '#1c1c1c',
+            textColor: '#f0b323'
+        },
+        connectorColor: '#d9a326',
+        roundHeader: {
+            backgroundColor: '#2d2d2d',
+            textColor: '#f0b323'
         }
     };
 
