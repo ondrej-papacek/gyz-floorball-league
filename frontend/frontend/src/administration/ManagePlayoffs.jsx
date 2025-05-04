@@ -87,13 +87,14 @@ const ManagePlayoffs = () => {
         );
     };
 
-    const fetchPlayersForTeam = async (teamName) => {
-        if (!teamName || players[teamName]) return; // Already fetched
+    const fetchPlayersForTeam = async (teamId) => {
+        if (!teamId || players[teamId]) return;
+
         const [year, division] = selectedLeague.split('_');
-        const ref = collection(db, `leagues/${year}_${division}/teams/${teamName}/players`);
+        const ref = collection(db, `leagues/${year}_${division}/teams/${teamId}/players`);
         const snap = await getDocs(ref);
         const teamPlayers = snap.docs.map(doc => doc.data()?.name).filter(Boolean);
-        setPlayers(prev => ({ ...prev, [teamName]: teamPlayers }));
+        setPlayers(prev => ({ ...prev, [teamId]: teamPlayers }));
     };
 
     const handleScorerChange = (matchId, teamKey, value) => {
@@ -126,6 +127,9 @@ const ManagePlayoffs = () => {
 
         const teamA = typeof match.teamA === 'object' ? match.teamA.name : match.teamA;
         const teamB = typeof match.teamB === 'object' ? match.teamB.name : match.teamB;
+        const teamAId = teams.find(t => t.name === teamA)?.id;
+        const teamBId = teams.find(t => t.name === teamB)?.id;
+
 
         const scoreA = match.scoreA ?? 0;
         const scoreB = match.scoreB ?? 0;
@@ -174,7 +178,6 @@ const ManagePlayoffs = () => {
         const teamAScorers = formatScorers('teamA');
         const teamBScorers = formatScorers('teamB');
 
-        // Save to playoff-specific goalScorers
         await setDoc(
             doc(db, `leagues/${year}_${division}/playoff/rounds/goalScorers`, match.id),
             {
@@ -222,11 +225,10 @@ const ManagePlayoffs = () => {
             }
         };
 
-        await updatePlayerGoals(teamA, teamAScorers);
-        await updatePlayerGoals(teamB, teamBScorers);
-
-        await updateGoalScorersCollection(teamA, teamAScorers);
-        await updateGoalScorersCollection(teamB, teamBScorers);
+        await updatePlayerGoals(teamAId, teamAScorers);
+        await updatePlayerGoals(teamBId, teamBScorers);
+        await updateGoalScorersCollection(teamAId, teamAScorers);
+        await updateGoalScorersCollection(teamBId, teamBScorers);
 
         setRounds(prev =>
             prev.map(r =>
@@ -411,7 +413,12 @@ const ManagePlayoffs = () => {
                                 🗑️ Smazat kolo
                             </button>
                         </div>
-                        {round.matches.map((match, i) => (
+                        {round.matches.map((match, i) => {
+                            const teamAId = teams.find(t => t.name === match.teamA)?.id;
+                            const teamBId = teams.find(t => t.name === match.teamB)?.id;
+
+                            return (
+
                             <div key={match.id} className="playoff-match-row">
 
                                 {/* TEAM A */}
@@ -419,13 +426,14 @@ const ManagePlayoffs = () => {
                                     <select
                                         value={match.teamA || ''}
                                         onChange={(e) => handleChange(round.round, i, 'teamA', e.target.value)}
-                                        onFocus={() => fetchPlayersForTeam(match.teamA)}
+                                        onFocus={() => fetchPlayersForTeam(teamAId)}
                                     >
                                         {teams.map(t => (
                                             <option key={t.id} value={t.name}>{t.name}</option>
                                         ))}
                                     </select>
 
+                                    {/* TEAM A SCORERS */}
                                     <div className="scorer-form">
                                         <select
                                             value={selectedScorer[match.id]?.teamA || ''}
@@ -438,7 +446,7 @@ const ManagePlayoffs = () => {
                                             }))}
                                         >
                                             <option value="">Vyberte hráče</option>
-                                            {(players[match.teamA] || []).map(name => (
+                                            {(players[teamAId] || []).map(name => (
                                                 <option key={name} value={name}>{name}</option>
                                             ))}
                                         </select>
@@ -480,13 +488,14 @@ const ManagePlayoffs = () => {
                                     <select
                                         value={match.teamB || ''}
                                         onChange={(e) => handleChange(round.round, i, 'teamB', e.target.value)}
-                                        onFocus={() => fetchPlayersForTeam(match.teamB)}
+                                        onFocus={() => fetchPlayersForTeam(teamBId)}
                                     >
                                         {teams.map(t => (
                                             <option key={t.id} value={t.name}>{t.name}</option>
                                         ))}
                                     </select>
 
+                                    {/* TEAM B SCORERS */}
                                     <div className="scorer-form">
                                         <select
                                             value={selectedScorer[match.id]?.teamB || ''}
@@ -499,7 +508,7 @@ const ManagePlayoffs = () => {
                                             }))}
                                         >
                                             <option value="">Vyberte hráče</option>
-                                            {(players[match.teamB] || []).map(name => (
+                                            {(players[teamBId] || []).map(name => (
                                                 <option key={name} value={name}>{name}</option>
                                             ))}
                                         </select>
@@ -526,7 +535,8 @@ const ManagePlayoffs = () => {
 
                                 <button onClick={() => saveMatch(round.round, i)}>Uložit</button>
                             </div>
-                        ))}
+                            );
+                        })}
                     </div>
                 ))}
 
