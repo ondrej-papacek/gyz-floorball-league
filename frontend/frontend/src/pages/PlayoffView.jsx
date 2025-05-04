@@ -17,6 +17,18 @@ const PlayoffView = ({ year }) => {
         return snap.docs.map(doc => doc.data());
     };
 
+    const sanitizeMatches = (matches) =>
+        matches.filter(
+            m =>
+                m &&
+                typeof m.id === 'string' &&
+                typeof m.name === 'string' &&
+                Array.isArray(m.participants) &&
+                m.participants.length === 2 &&
+                typeof m.participants[0]?.name === 'string' &&
+                typeof m.participants[1]?.name === 'string'
+        );
+
     useEffect(() => {
         const fetchPlayoffs = async () => {
             setLoading(true);
@@ -26,8 +38,8 @@ const PlayoffView = ({ year }) => {
                     fetchBracketMatches(year, 'upper')
                 ]);
 
-                setLowerMatches(lower);
-                setUpperMatches(upper);
+                setLowerMatches(sanitizeMatches(lower));
+                setUpperMatches(sanitizeMatches(upper));
                 setError('');
             } catch (err) {
                 console.error('Error fetching playoff bracket matches:', err);
