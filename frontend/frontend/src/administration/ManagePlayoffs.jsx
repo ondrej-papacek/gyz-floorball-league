@@ -177,9 +177,6 @@ const ManagePlayoffs = () => {
 
         const enrichedMatches = newMatches.map((match, i) => {
             const matchId = `match_${year}_${division}_${cleanRoundId}_${i}`;
-            const nextMatchIndex = Math.floor(i / 2);
-            const nextRoundId = cleanRoundId.replace(/\d+$/, '') + 'Next';
-            const nextMatchId = `match_${year}_${division}_${nextRoundId}_${nextMatchIndex}`;
 
             const teamA = typeof match.teamA === 'object' ? match.teamA.name : match.teamA;
             const teamB = typeof match.teamB === 'object' ? match.teamB.name : match.teamB;
@@ -195,20 +192,19 @@ const ManagePlayoffs = () => {
                         id: teamA,
                         name: teamA,
                         resultText: (match.scoreA ?? 0).toString(),
-                        isWinner: match.scoreA > match.scoreB
+                        isWinner: false
                     },
                     {
                         id: teamB,
                         name: teamB,
                         resultText: (match.scoreB ?? 0).toString(),
-                        isWinner: match.scoreB > match.scoreA
+                        isWinner: false
                     }
                 ],
                 teamA,
                 teamB,
                 scoreA: match.scoreA,
-                scoreB: match.scoreB,
-                nextMatchId
+                scoreB: match.scoreB
             };
         });
 
