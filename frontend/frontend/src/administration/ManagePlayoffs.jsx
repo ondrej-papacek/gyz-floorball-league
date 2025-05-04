@@ -91,7 +91,21 @@ const ManagePlayoffs = () => {
             ...match,
             tournamentRoundText: roundName,
             startTime: new Date().toISOString(),
-            state: "SCHEDULED"
+            state: "SCHEDULED",
+            participants: [
+                {
+                    id: match.teamA,
+                    name: match.teamA,
+                    resultText: (match.scoreA ?? 0).toString(),
+                    isWinner: match.scoreA > match.scoreB
+                },
+                {
+                    id: match.teamB,
+                    name: match.teamB,
+                    resultText: (match.scoreB ?? 0).toString(),
+                    isWinner: match.scoreB > match.scoreA
+                }
+            ]
         };
 
         await setDoc(
@@ -147,9 +161,13 @@ const ManagePlayoffs = () => {
         const cleanRoundId = newRoundName.trim().replace(/\s+/g, '_');
 
         const enrichedMatches = newMatches.map((match, i) => {
-            const id = `match_${year}_${division}_${cleanRoundId}_${i}`;
+            const matchId = `match_${year}_${division}_${cleanRoundId}_${i}`;
+            const nextMatchIndex = Math.floor(i / 2);
+            const nextRoundId = cleanRoundId.replace(/\d+$/, '') + 'Next';
+            const nextMatchId = `match_${year}_${division}_${nextRoundId}_${nextMatchIndex}`;
+
             return {
-                id,
+                id: matchId,
                 name: `${newRoundName} ${i + 1}`,
                 tournamentRoundText: newRoundName,
                 startTime: new Date().toISOString(),
@@ -171,7 +189,8 @@ const ManagePlayoffs = () => {
                 teamA: match.teamA,
                 teamB: match.teamB,
                 scoreA: match.scoreA,
-                scoreB: match.scoreB
+                scoreB: match.scoreB,
+                nextMatchId
             };
         });
 
