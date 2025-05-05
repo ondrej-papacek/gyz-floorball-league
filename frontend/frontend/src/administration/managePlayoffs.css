@@ -183,6 +183,21 @@
     background-color: #b33a3a;
 }
 
+.decrement-btn {
+    background-color: #922c2c;
+    color: white;
+    border: none;
+    padding: 2px 6px;
+    margin-left: 8px;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    cursor: pointer;
+}
+
+.decrement-btn:hover {
+    background-color: #b33a3a;
+}
+
 /* =================== Smartphones =================== */
 @media (max-width: 480px) {
     .manage-playoffs-page {

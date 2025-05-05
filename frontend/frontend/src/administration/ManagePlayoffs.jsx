@@ -1,4 +1,4 @@
-﻿import React, { useEffect, useState } from 'react';
+﻿import React, { useEffect, useState, useCallback } from 'react';
 import { db } from '../services/firebase';
 import {
     collection,
@@ -7,7 +7,8 @@ import {
     doc,
     setDoc,
     deleteDoc,
-    updateDoc
+    updateDoc,
+    runTransaction
 } from 'firebase/firestore';
 import { saveRound, updateRound, deleteRound as deleteRoundAPI } from '../services/playoffService';
 import AdminNavbar from '../components/AdminNavbar';
@@ -60,6 +61,27 @@ const ManagePlayoffs = () => {
         const [year, division] = selectedLeague.split('_');
         const bracketRef = collection(db, `leagues/${year}_${division}/playoff/rounds/bracketMatches`);
         const snap = await getDocs(bracketRef);
+        const goalScorersRef = collection(db, `leagues/${year}_${division}/playoff/rounds/goalScorers`);
+        const scorersSnap = await getDocs(goalScorersRef);
+
+        const newScorers = {};
+        const newGoals = {};
+
+        scorersSnap.docs.forEach(doc => {
+            const data = doc.data();
+            newScorers[doc.id] = {
+                teamA: data.teamA.map(p => p.name),
+                teamB: data.teamB.map(p => p.name)
+            };
+
+            newGoals[doc.id] = {
+                teamA: Object.fromEntries(data.teamA.map(p => [p.name, p.goals])),
+                teamB: Object.fromEntries(data.teamB.map(p => [p.name, p.goals]))
+            };
+        });
+
+        setScorers(newScorers);
+        setScorerGoals(newGoals);
 
         const matches = snap.docs.map(doc => doc.data());
 
@@ -139,6 +161,73 @@ const ManagePlayoffs = () => {
             }
         }));
     };
+
+    const handleDecrementGoal = useCallback(async (matchId, teamKey, playerName) => {
+        setScorerGoals(prev => {
+            const current = prev?.[matchId]?.[teamKey]?.[playerName] || 1;
+            const updatedGoals = {
+                ...(prev[matchId]?.[teamKey] || {}),
+                [playerName]: Math.max(current - 1, 0)
+            };
+
+            if (updatedGoals[playerName] === 0) {
+                delete updatedGoals[playerName];
+            }
+
+            const updatedScorerGoals = {
+                ...prev,
+                [matchId]: {
+                    ...prev[matchId],
+                    [teamKey]: updatedGoals
+                }
+            };
+
+            if (updatedGoals[playerName] === undefined) {
+                setScorers(prevScorers => ({
+                    ...prevScorers,
+                    [matchId]: {
+                        ...prevScorers[matchId],
+                        [teamKey]: (prevScorers[matchId]?.[teamKey] || []).filter(n => n !== playerName)
+                    }
+                }));
+            }
+
+            return updatedScorerGoals;
+        });
+
+        setTimeout(async () => {
+            const [year, division] = selectedLeague.split('_');
+            const matchScorers = scorers[matchId] || {};
+            const updatedNames = (matchScorers[teamKey] || []).filter(n => n !== playerName);
+
+            const updatedArray = updatedNames.map(name => ({
+                name,
+                id: normalizeName(name),
+                goals: scorerGoals[matchId]?.[teamKey]?.[name] || 1
+            }));
+
+            await runTransaction(db, async (transaction) => {
+                const docRef = doc(db, `leagues/${year}_${division}/playoff/rounds/goalScorers`, matchId);
+                const docSnap = await transaction.get(docRef);
+                if (!docSnap.exists()) return;
+
+                const existingData = docSnap.data();
+                const currentList = Array.isArray(existingData[teamKey]) ? existingData[teamKey] : [];
+
+                const updatedList = currentList
+                    .filter(p => p.name !== playerName)
+                    .map(p => ({
+                        name: p.name,
+                        id: normalizeName(p.name),
+                        goals: p.goals
+                    }));
+
+                transaction.update(docRef, {
+                    [teamKey]: updatedList
+                });
+            });
+        }, 100);
+    }, [scorers, scorerGoals, selectedLeague]);
 
     const saveMatch = async (roundName, matchIndex) => {
         const [year, division] = selectedLeague.split('_');
@@ -490,17 +579,22 @@ const ManagePlayoffs = () => {
                                         </select>
                                         <button
                                             onClick={() => {
-                                                const name = selectedScorer[match.id]?.teamA;
+                                                const teamKey = 'teamA';
+                                                const name = selectedScorer[match.id]?.[teamKey];
                                                 if (!name) return;
-                                                const existing = (scorers[match.id]?.teamA || []).find(n => n === name);
-                                                if (existing) return;
 
-                                                handleScorerChange(match.id, 'teamA', [
-                                                    ...(scorers[match.id]?.teamA || []),
-                                                    name
-                                                ]);
+                                                const isExisting = (scorers[match.id]?.[teamKey] || []).includes(name);
 
-                                                handleGoalCountChange(match.id, 'teamA', name, 1);
+                                                if (isExisting) {
+                                                    const currentGoals = scorerGoals[match.id]?.[teamKey]?.[name] || 1;
+                                                    handleGoalCountChange(match.id, teamKey, name, currentGoals + 1);
+                                                } else {
+                                                    handleScorerChange(match.id, teamKey, [
+                                                        ...(scorers[match.id]?.[teamKey] || []),
+                                                        name
+                                                    ]);
+                                                    handleGoalCountChange(match.id, teamKey, name, 1);
+                                                }
                                             }}
                                         >
                                             +
@@ -510,6 +604,12 @@ const ManagePlayoffs = () => {
                                             {(scorers[match.id]?.teamA || []).map((name) => (
                                                 <li key={name}>
                                                     {name} ({scorerGoals[match.id]?.teamA?.[name] || 1} gólů)
+                                                    <button
+                                                        onClick={() => handleDecrementGoal(match.id, 'teamA', name)}
+                                                        className="decrement-btn"
+                                                    >
+                                                        —
+                                                    </button>
                                                 </li>
                                             ))}
                                         </ul>
@@ -560,17 +660,22 @@ const ManagePlayoffs = () => {
                                         </select>
                                         <button
                                             onClick={() => {
-                                                const name = selectedScorer[match.id]?.teamB;
+                                                const teamKey = 'teamB';
+                                                const name = selectedScorer[match.id]?.[teamKey];
                                                 if (!name) return;
-                                                const existing = (scorers[match.id]?.teamB || []).find(n => n === name);
-                                                if (existing) return;
 
-                                                handleScorerChange(match.id, 'teamB', [
-                                                    ...(scorers[match.id]?.teamB || []),
-                                                    name
-                                                ]);
+                                                const isExisting = (scorers[match.id]?.[teamKey] || []).includes(name);
 
-                                                handleGoalCountChange(match.id, 'teamB', name, 1);
+                                                if (isExisting) {
+                                                    const currentGoals = scorerGoals[match.id]?.[teamKey]?.[name] || 1;
+                                                    handleGoalCountChange(match.id, teamKey, name, currentGoals + 1);
+                                                } else {
+                                                    handleScorerChange(match.id, teamKey, [
+                                                        ...(scorers[match.id]?.[teamKey] || []),
+                                                        name
+                                                    ]);
+                                                    handleGoalCountChange(match.id, teamKey, name, 1);
+                                                }
                                             }}
                                         >
                                             +
@@ -580,6 +685,12 @@ const ManagePlayoffs = () => {
                                             {(scorers[match.id]?.teamB || []).map((name) => (
                                                 <li key={name}>
                                                     {name} ({scorerGoals[match.id]?.teamB?.[name] || 1} gólů)
+                                                    <button
+                                                        onClick={() => handleDecrementGoal(match.id, 'teamB', name)}
+                                                        className="decrement-btn"
+                                                    >
+                                                        —
+                                                    </button>
                                                 </li>
                                             ))}
                                         </ul>
