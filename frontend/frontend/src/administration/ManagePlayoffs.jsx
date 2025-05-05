@@ -3,9 +3,11 @@ import { db } from '../services/firebase';
 import {
     collection,
     getDocs,
+    getDoc,
     doc,
     setDoc,
-    deleteDoc
+    deleteDoc,
+    updateDoc
 } from 'firebase/firestore';
 import { saveRound, updateRound, deleteRound as deleteRoundAPI } from '../services/playoffService';
 import AdminNavbar from '../components/AdminNavbar';
@@ -490,6 +492,14 @@ const ManagePlayoffs = () => {
                                         >
                                             +
                                         </button>
+
+                                        <ul className="scorer-list">
+                                            {(scorers[match.id]?.teamA || []).map((name) => (
+                                                <li key={name}>
+                                                    {name} ({scorerGoals[match.id]?.teamA?.[name] || 1} gólů)
+                                                </li>
+                                            ))}
+                                        </ul>
                                     </div>
 
                                 </div>
@@ -552,6 +562,14 @@ const ManagePlayoffs = () => {
                                         >
                                             +
                                         </button>
+
+                                        <ul className="scorer-list">
+                                            {(scorers[match.id]?.teamB || []).map((name) => (
+                                                <li key={name}>
+                                                    {name} ({scorerGoals[match.id]?.teamB?.[name] || 1} gólů)
+                                                </li>
+                                            ))}
+                                        </ul>
                                     </div>
 
                                 </div>
