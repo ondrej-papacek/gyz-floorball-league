@@ -1,81 +1,103 @@
-﻿import React from 'react';
-import './playoffBracket.css';
+﻿import React, { useEffect, useState } from 'react';
+import { db } from '../services/firebase';
 import {
-    SingleEliminationBracket,
-    Match as DefaultMatch,
-    SVGViewer,
-    createTheme
-} from '@g-loot/react-tournament-brackets';
+    collection,
+    getDocs,
+    onSnapshot
+} from 'firebase/firestore';
+import PlayoffBracket from '../components/PlayoffBracket';
+import './playoffView.css';
 
-const CustomMatch = ({ startTime, ...rest }) => {
-    return <DefaultMatch {...rest} />;
-};
+const PlayoffView = ({ year }) => {
+    const [lowerMatches, setLowerMatches] = useState([]);
+    const [upperMatches, setUpperMatches] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState('');
 
-const DarkGoldTheme = createTheme({
-    textColor: { main: '#ffffff', highlighted: '#f0b323', dark: '#cccccc' },
-    matchBackground: {
-        wonColor: '#333333',
-        lostColor: '#1a1a1a'
-    },
-    score: {
-        background: {
-            wonColor: '#1c1c1c',
-            lostColor: '#1c1c1c'
-        },
-        text: {
-            highlightedWonColor: '#4caf50',
-            highlightedLostColor: '#f44336'
-        }
-    },
-    border: {
-        color: '#777',
-        highlightedColor: '#d9a326'
-    },
-    roundHeader: {
-        backgroundColor: '#2d2d2d',
-        fontColor: '#f0b323'
-    },
-    connectorColor: '#d9a326',
-    connectorColorHighlight: '#f0b323',
-    svgBackground: '#1a1a1a'
-});
+    const sanitizeMatches = (matches) =>
+        matches.filter(m => {
+            const valid =
+                m &&
+                typeof m.id === 'string' &&
+                typeof m.name === 'string' &&
+                Array.isArray(m.participants) &&
+                m.participants.length === 2 &&
+                typeof m.participants[0]?.name === 'string' &&
+                typeof m.participants[1]?.name === 'string';
 
-const PlayoffBracket = ({ matches }) => {
-    if (!matches?.length) return <p>Žádné zápasy zatím nejsou dostupné.</p>;
+            if (!valid) {
+                console.warn('Invalid match skipped:', m);
+            }
+
+            return valid;
+        });
+
+    useEffect(() => {
+        const lowerRef = collection(db, `leagues/${year}_lower/playoff/rounds/bracketMatches`);
+        const upperRef = collection(db, `leagues/${year}_upper/playoff/rounds/bracketMatches`);
+
+        const loadInitialData = async () => {
+            try {
+                const [lowerSnapshot, upperSnapshot] = await Promise.all([
+                    getDocs(lowerRef),
+                    getDocs(upperRef)
+                ]);
+
+                setLowerMatches(sanitizeMatches(lowerSnapshot.docs.map(doc => doc.data())));
+                setUpperMatches(sanitizeMatches(upperSnapshot.docs.map(doc => doc.data())));
+                setError('');
+            } catch (err) {
+                console.error('Initial playoff fetch failed:', err);
+                setError('Nepodařilo se načíst data playoff.');
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        loadInitialData().catch(console.error);
+
+        const unsubscribeLower = onSnapshot(lowerRef, (snapshot) => {
+            try {
+                const matches = snapshot.docs.map(doc => doc.data());
+                setLowerMatches(sanitizeMatches(matches));
+            } catch (err) {
+                console.error('Realtime update failed (lower):', err);
+            }
+        });
+
+        const unsubscribeUpper = onSnapshot(upperRef, (snapshot) => {
+            try {
+                const matches = snapshot.docs.map(doc => doc.data());
+                setUpperMatches(sanitizeMatches(matches));
+            } catch (err) {
+                console.error('Realtime update failed (upper):', err);
+            }
+        });
+
+        return () => {
+            unsubscribeLower();
+            unsubscribeUpper();
+        };
+    }, [year]);
+
+    if (loading) return <div className="playoff-view-page"><p>Načítání...</p></div>;
+    if (error) return <div className="playoff-view-page error">{error}</div>;
 
     return (
-        <div className="playoff-bracket-reset">
-            <SingleEliminationBracket
-                matches={matches}
-                matchComponent={CustomMatch}
-                roundSeparatorWidth={64}
-                theme={DarkGoldTheme}
-                renderTitle={() => null}
-                renderMatchLabel={() => null}
-                options={{
-                    style: {
-                        roundHeader: {
-                            backgroundColor: DarkGoldTheme.roundHeader.backgroundColor,
-                            fontColor: DarkGoldTheme.roundHeader.fontColor
-                        },
-                        connectorColor: DarkGoldTheme.connectorColor,
-                        connectorColorHighlight: DarkGoldTheme.connectorColorHighlight
-                    }
-                }}
-                svgWrapper={({ children, ...props }) => (
-                    <SVGViewer
-                        background={DarkGoldTheme.svgBackground}
-                        SVGBackground={DarkGoldTheme.svgBackground}
-                        width={900}
-                        height={600}
-                        {...props}
-                    >
-                        {children}
-                    </SVGViewer>
-                )}
-            />
+        <div className="playoff-view-page">
+            <h2 className="playoff-title">Playoff {year}</h2>
+
+            <div className="bracket-section">
+                <h3 className="division-title">Nižší gymnázium</h3>
+                <PlayoffBracket matches={lowerMatches} />
+            </div>
+
+            <div className="bracket-section">
+                <h3 className="division-title">Vyšší gymnázium</h3>
+                <PlayoffBracket matches={upperMatches} />
+            </div>
         </div>
     );
 };
 
-export default PlayoffBracket;
+export default PlayoffView;

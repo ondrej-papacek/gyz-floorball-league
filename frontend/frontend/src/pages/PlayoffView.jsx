@@ -1,6 +1,6 @@
 ﻿import React, { useEffect, useState } from 'react';
 import { db } from '../services/firebase';
-import { collection, getDocs } from 'firebase/firestore';
+import { collection, getDocs, onSnapshot } from 'firebase/firestore';
 import PlayoffBracket from '../components/PlayoffBracket';
 import './playoffView.css';
 
@@ -9,13 +9,6 @@ const PlayoffView = ({ year }) => {
     const [upperMatches, setUpperMatches] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
-
-    const fetchBracketMatches = async (year, division) => {
-        const snap = await getDocs(
-            collection(db, 'leagues', `${year}_${division}`, 'playoff', 'rounds', 'bracketMatches')
-        );
-        return snap.docs.map(doc => doc.data());
-    };
 
     const sanitizeMatches = (matches) =>
         matches.filter(m => {
@@ -36,33 +29,48 @@ const PlayoffView = ({ year }) => {
         });
 
     useEffect(() => {
-        let isMounted = true;
+        const lowerRef = collection(db, `leagues/${year}_lower/playoff/rounds/bracketMatches`);
+        const upperRef = collection(db, `leagues/${year}_upper/playoff/rounds/bracketMatches`);
 
-        const fetchPlayoffs = async () => {
-            setLoading(true);
+        (async () => {
             try {
-                const [lower, upper] = await Promise.all([
-                    fetchBracketMatches(year, 'lower'),
-                    fetchBracketMatches(year, 'upper')
+                const [lowerSnap, upperSnap] = await Promise.all([
+                    getDocs(lowerRef),
+                    getDocs(upperRef)
                 ]);
 
-                if (!isMounted) return;
-
-                setLowerMatches(sanitizeMatches(lower));
-                setUpperMatches(sanitizeMatches(upper));
+                setLowerMatches(sanitizeMatches(lowerSnap.docs.map(doc => doc.data())));
+                setUpperMatches(sanitizeMatches(upperSnap.docs.map(doc => doc.data())));
                 setError('');
             } catch (err) {
-                console.error('Error fetching playoff bracket matches:', err);
-                if (isMounted) setError('Nepodařilo se načíst data playoff.');
+                console.error('Initial playoff fetch failed:', err);
+                setError('Nepodařilo se načíst data playoff.');
             } finally {
-                if (isMounted) setLoading(false);
+                setLoading(false);
             }
-        };
+        })();
 
-        fetchPlayoffs();
+        const unsubscribeLower = onSnapshot(lowerRef, (snap) => {
+            try {
+                const matches = snap.docs.map(doc => doc.data());
+                setLowerMatches(sanitizeMatches(matches));
+            } catch (err) {
+                console.error('Realtime update failed (lower):', err);
+            }
+        });
+
+        const unsubscribeUpper = onSnapshot(upperRef, (snap) => {
+            try {
+                const matches = snap.docs.map(doc => doc.data());
+                setUpperMatches(sanitizeMatches(matches));
+            } catch (err) {
+                console.error('Realtime update failed (upper):', err);
+            }
+        });
 
         return () => {
-            isMounted = false;
+            unsubscribeLower();
+            unsubscribeUpper();
         };
     }, [year]);
 
