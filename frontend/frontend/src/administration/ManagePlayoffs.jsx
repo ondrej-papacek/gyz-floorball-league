@@ -444,6 +444,9 @@ const ManagePlayoffs = () => {
             const scoreA = match.scoreA ?? 0;
             const scoreB = match.scoreB ?? 0;
 
+            const isTeamABye = !!teamA && !teamB;
+            const isTeamBBye = !!teamB && !teamA;
+
             return {
                 id: matchId,
                 name: `${newRoundName} ${i + 1}`,
@@ -452,20 +455,20 @@ const ManagePlayoffs = () => {
                 state: "SCHEDULED",
                 participants: [
                     {
-                        id: teamA,
-                        name: teamA,
+                        id: teamA || "",
+                        name: teamA || "",
                         resultText: scoreA.toString(),
-                        isWinner: scoreA > scoreB
+                        isWinner: isTeamABye ? true : (scoreA > scoreB)
                     },
                     {
-                        id: teamB,
-                        name: teamB,
+                        id: teamB || "",
+                        name: teamB || "",
                         resultText: scoreB.toString(),
-                        isWinner: scoreB > scoreA
+                        isWinner: isTeamBBye ? true : (scoreB > scoreA)
                     }
                 ],
-                teamA,
-                teamB,
+                teamA: teamA || "",
+                teamB: teamB || "",
                 scoreA,
                 scoreB,
                 nextMatchId
