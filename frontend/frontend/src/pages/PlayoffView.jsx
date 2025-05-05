@@ -1,6 +1,10 @@
 ﻿import React, { useEffect, useState } from 'react';
 import { db } from '../services/firebase';
-import { collection, getDocs, onSnapshot } from 'firebase/firestore';
+import {
+    collection,
+    getDocs,
+    onSnapshot
+} from 'firebase/firestore';
 import PlayoffBracket from '../components/PlayoffBracket';
 import './playoffView.css';
 
@@ -32,15 +36,15 @@ const PlayoffView = ({ year }) => {
         const lowerRef = collection(db, `leagues/${year}_lower/playoff/rounds/bracketMatches`);
         const upperRef = collection(db, `leagues/${year}_upper/playoff/rounds/bracketMatches`);
 
-        (async () => {
+        const loadInitialData = async () => {
             try {
-                const [lowerSnap, upperSnap] = await Promise.all([
+                const [lowerSnapshot, upperSnapshot] = await Promise.all([
                     getDocs(lowerRef),
                     getDocs(upperRef)
                 ]);
 
-                setLowerMatches(sanitizeMatches(lowerSnap.docs.map(doc => doc.data())));
-                setUpperMatches(sanitizeMatches(upperSnap.docs.map(doc => doc.data())));
+                setLowerMatches(sanitizeMatches(lowerSnapshot.docs.map(doc => doc.data())));
+                setUpperMatches(sanitizeMatches(upperSnapshot.docs.map(doc => doc.data())));
                 setError('');
             } catch (err) {
                 console.error('Initial playoff fetch failed:', err);
@@ -48,20 +52,22 @@ const PlayoffView = ({ year }) => {
             } finally {
                 setLoading(false);
             }
-        })();
+        };
 
-        const unsubscribeLower = onSnapshot(lowerRef, (snap) => {
+        loadInitialData().catch(console.error);
+
+        const unsubscribeLower = onSnapshot(lowerRef, (snapshot) => {
             try {
-                const matches = snap.docs.map(doc => doc.data());
+                const matches = snapshot.docs.map(doc => doc.data());
                 setLowerMatches(sanitizeMatches(matches));
             } catch (err) {
                 console.error('Realtime update failed (lower):', err);
             }
         });
 
-        const unsubscribeUpper = onSnapshot(upperRef, (snap) => {
+        const unsubscribeUpper = onSnapshot(upperRef, (snapshot) => {
             try {
-                const matches = snap.docs.map(doc => doc.data());
+                const matches = snapshot.docs.map(doc => doc.data());
                 setUpperMatches(sanitizeMatches(matches));
             } catch (err) {
                 console.error('Realtime update failed (upper):', err);
