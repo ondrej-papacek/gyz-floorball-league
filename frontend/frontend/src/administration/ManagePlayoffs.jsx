@@ -197,14 +197,6 @@ const ManagePlayoffs = () => {
 
         setTimeout(async () => {
             const [year, division] = selectedLeague.split('_');
-            const matchScorers = scorers[matchId] || {};
-            const updatedNames = (matchScorers[teamKey] || []).filter(n => n !== playerName);
-
-            const updatedArray = updatedNames.map(name => ({
-                name,
-                id: normalizeName(name),
-                goals: scorerGoals[matchId]?.[teamKey]?.[name] || 1
-            }));
 
             await runTransaction(db, async (transaction) => {
                 const docRef = doc(db, `leagues/${year}_${division}/playoff/rounds/goalScorers`, matchId);
