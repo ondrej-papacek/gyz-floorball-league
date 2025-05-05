@@ -283,22 +283,35 @@ const ManagePlayoffs = () => {
     const handleDeleteRound = async (roundName) => {
         const [year, division] = selectedLeague.split('_');
         const bracketRef = collection(db, `leagues/${year}_${division}/playoff/rounds/bracketMatches`);
+        const goalScorersRef = collection(db, `leagues/${year}_${division}/playoff/rounds/goalScorers`);
 
         if (!window.confirm(`Opravdu chcete smazat celé kolo "${roundName}"?`)) return;
 
-        const snapshot = await getDocs(bracketRef);
-        const matchesToDelete = snapshot.docs.filter(doc =>
+        const [matchSnapshot, scorerSnapshot] = await Promise.all([
+            getDocs(bracketRef),
+            getDocs(goalScorersRef)
+        ]);
+
+        const matchesToDelete = matchSnapshot.docs.filter(doc =>
             doc.data().tournamentRoundText === roundName
         );
 
-        const deletePromises = matchesToDelete.map(docSnap =>
+        const deleteMatchDocs = matchesToDelete.map(docSnap =>
             deleteDoc(doc(db, `leagues/${year}_${division}/playoff/rounds/bracketMatches`, docSnap.id))
         );
 
-        await Promise.all(deletePromises);
+        const matchIds = matchesToDelete.map(doc => doc.id);
+        const deleteScorerDocs = scorerSnapshot.docs
+            .filter(doc => matchIds.includes(doc.id))
+            .map(docSnap =>
+                deleteDoc(doc(db, `leagues/${year}_${division}/playoff/rounds/goalScorers`, docSnap.id))
+            );
+
+        await Promise.all([...deleteMatchDocs, ...deleteScorerDocs]);
         await deleteRoundAPI(year, division, roundName);
         await fetchRounds();
-        alert(`Kolo "${roundName}" bylo smazáno.`);
+
+        alert(`Kolo "${roundName}" a všichni střelci byli smazáni.`);
     };
 
     const handleNewMatchChange = (index, field, value) => {
