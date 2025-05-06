@@ -27,6 +27,10 @@ export const deleteRound = async (year, division, round) => {
     return axios.delete(`${API_BASE}/${year}/${division}/round/${round}`);
 };
 
-export const generateSchedule = async (year, division) => {
-    return axios.post(`${API_BASE}/generate-schedule`, { year, division });
+export const generateSchedule = async (year, division, startDate) => {
+    return axios.post(`${API_BASE}/generate-schedule`, {
+        year,
+        division,
+        startDate
+    });
 };

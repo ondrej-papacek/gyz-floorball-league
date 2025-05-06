@@ -12,18 +12,17 @@
 
     const totalTeams = teamsCopy.length;
     const numRounds = totalTeams - 1;
+
     const matches = [];
 
     for (let round = 0; round < numRounds; round++) {
-        const roundMatches = [];
-
         for (let i = 0; i < totalTeams / 2; i++) {
             const teamA = teamsCopy[i];
             const teamB = teamsCopy[totalTeams - 1 - i];
 
             if (teamA.id === "bye" || teamB.id === "bye") continue;
 
-            roundMatches.push({
+            matches.push({
                 teamA: teamA.id,
                 teamB: teamB.id,
                 teamA_name: teamA.name,
@@ -31,12 +30,11 @@
                 scoreA: 0,
                 scoreB: 0,
                 status: "upcoming",
-                round: round + 1,
+                round: matches.length + 1
             });
         }
 
-        matches.push(roundMatches);
-
+        // Rotate teams (except the first)
         const first = teamsCopy[0];
         const rotated = [first, ...rotateRight(teamsCopy.slice(1))];
         for (let i = 0; i < totalTeams; i++) {

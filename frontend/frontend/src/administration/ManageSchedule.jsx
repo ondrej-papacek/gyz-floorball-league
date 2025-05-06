@@ -45,6 +45,7 @@ const ManageSchedule = () => {
     const [error, setError] = useState('');
     const [selectedYear, setSelectedYear] = useState('');
     const [availableYears, setAvailableYears] = useState([]);
+    const [startDate, setStartDate] = useState('');
 
     useEffect(() => {
         const fetchYears = async () => {
@@ -69,7 +70,7 @@ const ManageSchedule = () => {
 
     const handleGenerateSchedule = async (division) => {
         try {
-            await generateSchedule(selectedYear, division);
+            await generateSchedule(selectedYear, division, startDate);
             fetchSchedule();
             alert(`Rozpis pro ${division === 'lower' ? 'nižší' : 'vyšší'} gymnázium ${selectedYear} byl vygenerován.`);
         } catch (err) {
@@ -191,6 +192,15 @@ const ManageSchedule = () => {
                     </div>
                 ) : (
                     <>
+                        <div className="schedule-start-date">
+                            <label>Začátek ligy:</label>
+                            <input
+                                type="date"
+                                value={startDate}
+                                onChange={(e) => setStartDate(e.target.value)}
+                            />
+                        </div>
+
                         <div className="manage-schedule-generate-buttons">
                             <button onClick={() => handleGenerateSchedule('lower')}>Vygenerovat nižší {selectedYear}</button>
                             <button onClick={() => handleGenerateSchedule('upper')}>Vygenerovat vyšší {selectedYear}</button>

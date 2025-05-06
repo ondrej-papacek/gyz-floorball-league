@@ -5,7 +5,7 @@ const generateBergerTable = require('../utils/bergerTable');
 
 exports.generateSchedule = async (req, res, next) => {
     try {
-        const { year, division } = req.body;
+        const { year, division, startDate } = req.body;
 
         if (!["lower", "upper"].includes(division)) {
             return res.status(400).json({ message: "Invalid division specified." });
@@ -20,7 +20,6 @@ exports.generateSchedule = async (req, res, next) => {
             .get();
 
         if (!teamsSnapshot || teamsSnapshot.empty) {
-            console.error(`No teams found for ${division} in Firestore.`);
             return res.status(400).json({ message: `No teams found for ${division}.` });
         }
 
@@ -29,40 +28,36 @@ exports.generateSchedule = async (req, res, next) => {
             name: doc.data()?.name || "Unknown",
         }));
 
-        if (!teams.length) {
-            return res.status(400).json({ message: `No teams found for ${division}.` });
-        }
-
         const schedule = generateBergerTable(teams);
 
         if (!schedule.length) {
             return res.status(500).json({ message: "Failed to generate valid schedule." });
         }
 
-        console.log(`Schedule successfully generated for ${division}.`);
-
         const matchesRef = db.collection("leagues").doc(`${year}_${division}`).collection("matches");
         const batch = db.batch();
-        let baseDay = new Date(`${year}-03-21T14:15:00+01:00`);
 
-        schedule.forEach((round, roundIndex) => {
-            round.forEach((match, matchIndex) => {
-                const matchRef = matchesRef.doc();
-                const matchDate = new Date(baseDay);
-                matchDate.setHours(14, 15 + matchIndex * 30, 0);
+        let baseDay = startDate
+            ? new Date(`${startDate}T14:15:00+01:00`)
+            : new Date(`${year}-03-21T14:15:00+01:00`);
 
-                batch.set(matchRef, {
-                    round: roundIndex + 1,
-                    teamA: match.teamA,
-                    teamB: match.teamB,
-                    teamA_name: match.teamA_name,
-                    teamB_name: match.teamB_name,
-                    status: "upcoming",
-                    scoreA: 0,
-                    scoreB: 0,
-                    date: Timestamp.fromDate(matchDate)
-                });
+        schedule.forEach((match, index) => {
+            const matchRef = matchesRef.doc();
+            const matchDate = new Date(baseDay);
+            matchDate.setHours(14, 15, 0);
+
+            batch.set(matchRef, {
+                round: index + 1,
+                teamA: match.teamA,
+                teamB: match.teamB,
+                teamA_name: match.teamA_name,
+                teamB_name: match.teamB_name,
+                status: "upcoming",
+                scoreA: 0,
+                scoreB: 0,
+                date: Timestamp.fromDate(matchDate)
             });
+
             baseDay.setDate(baseDay.getDate() + 7);
         });
 
@@ -121,7 +116,7 @@ exports.getUpcomingMatch = async (req, res, next) => {
             const roundDate = lowerDate < upperDate ? lowerDate : upperDate;
 
             rounds.push({
-                date: roundDate.toISOString(), // ✅ fixed here
+                date: roundDate.toISOString(),
                 lowerMatch: {
                     teamA_name: lowerMatch.teamA_name,
                     teamB_name: lowerMatch.teamB_name,
