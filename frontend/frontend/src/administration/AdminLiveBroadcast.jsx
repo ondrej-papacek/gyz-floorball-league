@@ -211,8 +211,8 @@ const AdminLiveBroadcast = () => {
             const teamBRef = doc(db, `leagues/${year}_${division}/teams/${liveData.teamB}`);
 
             const [teamASnap, teamBSnap] = await Promise.all([getDoc(teamARef), getDoc(teamBRef)]);
-            const teamAData = teamASnap.data();
-            const teamBData = teamBSnap.data();
+            const cleanTeamAData = teamASnap.data();
+            const cleanTeamBData = teamBSnap.data();
 
             const matchEntryA = { opponent: liveData.teamB_name, score: `${liveData.scoreA}-${liveData.scoreB}`, matchId };
             const matchEntryB = { opponent: liveData.teamA_name, score: `${liveData.scoreB}-${liveData.scoreA}`, matchId };
@@ -243,19 +243,14 @@ const AdminLiveBroadcast = () => {
                 }
             };
 
-            const updateGoalScorerList = async (division, teamId, scorers) => {
+            const updateGoalScorerList = async (division, teamId, teamName, scorers) => {
                 const goalScorersRef = collection(db, `leagues/${year}_${division}/goalScorers`);
                 const snapshot = await getDocs(goalScorersRef);
 
                 for (const scorer of scorers || []) {
                     const playerId = scorer.id || normalizeName(scorer.name);
-                    const playerRef = doc(db, `leagues/${year}_${division}/teams/${teamId}/players/${playerId}`);
-                    const playerSnap = await getDoc(playerRef);
-                    if (!playerSnap.exists()) continue;
-
-                    const playerData = playerSnap.data();
                     const existing = snapshot.docs.find(doc =>
-                        doc.data().id === playerId && doc.data().team === teamId
+                        doc.data().id === playerId && doc.data().team_id === teamId
                     );
 
                     if (existing) {
@@ -265,9 +260,10 @@ const AdminLiveBroadcast = () => {
                     } else {
                         await setDoc(doc(goalScorersRef), {
                             id: playerId,
-                            name: playerData.name,
+                            name: scorer.name,
                             goals: scorer.goals,
-                            team: teamId
+                            team: teamName,
+                            team_id: teamId
                         });
                     }
                 }
@@ -275,26 +271,26 @@ const AdminLiveBroadcast = () => {
 
             await Promise.all([
                 setDoc(teamARef, {
-                    ...teamAData,
-                    points: (teamAData.points || 0) + pointsA,
-                    wins: (teamAData.wins || 0) + winA,
-                    draws: (teamAData.draws || 0) + drawA,
-                    losses: (teamAData.losses || 0) + lossA,
-                    goalsScored: (teamAData.goalsScored || 0) + liveData.scoreA,
-                    goalsConceded: (teamAData.goalsConceded || 0) + liveData.scoreB,
-                    matchesPlayed: (teamAData.matchesPlayed || 0) + 1,
-                    matches: [...(teamAData.matches || []), matchEntryA]
+                    ...cleanTeamAData,
+                    points: (cleanTeamAData.points || 0) + pointsA,
+                    wins: (cleanTeamAData.wins || 0) + winA,
+                    draws: (cleanTeamAData.draws || 0) + drawA,
+                    losses: (cleanTeamAData.losses || 0) + lossA,
+                    goalsScored: (cleanTeamAData.goalsScored || 0) + liveData.scoreA,
+                    goalsConceded: (cleanTeamAData.goalsConceded || 0) + liveData.scoreB,
+                    matchesPlayed: (cleanTeamAData.matchesPlayed || 0) + 1,
+                    matches: [...(cleanTeamAData.matches || []), matchEntryA]
                 }),
                 setDoc(teamBRef, {
-                    ...teamBData,
-                    points: (teamBData.points || 0) + pointsB,
-                    wins: (teamBData.wins || 0) + winB,
-                    draws: (teamBData.draws || 0) + drawB,
-                    losses: (teamBData.losses || 0) + lossB,
-                    goalsScored: (teamBData.goalsScored || 0) + liveData.scoreB,
-                    goalsConceded: (teamBData.goalsConceded || 0) + liveData.scoreA,
-                    matchesPlayed: (teamBData.matchesPlayed || 0) + 1,
-                    matches: [...(teamBData.matches || []), matchEntryB]
+                    ...cleanTeamBData,
+                    points: (cleanTeamBData.points || 0) + pointsB,
+                    wins: (cleanTeamBData.wins || 0) + winB,
+                    draws: (cleanTeamBData.draws || 0) + drawB,
+                    losses: (cleanTeamBData.losses || 0) + lossB,
+                    goalsScored: (cleanTeamBData.goalsScored || 0) + liveData.scoreB,
+                    goalsConceded: (cleanTeamBData.goalsConceded || 0) + liveData.scoreA,
+                    matchesPlayed: (cleanTeamBData.matchesPlayed || 0) + 1,
+                    matches: [...(cleanTeamBData.matches || []), matchEntryB]
                 }),
                 updatePlayerGoals(liveData.teamA, consolidateScorers(liveData.scorerA)),
                 updatePlayerGoals(liveData.teamB, consolidateScorers(liveData.scorerB)),

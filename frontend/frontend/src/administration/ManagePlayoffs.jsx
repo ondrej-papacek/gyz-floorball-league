@@ -273,16 +273,18 @@ const ManagePlayoffs = () => {
         const matchScorers = scorers[match.id] || {};
         const goals = scorerGoals[match.id] || {};
 
-        const formatScorers = (teamKey) => {
+        const formatScorers = (teamKey, teamName, teamId) => {
             return (matchScorers[teamKey] || []).map(name => ({
                 name,
                 id: normalizeName(name),
-                goals: goals?.[teamKey]?.[name] || 1
+                goals: goals?.[teamKey]?.[name] || 1,
+                team: teamName,
+                team_id: teamId
             }));
         };
 
-        const teamAScorers = formatScorers('teamA');
-        const teamBScorers = formatScorers('teamB');
+        const teamAScorers = formatScorers('teamA', teamA, teamAId);
+        const teamBScorers = formatScorers('teamB', teamB, teamBId);
 
         await setDoc(
             doc(db, `leagues/${year}_${division}/playoff/rounds/goalScorers`, match.id),
@@ -310,10 +312,14 @@ const ManagePlayoffs = () => {
             const goalScorersRef = collection(db, `leagues/${year}_${division}/goalScorers`);
             const snapshot = await getDocs(goalScorersRef);
 
+            const team = teams.find(t => t.id === teamId);
+            const teamName = team?.name || teamId;
+
             for (const scorer of scorers) {
                 const playerId = scorer.id;
+
                 const existing = snapshot.docs.find(doc =>
-                    doc.data().id === playerId && doc.data().team === teamId
+                    doc.data().id === playerId && doc.data().team_id === teamId
                 );
 
                 if (existing) {
@@ -325,7 +331,8 @@ const ManagePlayoffs = () => {
                         id: playerId,
                         name: scorer.name,
                         goals: scorer.goals,
-                        team: teamId
+                        team: teamName,
+                        team_id: teamId
                     });
                 }
             }

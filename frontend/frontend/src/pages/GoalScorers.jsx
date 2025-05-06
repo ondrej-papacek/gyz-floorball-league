@@ -57,11 +57,14 @@ function GoalScorers() {
         const map = new Map();
 
         for (const scorer of scorers) {
-            const key = `${scorer.name}_${scorer.team}`;
+            const key = `${scorer.name}_${scorer.team_id}`;
             if (map.has(key)) {
                 map.get(key).goals += scorer.goals;
             } else {
-                map.set(key, { ...scorer });
+                map.set(key, {
+                    ...scorer,
+                    team: scorer.team || scorer.team_id
+                });
             }
         }
 

@@ -6,7 +6,7 @@ import {
     updatePlayer
 } from '../services/playerService';
 import { db } from '../services/firebase';
-import { collection, getDocs, doc, deleteDoc, updateDoc } from 'firebase/firestore';
+import { collection, getDocs, doc, deleteDoc, updateDoc, setDoc } from 'firebase/firestore';
 import './managePlayers.css';
 import AdminNavbar from '../components/AdminNavbar';
 import { normalizeName } from '../utils/teamUtils';
@@ -150,7 +150,7 @@ const ManagePlayers = () => {
         const normalizedId = normalizeName(updatedData.name);
 
         const existingScorerDoc = goalScorersSnap.docs.find(
-            doc => doc.data().id === normalizedId && doc.data().team === selectedTeamId
+            doc => doc.data().id === normalizedId && doc.data().team_id === selectedTeamId
         );
 
         if (existingScorerDoc) {
@@ -161,11 +161,13 @@ const ManagePlayers = () => {
             });
         } else {
             const newScorerRef = doc(goalScorersRef);
+            const team = teams.find(t => t.id === selectedTeamId);
             await setDoc(newScorerRef, {
                 id: normalizedId,
                 name: updatedData.name,
                 goals: updatedData.goals,
-                team: selectedTeamId
+                team: team.name,
+                team_id: selectedTeamId
             });
         }
 
