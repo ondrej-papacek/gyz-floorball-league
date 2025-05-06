@@ -5,6 +5,9 @@ const Docxtemplater = require('docxtemplater');
 
 function loadTemplate(templateName) {
     const templatePath = path.join(__dirname, 'templates', templateName);
+    if (!fs.existsSync(templatePath)) {
+        throw new Error(`Template not found: ${templateName}`);
+    }
     return fs.readFileSync(templatePath, 'binary');
 }
 
