@@ -87,29 +87,21 @@
 .password-wrapper {
     position: relative;
     width: 100%;
-    display: flex;
-    align-items: center;
 }
 
-.toggle-password {
+.toggle-password .bx {
+    font-size: 1.2rem;
+    color: #ccc;
     position: absolute;
     right: 12px;
     top: 50%;
     transform: translateY(-50%);
     cursor: pointer;
-    color: #d9a326;
-    font-size: 22px;
-    z-index: 1;
-    background: none;
-    border: none;
-    padding: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    transition: color 0.2s ease-in-out;
 }
 
-.toggle-password:hover {
-    color: #ffffff;
+.toggle-password .bx:hover {
+    color: #f0b323;
 }
 
 .remember-row {

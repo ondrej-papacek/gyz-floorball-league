@@ -1,13 +1,9 @@
 ﻿import React, { useState, useEffect } from 'react';
 import {
     collection,
-    getDocs,
-    deleteDoc,
-    doc,
-    updateDoc,
-    setDoc
+    getDocs
 } from 'firebase/firestore';
-import { auth, db } from '../services/firebase';
+import { db } from '../services/firebase';
 import './manageAccounts.css';
 import AdminNavbar from "../components/AdminNavbar.jsx";
 
@@ -15,8 +11,36 @@ const ManageAccounts = () => {
     const [users, setUsers] = useState([]);
     const [loading, setLoading] = useState(true);
     const [newUser, setNewUser] = useState({ email: '', password: '', role: 'helper' });
+    const [showPassword, setShowPassword] = useState(false);
     const [error, setError] = useState('');
     const [success, setSuccess] = useState('');
+
+    const passwordChecks = [
+        {
+            label: 'Délka alespoň 10 znaků',
+            test: (pwd) => pwd.length >= 10,
+        },
+        {
+            label: 'Obsahuje speciální znak (@!?* apod.)',
+            test: (pwd) => /[@!?\-*._]/.test(pwd),
+        },
+        {
+            label: 'Nepoužívejte zakázané znaky (např. ", <, >, \\)',
+            test: (pwd) => !/[<>"'\\]/.test(pwd),
+        },
+        {
+            label: 'Obsahuje číslici',
+            test: (pwd) => /\d/.test(pwd),
+        },
+        {
+            label: 'Obsahuje malé písmeno',
+            test: (pwd) => /[a-z]/.test(pwd),
+        },
+        {
+            label: 'Obsahuje velké písmeno',
+            test: (pwd) => /[A-Z]/.test(pwd),
+        },
+    ];
 
     const currentUID = localStorage.getItem('uid');
 
@@ -32,14 +56,26 @@ const ManageAccounts = () => {
 
     const handleDelete = async (id) => {
         if (window.confirm('Opravdu chcete tohoto uživatele odstranit?')) {
-            await deleteDoc(doc(db, 'users', id));
-            setUsers(users.filter(u => u.id !== id));
+            try {
+                await fetch(`https://gyz-floorball-league.onrender.com/api/users/${id}`, {
+                    method: 'DELETE',
+                });
+                setUsers(users.filter(u => u.id !== id));
+            } catch (err) {
+                console.error('Chyba při mazání:', err);
+                alert('Nepodařilo se smazat uživatele.');
+            }
         }
     };
 
     const handleRoleChange = async (id, newRole) => {
-        const userRef = doc(db, 'users', id);
-        await updateDoc(userRef, { role: newRole });
+        await fetch(`https://gyz-floorball-league.onrender.com/api/users/${id}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ role: newRole }),
+        });
         setUsers(users.map(u => u.id === id ? { ...u, role: newRole } : u));
     };
 
@@ -58,7 +94,8 @@ const ManageAccounts = () => {
             });
 
             if (!response.ok) {
-                throw new Error('Chyba serveru při vytváření uživatele');
+                const { message } = await response.json();
+                throw new Error(message || 'Chyba serveru při vytváření uživatele');
             }
 
             const data = await response.json();
@@ -69,7 +106,7 @@ const ManageAccounts = () => {
 
         } catch (err) {
             console.error('Chyba při vytváření účtu:', err);
-            setError('Nepodařilo se vytvořit účet. Možná již existuje nebo je špatný formát e-mailu.');
+            setError(err.message);
         }
     };
 
@@ -85,16 +122,36 @@ const ManageAccounts = () => {
                         type="email"
                         placeholder="Email"
                         value={newUser.email}
-                        onChange={(e) => setNewUser({ ...newUser, email: e.target.value })}
+                        onChange={(e) => setNewUser({ ...newUser, email: e.target.value.trim() })}
                         required
                     />
-                    <input
-                        type="password"
-                        placeholder="Heslo"
-                        value={newUser.password}
-                        onChange={(e) => setNewUser({ ...newUser, password: e.target.value })}
-                        required
-                    />
+                    <div className="password-wrapper">
+                        <input
+                            type={showPassword ? 'text' : 'password'}
+                            placeholder="Heslo"
+                            value={newUser.password}
+                            onChange={(e) => setNewUser({ ...newUser, password: e.target.value })}
+                            required
+                        />
+                        <span className="toggle-password" onClick={() => setShowPassword(!showPassword)}>
+                            <i className={`bx ${showPassword ? 'bxs-hide' : 'bxs-show'}`}></i>
+                        </span>
+                    </div>
+                    <p className="password-hint">Heslo musí splňovat následující kritéria:</p>
+                    <ul className="password-checklist">
+                        {passwordChecks.map((rule, index) => {
+                            const passed = rule.test(newUser.password);
+                            return (
+                                <li>
+                                  <span className={passed ? 'check-icon green' : 'check-icon red'}>
+                                    {passed ? '✔' : '✖'}
+                                  </span>{' '}
+                                    {rule.label}
+                                </li>
+
+                            );
+                        })}
+                    </ul>
                     <select
                         value={newUser.role}
                         onChange={(e) => setNewUser({ ...newUser, role: e.target.value })}
@@ -102,7 +159,9 @@ const ManageAccounts = () => {
                         <option value="admin">Admin</option>
                         <option value="helper">Helper</option>
                     </select>
-                    <button type="submit">+ Přidat účet</button>
+                    <button type="submit" disabled={!passwordChecks.every(rule => rule.test(newUser.password))}>
+                        + Přidat účet
+                    </button>
                     {error && <p className="error-msg">{error}</p>}
                     {success && <p className="success-msg">{success}</p>}
                 </form>

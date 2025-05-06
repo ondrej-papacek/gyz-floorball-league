@@ -37,8 +37,11 @@ exports.deleteUser = async (req, res, next) => {
     try {
         const userId = req.params.id;
         await db.collection('users').doc(userId).delete();
+        await admin.auth().deleteUser(userId);
+
         res.status(200).json({ message: 'Uživatel byl úspěšně smazán.' });
     } catch (error) {
         next(new Error('Nepodařilo se smazat uživatele.'));
     }
 };
+

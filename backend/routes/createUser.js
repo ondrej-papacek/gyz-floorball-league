@@ -11,10 +11,16 @@ router.post('/create-user', async (req, res) => {
     }
 
     try {
-        const userRecord = await admin.auth().createUser({
-            email,
-            password,
-        });
+        const existing = await admin.auth().getUserByEmail(email).catch(() => null);
+        if (existing) {
+            return res.status(400).json({ message: 'Uživatel již existuje.' });
+        }
+
+        const userRecord = await admin.auth().createUser({ email, password });
+        const forbiddenChars = /[<>"'\\]/;
+        if (forbiddenChars.test(password)) {
+            return res.status(400).json({ message: 'Heslo obsahuje zakázané znaky.' });
+        }
 
         await db.collection('users').doc(userRecord.uid).set({
             email,

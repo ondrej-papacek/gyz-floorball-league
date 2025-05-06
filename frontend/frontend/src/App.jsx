@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import './App.css';
 import Navbar from './components/Navbar';
 import HeroSection from './components/HeroSection';
@@ -16,7 +16,6 @@ import LoginPage from './pages/LoginPage';
 import AdminDashboard from './administration/AdminDashboard';
 import AdminLiveBroadcast from "./administration/AdminLiveBroadcast.jsx";
 import ManageTeams from './administration/ManageTeams';
-// import ManageMatches from './administration/ManageMatches';
 import ManageNews from './administration/ManageNews';
 import ManageLeague from './administration/ManageLeague';
 import ManagePlayoffs from "./administration/ManagePlayoffs.jsx";
@@ -24,6 +23,7 @@ import withRoleGuard from './guards/withRoleGuard';
 import ManageAccounts from "./administration/ManageAccounts.jsx";
 import ManagePlayers from "./administration/ManagePlayers.jsx";
 import ManageSchedule from './administration/ManageSchedule';
+import Unauthorized from './pages/Unauthorized';
 
 function App() {
     return (
@@ -39,34 +39,36 @@ function App() {
                         <>
                             <div className="content-section">
                                 <div className="left-panel">
-                                    <NewsSection/>
-                                    <LiveMatch/>
+                                    <NewsSection />
+                                    <LiveMatch />
                                 </div>
                                 <div className="right-panel">
-                                    <UpcomingMatch/>
+                                    <UpcomingMatch />
                                 </div>
                             </div>
                         </>
                     }
                 />
-                <Route path="/news" element={<News/>}/>
-                <Route path="/news/:id" element={<News/>}/>
+                <Route path="/news" element={<News />} />
+                <Route path="/news/:id" element={<News />} />
                 <Route path="/teams" element={<Teams />} />
                 <Route path="/goalScorers" element={<GoalScorers />} />
                 <Route path="/schedule" element={<Schedule />} />
                 <Route path="/liveBroadcast" element={<LiveBroadcast />} />
                 <Route path="/login" element={<LoginPage />} />
+                <Route path="/unauthorized" element={<Unauthorized />} />
 
-                {/* Login Route */}
-                <Route path="/admin" element={withRoleGuard(AdminDashboard, 'admin')()} />
-                <Route path="/admin/liveBroadcast" element={withRoleGuard(AdminLiveBroadcast, 'admin')()} />
+                {/* Admin/Helper Access */}
+                <Route path="/admin" element={withRoleGuard(AdminDashboard, ['admin', 'helper'])()} />
+                <Route path="/admin/liveBroadcast" element={withRoleGuard(AdminLiveBroadcast, ['admin', 'helper'])()} />
+                <Route path="/admin/manage-playoffs" element={withRoleGuard(ManagePlayoffs, ['admin', 'helper'])()} />
+                <Route path="/admin/manage-news" element={withRoleGuard(ManageNews, ['admin', 'helper'])()} />
+                <Route path="/admin/manage-players" element={withRoleGuard(ManagePlayers, ['admin', 'helper'])()} />
+
+                {/* Admin-Only Access */}
                 <Route path="/admin/manage-teams/" element={withRoleGuard(ManageTeams, 'admin')()} />
-                {/*<Route path="/admin/manage-matches/" element={withRoleGuard(ManageMatches, 'admin')()} />*/}
-                <Route path="/admin/manage-playoffs/" element={withRoleGuard(ManagePlayoffs, 'admin')()} />
-                <Route path="/admin/manage-news" element={withRoleGuard(ManageNews, 'admin')()} />
                 <Route path="/admin/manage-league" element={withRoleGuard(ManageLeague, 'admin')()} />
                 <Route path="/admin/manage-accounts" element={withRoleGuard(ManageAccounts, 'admin')()} />
-                <Route path="/admin/manage-players" element={withRoleGuard(ManagePlayers, 'admin')()} />
                 <Route path="/admin/manage-schedule" element={withRoleGuard(ManageSchedule, 'admin')()} />
             </Routes>
 

@@ -1,9 +1,15 @@
 ﻿import React, { useState } from 'react';
-import { signInWithEmailAndPassword } from 'firebase/auth';
 import { auth, db } from '../services/firebase';
 import { doc, getDoc } from 'firebase/firestore';
 import { useNavigate } from 'react-router-dom';
 import './loginPage.css';
+import {
+    signInWithEmailAndPassword,
+    setPersistence,
+    browserLocalPersistence,
+    browserSessionPersistence
+} from 'firebase/auth';
+
 
 const LoginPage = () => {
     const [email, setEmail] = useState('');
@@ -18,6 +24,12 @@ const LoginPage = () => {
         setError('');
 
         try {
+            const persistence = rememberMe
+                ? browserLocalPersistence
+                : browserSessionPersistence;
+
+            await setPersistence(auth, persistence);
+
             const userCredential = await signInWithEmailAndPassword(auth, email, password);
             const user = userCredential.user;
 

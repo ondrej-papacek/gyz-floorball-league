@@ -103,6 +103,60 @@
     background-color: #e09f1f;
 }
 
+.password-wrapper {
+    position: relative;
+    width: 100%;
+}
+
+.password-wrapper input {
+    flex: 1;
+}
+
+.toggle-password .bx {
+    font-size: 1.2rem;
+    color: #ccc;
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+    transition: color 0.2s ease-in-out;
+}
+
+.toggle-password .bx:hover {
+    color: #f0b323;
+}
+
+.password-hint {
+    font-size: 0.95rem;
+    color: #aaa;
+    margin-top: 8px;
+}
+
+.password-checklist {
+    list-style: none;
+    margin: 10px 0 0 0;
+    padding: 0;
+    font-size: 0.95rem;
+    color: #ccc;
+    line-height: 1.6;
+}
+
+.check-icon {
+    font-weight: bold;
+    display: inline-block;
+    width: 20px;
+}
+
+.check-icon.green {
+    color: #4caf50;
+    border: 1px solid #555;
+}
+
+.check-icon.red {
+    color: #f44336;
+}
+
 .error-msg {
     color: #f44336;
     margin-top: 10px;

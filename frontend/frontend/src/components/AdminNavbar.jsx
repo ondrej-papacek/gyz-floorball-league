@@ -1,10 +1,16 @@
-﻿import React from 'react';
+﻿import React, { useEffect, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import './adminNavbar.css';
 
 function AdminNavbar() {
     const location = useLocation();
     const navigate = useNavigate();
+    const [role, setRole] = useState(null);
+
+    useEffect(() => {
+        const localRole = localStorage.getItem('role') || sessionStorage.getItem('role');
+        setRole(localRole);
+    }, []);
 
     const isActive = (path) => location.pathname === path;
 
@@ -22,14 +28,25 @@ function AdminNavbar() {
             </div>
             <ul className="admin-nav-links">
                 <li className={isActive('/admin') ? 'active' : ''}><Link to="/admin">Dashboard</Link></li>
-                <li className={isActive('/admin/manage-league') ? 'active' : ''}><Link to="/admin/manage-league">Liga</Link></li>
-                <li className={isActive('/admin/manage-teams') ? 'active' : ''}><Link to="/admin/manage-teams">Týmy</Link></li>
-                <li className={isActive('/admin/manage-players') ? 'active' : ''}><Link to="/admin/manage-players">Hráči</Link></li>
-                <li className={isActive('/admin/manage-schedule') ? 'active' : ''}><Link to="/admin/manage-schedule">Rozpis zápasů</Link></li>
-                <li className={isActive('/admin/manage-playoffs') ? 'active' : ''}><Link to="/admin/manage-playoffs">Playoff</Link></li>
-                <li className={isActive('/admin/manage-news') ? 'active' : ''}><Link to="/admin/manage-news">Novinky</Link></li>
-                <li className={isActive('/admin/liveBroadcast') ? 'active' : ''}><Link to="/admin/liveBroadcast">Živý zápas</Link></li>
-                <li className={isActive('/admin/manage-accounts') ? 'active' : ''}><Link to="/admin/manage-accounts">Účty</Link></li>
+
+                {role === 'admin' && (
+                    <>
+                        <li className={isActive('/admin/manage-league') ? 'active' : ''}><Link to="/admin/manage-league">Liga</Link></li>
+                        <li className={isActive('/admin/manage-teams') ? 'active' : ''}><Link to="/admin/manage-teams">Týmy</Link></li>
+                        <li className={isActive('/admin/manage-schedule') ? 'active' : ''}><Link to="/admin/manage-schedule">Rozpis zápasů</Link></li>
+                        <li className={isActive('/admin/manage-accounts') ? 'active' : ''}><Link to="/admin/manage-accounts">Účty</Link></li>
+                    </>
+                )}
+
+                {(role === 'admin' || role === 'helper') && (
+                    <>
+                        <li className={isActive('/admin/manage-players') ? 'active' : ''}><Link to="/admin/manage-players">Hráči</Link></li>
+                        <li className={isActive('/admin/manage-playoffs') ? 'active' : ''}><Link to="/admin/manage-playoffs">Playoff</Link></li>
+                        <li className={isActive('/admin/manage-news') ? 'active' : ''}><Link to="/admin/manage-news">Novinky</Link></li>
+                        <li className={isActive('/admin/liveBroadcast') ? 'active' : ''}><Link to="/admin/liveBroadcast">Živý zápas</Link></li>
+                    </>
+                )}
+
                 <li>
                     <button className="logout-button" onClick={handleLogout}>Odhlásit se</button>
                 </li>
