@@ -56,7 +56,7 @@ const UpcomingMatch = () => {
                 if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
 
                 const data = await response.json();
-                console.log("📡 Received Upcoming Match Data:", data);
+                console.log("Received Upcoming Match Data:", data);
 
                 if (Array.isArray(data) && data.length > 0) {
                     setRounds(data);
