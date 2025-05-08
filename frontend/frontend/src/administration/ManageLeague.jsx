@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import './manageLeague.css';
 import AdminNavbar from "../components/AdminNavbar.jsx";
 import { db } from '../services/firebase';
-import { deleteDoc, collection, doc, setDoc, getDocs } from 'firebase/firestore';
+import { collection, doc, setDoc, getDocs } from 'firebase/firestore';
 import { useLeague } from '../services/leagueContext';
 import { generateSeasonSummary } from '../services/docxService';
 
@@ -64,7 +64,9 @@ const ManageLeague = () => {
         if (!confirmed) return;
 
         try {
-            await deleteDoc(doc(db, 'leagues', id));
+            await fetch(`${import.meta.env.VITE_API_URL}/api/leagues/${id}`, {
+                method: 'DELETE'
+            });
             alert("Liga byla úspěšně odstraněna.");
             await fetchLeagues();
         } catch (error) {
