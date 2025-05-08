@@ -92,9 +92,15 @@ const ManageSchedule = () => {
 
             [...lowerData, ...upperData].forEach(match => {
                 const roundNum = match.round ?? 1;
-                const matchDate = match.date?.seconds
-                    ? new Date(match.date.seconds * 1000)
-                    : new Date();
+                let matchDate;
+                if (match.date && match.date.seconds) {
+                    matchDate = new Date(match.date.seconds * 1000);
+                } else if (match.date instanceof Date) {
+                    matchDate = match.date;
+                } else {
+                    console.warn(`Invalid date for match ID ${match.id}`, match.date);
+                    matchDate = new Date();
+                }
 
                 if (!allRounds[roundNum]) {
                     allRounds[roundNum] = {

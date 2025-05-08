@@ -56,26 +56,37 @@ function Schedule() {
                 .map(doc => ({ id: doc.id, ...doc.data(), division: 'upper' }))
                 .filter(match => match.id !== 'placeholder');
 
-            const rounds = [];
-            const totalRounds = Math.max(lowerData.length, upperData.length);
-            const baseDate = new Date(parseInt(year), 2, 21); // March 21
+            const allRounds = {};
 
-            for (let i = 0; i < totalRounds; i++) {
-                const matches = [];
-                if (i < lowerData.length) matches.push(lowerData[i]);
-                if (i < upperData.length) matches.push(upperData[i]);
+            [...lowerData, ...upperData].forEach(match => {
+                const roundNum = match.round ?? 1;
+                let matchDate;
+                if (match.date && match.date.seconds) {
+                    matchDate = new Date(match.date.seconds * 1000);
+                } else if (match.date instanceof Date) {
+                    matchDate = match.date;
+                } else {
+                    console.warn(`Invalid date for match ID ${match.id}`, match.date);
+                    matchDate = new Date();
+                }
 
-                const date = new Date(baseDate);
-                date.setDate(baseDate.getDate() + i * 7);
+                if (!allRounds[roundNum]) {
+                    allRounds[roundNum] = {
+                        round: roundNum,
+                        date: matchDate,
+                        matches: []
+                    };
+                }
 
-                rounds.push({
-                    round: i + 1,
-                    date,
-                    matches
-                });
-            }
+                allRounds[roundNum].matches.push(match);
 
-            setMergedMatches(rounds);
+                if (matchDate < allRounds[roundNum].date) {
+                    allRounds[roundNum].date = matchDate;
+                }
+            });
+
+            const merged = Object.values(allRounds).sort((a, b) => a.round - b.round);
+            setMergedMatches(merged);
         } catch (error) {
             console.error("Error fetching schedule:", error);
         }
