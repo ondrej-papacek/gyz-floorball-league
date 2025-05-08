@@ -93,14 +93,19 @@ const ManageSchedule = () => {
             [...lowerData, ...upperData].forEach(match => {
                 const roundNum = match.round ?? 1;
 
-                let matchDate;
+                let matchDate = null;
+
                 if (match.date && match.date.seconds) {
                     matchDate = new Date(match.date.seconds * 1000);
                 } else if (match.date instanceof Date) {
+                    matchDate = match.date;
+                } else if (typeof match.date === 'string' || typeof match.date === 'number') {
                     matchDate = new Date(match.date);
-                } else {
-                    console.warn(`Invalid date for match ID ${match.id}`, match.date);
-                    matchDate = new Date();
+                }
+
+                if (!matchDate || isNaN(matchDate.getTime())) {
+                    console.warn(`Skipping match with invalid date [${match.id}]:`, match.date);
+                    return;
                 }
 
                 matchDate.setSeconds(0, 0);
@@ -108,7 +113,7 @@ const ManageSchedule = () => {
                 if (!allRounds[roundNum]) {
                     allRounds[roundNum] = {
                         round: roundNum,
-                        date: matchDate,
+                        date: null,
                         matches: []
                     };
                 }
@@ -120,10 +125,7 @@ const ManageSchedule = () => {
 
                 allRounds[roundNum].matches.push(preparedMatch);
 
-                if (
-                    !allRounds[roundNum].date ||
-                    matchDate < allRounds[roundNum].date
-                ) {
+                if (!allRounds[roundNum].date || matchDate < allRounds[roundNum].date) {
                     allRounds[roundNum].date = matchDate;
                 }
             });
