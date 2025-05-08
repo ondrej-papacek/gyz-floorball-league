@@ -70,6 +70,7 @@ const ManageSchedule = () => {
 
     const handleGenerateSchedule = async (division) => {
         try {
+            console.log("Sending startDate:", startDate);
             await generateSchedule(selectedYear, division, startDate);
             fetchSchedule();
             alert(`Rozpis pro ${division === 'lower' ? 'nižší' : 'vyšší'} gymnázium ${selectedYear} byl vygenerován.`);

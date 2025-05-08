@@ -37,13 +37,21 @@ exports.generateSchedule = async (req, res, next) => {
         const matchesRef = db.collection("leagues").doc(`${year}_${division}`).collection("matches");
         const batch = db.batch();
 
-        let baseDay = startDate
-            ? new Date(`${startDate}T14:15:00+01:00`)
-            : new Date(`${year}-03-21T14:15:00+01:00`);
+        let baseDay;
+        if (startDate && typeof startDate === 'string') {
+            baseDay = new Date(`${startDate}T14:15:00`);
+            if (isNaN(baseDay.getTime())) {
+                console.warn('Invalid startDate format. Falling back.');
+                baseDay = new Date(`${year}-03-21T14:15:00`);
+            }
+        } else {
+            baseDay = new Date(`${year}-03-21T14:15:00`);
+        }
 
         schedule.forEach((match, index) => {
             const matchRef = matchesRef.doc();
-            const matchDate = new Date(baseDay);
+            const matchDate = new Date(baseDay.getTime());
+            matchDate.setDate(matchDate.getDate() + index * 7);
             matchDate.setHours(14, 15, 0);
 
             batch.set(matchRef, {
@@ -57,8 +65,6 @@ exports.generateSchedule = async (req, res, next) => {
                 scoreB: 0,
                 date: Timestamp.fromDate(matchDate)
             });
-
-            baseDay.setDate(baseDay.getDate() + 7);
         });
 
         await batch.commit();
