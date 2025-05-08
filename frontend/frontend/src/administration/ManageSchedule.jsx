@@ -87,24 +87,33 @@ const ManageSchedule = () => {
             const lowerData = lower.filter(m => m.id !== 'placeholder');
             const upperData = upper.filter(m => m.id !== 'placeholder');
 
-            const merged = [];
-            const baseDate = new Date(parseInt(selectedYear), 2, 21);
-            const totalRounds = Math.max(lowerData.length, upperData.length);
+            const allRounds = {};
 
-            for (let i = 0; i < totalRounds; i++) {
-                const matches = [];
-                if (i < lowerData.length) matches.push({ ...lowerData[i], division: 'lower' });
-                if (i < upperData.length) matches.push({ ...upperData[i], division: 'upper' });
+            [...lowerData, ...upperData].forEach(match => {
+                const roundNum = match.round ?? 1;
+                const matchDate = match.date?.seconds
+                    ? new Date(match.date.seconds * 1000)
+                    : new Date();
 
-                const date = new Date(baseDate);
-                date.setDate(baseDate.getDate() + i * 7);
+                if (!allRounds[roundNum]) {
+                    allRounds[roundNum] = {
+                        round: roundNum,
+                        date: matchDate,
+                        matches: []
+                    };
+                }
 
-                merged.push({
-                    round: i + 1,
-                    date,
-                    matches
+                allRounds[roundNum].matches.push({
+                    ...match,
+                    division: match.division || (lower.includes(match) ? 'lower' : 'upper')
                 });
-            }
+
+                if (matchDate < allRounds[roundNum].date) {
+                    allRounds[roundNum].date = matchDate;
+                }
+            });
+
+            const merged = Object.values(allRounds).sort((a, b) => a.round - b.round);
 
             setMergedMatches(merged);
             setError('');
