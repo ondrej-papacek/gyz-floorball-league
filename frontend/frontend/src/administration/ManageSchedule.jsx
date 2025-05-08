@@ -202,7 +202,7 @@ const ManageSchedule = () => {
                     </div>
                 ) : (
                     <>
-                        <div className="schedule-start-date">
+                        <div className="manage-schedule-start-date">
                             <label>Začátek ligy:</label>
                             <input
                                 type="date"
