@@ -41,16 +41,23 @@ exports.addTeam = async (req, res, next) => {
     try {
         const { year, division } = req.params;
         const teamData = req.body;
-        const teamRef = await db
+
+        const teamsRef = db
             .collection('leagues')
             .doc(`${year}_${division}`)
-            .collection('teams')
-            .add(teamData);
-        res.status(201).json({ id: teamRef.id, ...teamData });
+            .collection('teams');
+
+        const newDocRef = teamsRef.doc();
+        const newTeam = { id: newDocRef.id, ...teamData };
+
+        await newDocRef.set(newTeam);
+
+        res.status(201).json(newTeam);
     } catch (error) {
         next(new Error('Nepodařilo se vytvořit tým.'));
     }
 };
+
 
 exports.updateTeam = async (req, res, next) => {
     try {
