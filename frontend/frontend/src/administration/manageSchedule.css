@@ -27,6 +27,10 @@
     margin-bottom: 20px;
 }
 
+.manage-schedule-start-date {
+    margin-bottom: 15px;
+}
+
 .manage-schedule-start-date input[type="date"] {
     padding: 10px 14px;
     font-size: 1rem;
