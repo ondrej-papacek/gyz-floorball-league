@@ -92,15 +92,18 @@ const ManageSchedule = () => {
 
             [...lowerData, ...upperData].forEach(match => {
                 const roundNum = match.round ?? 1;
+
                 let matchDate;
                 if (match.date && match.date.seconds) {
                     matchDate = new Date(match.date.seconds * 1000);
                 } else if (match.date instanceof Date) {
-                    matchDate = match.date;
+                    matchDate = new Date(match.date);
                 } else {
                     console.warn(`Invalid date for match ID ${match.id}`, match.date);
                     matchDate = new Date();
                 }
+
+                matchDate.setSeconds(0, 0);
 
                 if (!allRounds[roundNum]) {
                     allRounds[roundNum] = {
@@ -110,18 +113,22 @@ const ManageSchedule = () => {
                     };
                 }
 
-                allRounds[roundNum].matches.push({
+                const preparedMatch = {
                     ...match,
                     division: match.division || (lower.includes(match) ? 'lower' : 'upper')
-                });
+                };
 
-                if (matchDate < allRounds[roundNum].date) {
+                allRounds[roundNum].matches.push(preparedMatch);
+
+                if (
+                    !allRounds[roundNum].date ||
+                    matchDate < allRounds[roundNum].date
+                ) {
                     allRounds[roundNum].date = matchDate;
                 }
             });
 
             const merged = Object.values(allRounds).sort((a, b) => a.round - b.round);
-
             setMergedMatches(merged);
             setError('');
         } catch (err) {
