@@ -1,5 +1,6 @@
 ﻿const admin = require('../firebase');
 const db = admin.firestore();
+const { generateTeamIdFromName } = require('../utils/teamUtils');
 
 exports.getTeams = async (req, res, next) => {
     try {
@@ -42,22 +43,23 @@ exports.addTeam = async (req, res, next) => {
         const { year, division } = req.params;
         const teamData = req.body;
 
-        const teamsRef = db
+        const teamId = generateTeamIdFromName(teamData.name);
+        const teamRef = db
             .collection('leagues')
             .doc(`${year}_${division}`)
-            .collection('teams');
+            .collection('teams')
+            .doc(teamId);
 
-        const newDocRef = teamsRef.doc();
-        const newTeam = { id: newDocRef.id, ...teamData };
+        const newTeam = { id: teamId, ...teamData };
 
-        await newDocRef.set(newTeam);
+        await teamRef.set(newTeam);
 
         res.status(201).json(newTeam);
     } catch (error) {
+        console.error("Failed to add team:", error);
         next(new Error('Nepodařilo se vytvořit tým.'));
     }
 };
-
 
 exports.updateTeam = async (req, res, next) => {
     try {
@@ -85,14 +87,18 @@ exports.updateTeam = async (req, res, next) => {
 exports.deleteTeam = async (req, res, next) => {
     try {
         const { year, division, teamId } = req.params;
-        await db
+
+        const teamRef = db
             .collection('leagues')
             .doc(`${year}_${division}`)
             .collection('teams')
-            .doc(teamId)
-            .delete();
-        res.status(200).json({ message: 'Tým byl úspěšně smazán.' });
+            .doc(teamId);
+
+        await admin.firestore().recursiveDelete(teamRef);
+
+        res.status(200).json({ message: 'Tým a jeho data byly úspěšně smazány.' });
     } catch (error) {
-        next(new Error('Nepodařilo se smazat tým.'));
+        console.error("Error during recursive team delete:", error);
+        next(new Error('Nepodařilo se smazat tým a jeho poddokumenty.'));
     }
 };

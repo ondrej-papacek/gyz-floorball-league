@@ -36,9 +36,15 @@ exports.updateLeague = async (req, res, next) => {
 exports.deleteLeague = async (req, res, next) => {
     try {
         const leagueId = req.params.id;
-        await db.collection('leagues').doc(leagueId).delete();
-        res.status(200).json({ message: 'Liga byla úspěšně smazána.' });
+
+        const leagueRef = db.collection('leagues').doc(leagueId);
+
+        await admin.firestore().recursiveDelete(leagueRef);
+
+        res.status(200).json({ message: 'Liga a všechny její poddokumenty byly úspěšně smazány.' });
     } catch (error) {
-        next(new Error('Nepodařilo se smazat ligu.'));
+        console.error("🔥 Error during recursive league delete:", error);
+        next(new Error('Nepodařilo se smazat ligu a její data.'));
     }
 };
+
