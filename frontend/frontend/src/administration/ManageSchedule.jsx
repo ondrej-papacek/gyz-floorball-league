@@ -90,18 +90,17 @@ const ManageSchedule = () => {
 
             const allRounds = {};
 
+            const normalizeDate = (rawDate) => {
+                if (rawDate?._seconds) return new Date(rawDate._seconds * 1000);
+                if (rawDate?.seconds) return new Date(rawDate.seconds * 1000); // fallback for older format
+                if (rawDate instanceof Date) return rawDate;
+                if (typeof rawDate === 'string' || typeof rawDate === 'number') return new Date(rawDate);
+                return null;
+            };
+
             [...lowerData, ...upperData].forEach(match => {
                 const roundNum = match.round ?? 1;
-
-                let matchDate = null;
-
-                if (match.date && match.date.seconds) {
-                    matchDate = new Date(match.date.seconds * 1000);
-                } else if (match.date instanceof Date) {
-                    matchDate = match.date;
-                } else if (typeof match.date === 'string' || typeof match.date === 'number') {
-                    matchDate = new Date(match.date);
-                }
+                const matchDate = normalizeDate(match.date);
 
                 if (!matchDate || isNaN(matchDate.getTime())) {
                     console.warn(`Skipping match with invalid date [${match.id}]:`, match.date);
