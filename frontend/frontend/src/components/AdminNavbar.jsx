@@ -1,5 +1,7 @@
 ﻿import React, { useEffect, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { auth, db } from '../services/firebase';
+import { doc, getDoc } from 'firebase/firestore';
 import './adminNavbar.css';
 
 function AdminNavbar() {
@@ -8,8 +10,23 @@ function AdminNavbar() {
     const [role, setRole] = useState(null);
 
     useEffect(() => {
-        const localRole = localStorage.getItem('role') || sessionStorage.getItem('role');
-        setRole(localRole);
+        const fetchUserRole = async () => {
+            const user = auth.currentUser;
+            if (user) {
+                try {
+                    const userRef = doc(db, 'users', user.uid);
+                    const snap = await getDoc(userRef);
+                    if (snap.exists()) {
+                        const userData = snap.data();
+                        setRole(userData.role);
+                    }
+                } catch (error) {
+                    console.error('Error fetching user role for navbar:', error);
+                }
+            }
+        };
+
+        fetchUserRole();
     }, []);
 
     const isActive = (path) => location.pathname === path;
