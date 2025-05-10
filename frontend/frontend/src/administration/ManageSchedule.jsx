@@ -7,7 +7,8 @@ import {
     deleteMatch,
     updateRoundDate,
     cancelRound,
-    deleteRound
+    deleteRound,
+    forceFinishMatch
 } from '../services/scheduleService';
 import { generateRoundPreview } from '../services/docxService';
 import { collection, getDocs, doc, setDoc } from 'firebase/firestore';
@@ -307,12 +308,18 @@ const ManageSchedule = () => {
 
                                                     <div className="actions">
                                                         <button onClick={() => handleMatchAction(match, 'cancel')}>Zrušit</button>
-                                                        <button onClick={() => handleMatchAction(match, 'defaultWin', {
-                                                            status: 'finished', scoreA: 3, scoreB: 0
-                                                        })}>Kontumační výhra {match.teamA_name}</button>
-                                                        <button onClick={() => handleMatchAction(match, 'defaultWin', {
-                                                            status: 'finished', scoreA: 0, scoreB: 3
-                                                        })}>Kontumační výhra {match.teamB_name}</button>
+                                                        <button onClick={async () => {
+                                                            await forceFinishMatch(selectedYear, match.division, match.id, 3, 0);
+                                                            fetchSchedule();
+                                                        }}>
+                                                            Kontumační výhra {match.teamA_name}
+                                                        </button>
+                                                        <button onClick={async () => {
+                                                            await forceFinishMatch(selectedYear, match.division, match.id, 0, 3);
+                                                            fetchSchedule();
+                                                        }}>
+                                                            Kontumační výhra {match.teamB_name}
+                                                        </button>
                                                         <button onClick={() => handleMatchAction(match, 'delete')}>Smazat</button>
                                                     </div>
                                                 </div>

@@ -329,3 +329,73 @@ exports.deleteRound = async (req, res, next) => {
         next(new Error('Failed to delete round'));
     }
 };
+
+exports.forceFinishMatch = async (req, res, next) => {
+    try {
+        const { year, division, matchId } = req.params;
+        const { scoreA, scoreB } = req.body;
+
+        const matchRef = db.doc(`leagues/${year}_${division}/matches/${matchId}`);
+        const matchSnap = await matchRef.get();
+        if (!matchSnap.exists) return res.status(404).json({ message: "Match not found" });
+
+        const match = matchSnap.data();
+        const teamARef = db.doc(`leagues/${year}_${division}/teams/${match.teamA}`);
+        const teamBRef = db.doc(`leagues/${year}_${division}/teams/${match.teamB}`);
+        const [teamASnap, teamBSnap] = await Promise.all([teamARef.get(), teamBRef.get()]);
+
+        const teamAData = teamASnap.data();
+        const teamBData = teamBSnap.data();
+
+        let pointsA = 0, pointsB = 0, winA = 0, winB = 0, drawA = 0, drawB = 0, lossA = 0, lossB = 0;
+
+        if (scoreA > scoreB) {
+            pointsA = 3; winA = 1; lossB = 1;
+        } else if (scoreB > scoreA) {
+            pointsB = 3; winB = 1; lossA = 1;
+        } else {
+            pointsA = pointsB = 1; drawA = drawB = 1;
+        }
+
+        await Promise.all([
+            matchRef.update({
+                scoreA,
+                scoreB,
+                status: 'finished'
+            }),
+            teamARef.update({
+                points: admin.firestore.FieldValue.increment(pointsA),
+                wins: admin.firestore.FieldValue.increment(winA),
+                draws: admin.firestore.FieldValue.increment(drawA),
+                losses: admin.firestore.FieldValue.increment(lossA),
+                goalsScored: admin.firestore.FieldValue.increment(scoreA),
+                goalsConceded: admin.firestore.FieldValue.increment(scoreB),
+                matchesPlayed: admin.firestore.FieldValue.increment(1),
+                matches: [...(teamAData.matches || []), {
+                    matchId,
+                    opponent: match.teamB_name,
+                    score: `${scoreA}-${scoreB}`
+                }]
+            }),
+            teamBRef.update({
+                points: admin.firestore.FieldValue.increment(pointsB),
+                wins: admin.firestore.FieldValue.increment(winB),
+                draws: admin.firestore.FieldValue.increment(drawB),
+                losses: admin.firestore.FieldValue.increment(lossB),
+                goalsScored: admin.firestore.FieldValue.increment(scoreB),
+                goalsConceded: admin.firestore.FieldValue.increment(scoreA),
+                matchesPlayed: admin.firestore.FieldValue.increment(1),
+                matches: [...(teamBData.matches || []), {
+                    matchId,
+                    opponent: match.teamA_name,
+                    score: `${scoreB}-${scoreA}`
+                }]
+            })
+        ]);
+
+        res.status(200).json({ message: 'Match forcibly finished and stats updated.' });
+    } catch (error) {
+        console.error("Force finish error:", error);
+        next(new Error('Failed to force-finish match.'));
+    }
+};

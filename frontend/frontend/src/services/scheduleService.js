@@ -34,3 +34,9 @@ export const generateSchedule = async (year, division, startDate) => {
         startDate
     });
 };
+
+export const forceFinishMatch = async (year, division, matchId, scoreA, scoreB) => {
+    return axios.put(`${API_BASE}/${year}/${division}/matches/${matchId}/force-finish`, {
+        scoreA, scoreB
+    });
+};
