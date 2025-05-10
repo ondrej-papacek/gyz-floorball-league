@@ -19,9 +19,15 @@ function Teams() {
 
             snapshot.forEach(doc => {
                 const data = doc.data();
-                const [year] = doc.id.split('_');
-                if (data.status !== 'archived' && year) {
-                    activeYears.add(year);
+                if (data.status !== 'archived') {
+                    const docId = doc.id;
+                    const [year, division, maybePlayoff] = docId.split('_');
+
+                    if (maybePlayoff === 'playoff') {
+                        activeYears.add(`Playoff ${year}`);
+                    } else if (year) {
+                        activeYears.add(year);
+                    }
                 }
             });
 
