@@ -12,6 +12,7 @@ router.get("/upcoming-match", scheduleController.getUpcomingMatch);
 router.put("/liveMatch/:year/:division", scheduleController.startLiveMatch);
 router.post("/:year/:division/round/:round/cancel", scheduleController.cancelRound);
 router.put("/:year/:division/round/:round/date", scheduleController.updateRoundDate);
+router.put("/:year/:division/matches/:matchId/force-finish", scheduleController.forceFinishMatch);
 router.delete("/:year/:division/round/:round", scheduleController.deleteRound);
 
 module.exports = router;
