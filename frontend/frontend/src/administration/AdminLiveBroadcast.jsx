@@ -37,6 +37,10 @@ const AdminLiveBroadcast = () => {
     const timerRef = useRef(null);
     const updateRef = useRef(0);
 
+    useEffect(() => {
+        fetchLiveMatches();
+    }, []);
+
     const fetchLiveMatches = async () => {
         const divisions = ['lower', 'upper'];
         let allMatches = [];
