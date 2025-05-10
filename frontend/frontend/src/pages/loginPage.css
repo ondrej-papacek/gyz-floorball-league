@@ -12,13 +12,6 @@
     box-sizing: border-box;
 }
 
-.form-group {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    width: 100%;
-}
-
 .login-box {
     background-color: #444;
     padding: 30px;
@@ -30,13 +23,20 @@
     box-sizing: border-box;
 }
 
-.login-title {
+.login-box .login-title {
     font-size: 1.8rem;
     margin-bottom: 20px;
     color: #d9a326;
 }
 
-.login-input {
+.login-box .form-group {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+}
+
+.login-box .login-input {
     width: 100%;
     padding: 10px 40px 10px 12px;
     margin-bottom: 15px;
@@ -50,17 +50,63 @@
     transition: border 0.3s ease, background-color 0.3s ease;
 }
 
-.login-input:focus {
+.login-box .login-input:focus {
     outline: none;
     border-color: #f0b323;
     background-color: #666;
 }
 
-.login-input::placeholder {
+.login-box .login-input::placeholder {
     color: #ccc;
 }
 
-.login-button {
+.login-box .password-wrapper {
+    position: relative;
+    width: 100%;
+}
+
+.login-box .password-wrapper input {
+    width: 100%;
+}
+
+.login-box .toggle-password .bx {
+    font-size: 1.2rem;
+    color: #ccc;
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+    transition: color 0.2s ease-in-out;
+}
+
+.login-box .toggle-password .bx:hover {
+    color: #f0b323;
+}
+
+.login-box .remember-row {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    width: 100%;
+    margin-bottom: 1rem;
+    font-size: 0.95rem;
+    color: #ddd;
+}
+
+.login-box .remember-row input[type="checkbox"] {
+    margin-right: 8px;
+    border: 3px solid #555;
+    cursor: pointer;
+}
+
+.login-box .login-error {
+    color: #f19e3b;
+    margin-top: 10px;
+    font-size: 0.9rem;
+}
+
+.login-box .login-button {
     background-color: #d9a326;
     color: #fff;
     border: none;
@@ -73,108 +119,66 @@
     width: 100%;
 }
 
-.login-button:hover {
+.login-box .login-button:hover {
     background-color: #f0b323;
     transform: scale(1.02);
 }
 
-.login-error {
-    color: #f19e3b;
-    margin-top: 10px;
-    font-size: 0.9rem;
-}
-
-.password-wrapper {
-    position: relative;
-    width: 100%;
-}
-
-.toggle-password .bx {
-    font-size: 1.2rem;
-    color: #ccc;
-    position: absolute;
-    right: 12px;
-    top: 50%;
-    transform: translateY(-50%);
-    cursor: pointer;
-    transition: color 0.2s ease-in-out;
-}
-
-.toggle-password .bx:hover {
-    color: #f0b323;
-}
-
-.remember-row {
-    display: flex;
-    align-items: center;
-    justify-content: flex-start;
-    width: 100%;
-    margin-bottom: 1rem;
-    font-size: 0.95rem;
-    color: #ddd;
-}
-
-.remember-row input[type="checkbox"] {
-    margin-right: 8px;
-    border: 3px solid #555;
-    cursor: pointer;
-}
-
-/* ================= Smartphones (<=480px) ================= */
+/* ========== Smartphones (<=480px) ========== */
 @media (max-width: 480px) {
     .login-box {
         padding: 20px;
     }
 
-    .login-title {
+    .login-box .login-title {
         font-size: 1.5rem;
     }
 
-    .login-input {
+    .login-box .login-input {
         font-size: 0.9rem;
     }
 
-    .login-button {
+    .login-box .login-button {
         font-size: 0.9rem;
         padding: 10px;
     }
 
-    .remember-row {
+    .login-box .remember-row {
         font-size: 0.85rem;
     }
 }
 
-/* ================= Tablets (481px - 768px) ================= */
+/* ========== Tablets (481px - 768px) ========== */
 @media (min-width: 481px) and (max-width: 768px) {
     .login-box {
         padding: 25px;
     }
 
-    .login-title {
+    .login-box .login-title {
         font-size: 1.7rem;
     }
 
-    .login-input {
+    .login-box .login-input {
         font-size: 1rem;
     }
 
-    .login-button {
+    .login-box .login-button {
         font-size: 1rem;
     }
 }
 
-/* ================= Small Laptops (769px - 1024px) ================= */
+/* ========== Small Laptops (769px - 1024px) ========== */
 @media (min-width: 769px) and (max-width: 1024px) {
     .login-box {
         padding: 30px;
     }
 
-    .login-title {
+    .login-box .login-title {
         font-size: 1.8rem;
     }
 }
 
-/* ================= XL Screens (1440px +) ================= */
+/* ========== XL Screens (1440px +) ========== */
 @media (min-width: 1440px) {
     .login-box {
         max-width: 500px;

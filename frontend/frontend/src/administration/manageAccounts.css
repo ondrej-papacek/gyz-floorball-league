@@ -67,7 +67,7 @@
     background-color: #b03939;
 }
 
-.create-user-form {
+.manage-accounts .create-user-form {
     display: flex;
     flex-direction: column;
     gap: 14px;
@@ -76,8 +76,7 @@
     width: 100%;
 }
 
-/* NEW LAYOUT */
-.form-row {
+.manage-accounts .form-row {
     display: flex;
     justify-content: space-between;
     gap: 16px;
@@ -85,8 +84,8 @@
     flex-wrap: wrap;
 }
 
-.form-row input,
-.form-row select {
+.manage-accounts .form-row input,
+.manage-accounts .form-row select {
     flex: 1 1 30%;
     min-width: 200px;
     max-width: 280px;
@@ -99,18 +98,18 @@
     box-sizing: border-box;
 }
 
-.password-wrapper {
+.manage-accounts .password-wrapper {
     position: relative;
     flex: 1 1 30%;
     min-width: 200px;
     max-width: 280px;
 }
 
-.password-wrapper input {
+.manage-accounts .password-wrapper input {
     width: 100%;
 }
 
-.toggle-password .bx {
+.manage-accounts .toggle-password .bx {
     font-size: 1.1rem;
     color: #ccc;
     position: absolute;
@@ -121,11 +120,11 @@
     transition: color 0.2s ease-in-out;
 }
 
-.toggle-password .bx:hover {
+.manage-accounts .toggle-password .bx:hover {
     color: #f0b323;
 }
 
-.password-hint {
+.manage-accounts .password-hint {
     font-size: 0.85rem;
     color: #aaa;
     margin: 4px 0;
@@ -133,40 +132,42 @@
     text-align: center;
 }
 
-.password-checklist {
+.manage-accounts .password-checklist {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
     list-style: none;
     margin: 8px 0 12px 0;
     padding: 0;
     font-size: 0.9rem;
     color: #ccc;
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
     gap: 6px 12px;
     width: 100%;
 }
 
-.check-icon {
+.manage-accounts .check-icon {
     font-weight: bold;
     display: inline-block;
     width: 20px;
 }
 
-.check-icon.green {
+.manage-accounts .check-icon.green {
     color: #4caf50;
 }
 
-.check-icon.red {
+.manage-accounts .check-icon.red {
     color: #f44336;
 }
 
-.submit-wrapper {
+.manage-accounts .submit-wrapper {
     display: flex;
     justify-content: center;
     margin-top: 12px;
     width: 100%;
 }
 
-.submit-wrapper button {
+.manage-accounts .submit-wrapper button {
     background-color: #f0b323;
     color: black;
     border: none;
@@ -178,17 +179,17 @@
     width: 180px;
 }
 
-.submit-wrapper button:hover {
+.manage-accounts .submit-wrapper button:hover {
     background-color: #e09f1f;
 }
 
-.error-msg {
+.manage-accounts .error-msg {
     color: #f44336;
     margin-top: 10px;
     text-align: center;
 }
 
-.success-msg {
+.manage-accounts .success-msg {
     color: #4caf50;
     margin-top: 10px;
     text-align: center;
@@ -200,14 +201,14 @@
         padding: 20px;
     }
 
-    .form-row {
+    .manage-accounts .form-row {
         flex-direction: column;
         align-items: stretch;
     }
 
-    .form-row input,
-    .form-row select,
-    .submit-wrapper button {
+    .manage-accounts .form-row input,
+    .manage-accounts .form-row select,
+    .manage-accounts .submit-wrapper button {
         width: 100%;
         max-width: 100%;
     }
@@ -224,8 +225,8 @@
 
 /* ========= Tablets ========== */
 @media (min-width: 601px) and (max-width: 1024px) {
-    .form-row input,
-    .form-row select {
+    .manage-accounts .form-row input,
+    .manage-accounts .form-row select {
         flex: 1 1 45%;
     }
 

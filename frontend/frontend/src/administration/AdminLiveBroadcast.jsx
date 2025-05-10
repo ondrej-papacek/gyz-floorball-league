@@ -97,7 +97,7 @@ const AdminLiveBroadcast = () => {
             periodInfo: '1. POLOČAS',
             scorerA: [],
             scorerB: [],
-            date: new Date(),
+            date: fullMatch.date,
             matchRefPath: `leagues/${year}_${match.division}/matches/${matchId}`,
             division: match.division,
             season: year
