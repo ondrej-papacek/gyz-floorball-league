@@ -35,6 +35,7 @@
     text-align: left;
     color: white;
     font-size: 0.95rem;
+    vertical-align: middle;
 }
 
 .manage-accounts select {
@@ -59,6 +60,7 @@
     border-radius: 6px;
     cursor: pointer;
     transition: background-color 0.3s ease;
+    font-size: 1rem;
 }
 
 .manage-accounts button:hover {
@@ -68,8 +70,8 @@
 .create-user-form {
     display: flex;
     flex-wrap: wrap;
-    gap: 14px;
-    align-items: center;
+    gap: 14px 16px;
+    align-items: flex-start;
     margin-bottom: 30px;
     justify-content: center;
 }
@@ -82,7 +84,8 @@
     border: 1px solid #555;
     border-radius: 6px;
     font-size: 1rem;
-    flex: 1 1 220px;
+    flex: 1 1 240px;
+    max-width: 300px;
     box-sizing: border-box;
 }
 
@@ -95,7 +98,7 @@
     font-weight: bold;
     cursor: pointer;
     transition: background-color 0.3s ease;
-    flex: 1 1 220px;
+    flex: 1 1 240px;
     min-width: 160px;
 }
 
@@ -113,10 +116,10 @@
 }
 
 .toggle-password .bx {
-    font-size: 1.2rem;
+    font-size: 1.1rem;
     color: #ccc;
     position: absolute;
-    right: 12px;
+    right: 10px;
     top: 50%;
     transform: translateY(-50%);
     cursor: pointer;
@@ -128,18 +131,21 @@
 }
 
 .password-hint {
-    font-size: 0.95rem;
+    font-size: 0.85rem;
     color: #aaa;
-    margin-top: 8px;
+    margin: 4px 0;
+    width: 100%;
 }
 
 .password-checklist {
     list-style: none;
-    margin: 10px 0 0 0;
+    margin: 8px 0 12px 0;
     padding: 0;
-    font-size: 0.95rem;
+    font-size: 0.9rem;
     color: #ccc;
-    line-height: 1.6;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 6px 12px;
 }
 
 .check-icon {
@@ -150,7 +156,6 @@
 
 .check-icon.green {
     color: #4caf50;
-    border: 1px solid #555;
 }
 
 .check-icon.red {
@@ -169,7 +174,7 @@
     text-align: center;
 }
 
-/* ========= 📱 Smartphones ========== */
+/* ========= Smartphones ========== */
 @media (max-width: 600px) {
     .manage-accounts {
         padding: 20px;
@@ -197,12 +202,8 @@
     }
 }
 
-/* ========= 📱 Tablets ========== */
+/* ========= Tablets ========== */
 @media (min-width: 601px) and (max-width: 1024px) {
-    .create-user-form {
-        flex-wrap: wrap;
-    }
-
     .create-user-form input,
     .create-user-form select,
     .create-user-form button {
@@ -214,7 +215,7 @@
     }
 }
 
-/* ========= 🖥️ Desktops ========== */
+/* ========= Desktops ========== */
 @media (min-width: 1025px) {
     .manage-accounts {
         max-width: 900px;

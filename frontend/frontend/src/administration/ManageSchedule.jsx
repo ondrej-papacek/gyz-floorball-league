@@ -92,7 +92,7 @@ const ManageSchedule = () => {
 
             const normalizeDate = (rawDate) => {
                 if (rawDate?._seconds) return new Date(rawDate._seconds * 1000);
-                if (rawDate?.seconds) return new Date(rawDate.seconds * 1000); // fallback for older format
+                if (rawDate?.seconds) return new Date(rawDate.seconds * 1000);
                 if (rawDate instanceof Date) return rawDate;
                 if (typeof rawDate === 'string' || typeof rawDate === 'number') return new Date(rawDate);
                 return null;

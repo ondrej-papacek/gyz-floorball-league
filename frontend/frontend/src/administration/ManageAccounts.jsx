@@ -116,7 +116,7 @@ const ManageAccounts = () => {
             <div className="manage-accounts">
                 <h2>Správa uživatelů</h2>
 
-                <form className="create-user-form" onSubmit={handleCreateUser}>
+                <form className="create-user-form" onSubmit={handleCreateUser} aria-label="Vytvořit uživatele">
                     <h3>Přidat nový účet</h3>
                     <input
                         type="email"
@@ -142,13 +142,12 @@ const ManageAccounts = () => {
                         {passwordChecks.map((rule, index) => {
                             const passed = rule.test(newUser.password);
                             return (
-                                <li>
+                                <li key={index}>
                                   <span className={passed ? 'check-icon green' : 'check-icon red'}>
                                     {passed ? '✔' : '✖'}
                                   </span>{' '}
                                     {rule.label}
                                 </li>
-
                             );
                         })}
                     </ul>
