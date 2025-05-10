@@ -7,55 +7,53 @@ function GoalScorers() {
     const [scorersLower, setScorersLower] = useState([]);
     const [scorersUpper, setScorersUpper] = useState([]);
 
-    useEffect(() => {
-        const fetchGoalScorers = async () => {
-            try {
-                const leaguesSnapshot = await getDocs(collection(db, 'leagues'));
-                const activeLeagues = leaguesSnapshot.docs
-                    .map(doc => ({ id: doc.id, ...doc.data() }))
-                    .filter(l => l.status !== 'archived');
+    const fetchGoalScorers = async () => {
+        try {
+            const leaguesSnapshot = await getDocs(collection(db, 'leagues'));
+            const activeLeagues = leaguesSnapshot.docs
+                .map(doc => ({ id: doc.id, ...doc.data() }))
+                .filter(l => l.status !== 'archived');
 
-                const latestYear = Math.max(
-                    ...activeLeagues.map(l => parseInt(l.year)).filter(Boolean)
-                );
+            const latestYear = Math.max(
+                ...activeLeagues.map(l => parseInt(l.year)).filter(Boolean)
+            );
 
-                const divisions = ['lower', 'upper'];
+            const divisions = ['lower', 'upper'];
 
-                for (const div of divisions) {
-                    const league = activeLeagues.find(l => l.year == latestYear && l.division === div);
-                    if (!league) continue;
+            for (const div of divisions) {
+                const league = activeLeagues.find(l => l.year == latestYear && l.division === div);
+                if (!league) continue;
 
-                    const seasonPath = `leagues/${league.id}`;
-                    const seasonScorersSnap = await getDocs(collection(db, `${seasonPath}/goalScorers`));
-                    const seasonScorers = seasonScorersSnap.docs.map(doc => doc.data());
+                const seasonPath = `leagues/${league.id}`;
+                const seasonScorersSnap = await getDocs(collection(db, `${seasonPath}/goalScorers`));
+                const seasonScorers = seasonScorersSnap.docs.map(doc => doc.data());
 
-                    const playoffScorersSnap = await getDocs(collection(db, `${seasonPath}/playoff/rounds/goalScorers`));
-                    const playoffMatches = playoffScorersSnap.docs.map(doc => doc.data());
+                const playoffScorersSnap = await getDocs(collection(db, `${seasonPath}/playoff/rounds/goalScorers`));
+                const playoffMatches = playoffScorersSnap.docs.map(doc => doc.data());
 
-                    const playoffScorers = [];
-
-                    for (const match of playoffMatches) {
-                        for (const s of [...(match.teamA || []), ...(match.teamB || [])]) {
-                            playoffScorers.push(s);
-                        }
+                const playoffScorers = [];
+                for (const match of playoffMatches) {
+                    for (const s of [...(match.teamA || []), ...(match.teamB || [])]) {
+                        playoffScorers.push(s);
                     }
-
-                    const combined = mergeGoalScorers([...seasonScorers, ...playoffScorers]);
-
-                    if (div === 'lower') setScorersLower(combined);
-                    if (div === 'upper') setScorersUpper(combined);
                 }
-            } catch (error) {
-                console.error("Error fetching goal scorers:", error);
-            }
-        };
 
+                const combined = mergeGoalScorers([...seasonScorers, ...playoffScorers]);
+
+                if (div === 'lower') setScorersLower(combined);
+                if (div === 'upper') setScorersUpper(combined);
+            }
+        } catch (error) {
+            console.error("Error fetching goal scorers:", error);
+        }
+    };
+
+    useEffect(() => {
         fetchGoalScorers();
     }, []);
 
     const mergeGoalScorers = (scorers) => {
         const map = new Map();
-
         for (const scorer of scorers) {
             const key = `${scorer.name}_${scorer.team_id}`;
             if (map.has(key)) {
@@ -84,8 +82,9 @@ function GoalScorers() {
     return (
         <div className="goal-scorers-page">
             <h2 className="goal-scorers-title">Střelci</h2>
+            <button onClick={fetchGoalScorers}>Načíst znovu</button>
 
-            {/* Nižší gymnázium Section */}
+            {/* Nižší gymnázium */}
             <div className="gym-section">
                 <h3 className="gym-title">Nižší gymnázium</h3>
                 <table className="goal-scorers-table">
@@ -100,15 +99,13 @@ function GoalScorers() {
                     {scorersLower.length > 0 ? (
                         scorersLower.map(renderScorerRow)
                     ) : (
-                        <tr>
-                            <td colSpan="3" style={{ textAlign: "center" }}>Žádné údaje</td>
-                        </tr>
+                        <tr><td colSpan="3" style={{ textAlign: "center" }}>Žádné údaje</td></tr>
                     )}
                     </tbody>
                 </table>
             </div>
 
-            {/* Vyšší gymnázium Section */}
+            {/* Vyšší gymnázium */}
             <div className="gym-section">
                 <h3 className="gym-title">Vyšší gymnázium</h3>
                 <table className="goal-scorers-table">
@@ -123,9 +120,7 @@ function GoalScorers() {
                     {scorersUpper.length > 0 ? (
                         scorersUpper.map(renderScorerRow)
                     ) : (
-                        <tr>
-                            <td colSpan="3" style={{ textAlign: "center" }}>Žádné údaje</td>
-                        </tr>
+                        <tr><td colSpan="3" style={{ textAlign: "center" }}>Žádné údaje</td></tr>
                     )}
                     </tbody>
                 </table>

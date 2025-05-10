@@ -37,7 +37,10 @@ function Teams() {
 
     useEffect(() => {
         if (!selectedYear) return;
+        refreshTeams();
+    }, [selectedYear]);
 
+    const refreshTeams = () => {
         fetchTeams(selectedYear, 'lower').then(nizsi => {
             const sorted = nizsi.sort((a, b) => (b.points ?? 0) - (a.points ?? 0));
             setTeamsNizsi(sorted);
@@ -47,7 +50,7 @@ function Teams() {
             const sorted = vyssi.sort((a, b) => (b.points ?? 0) - (a.points ?? 0));
             setTeamsVyssi(sorted);
         }).catch(error => console.error('Error fetching upper teams:', error));
-    }, [selectedYear]);
+    };
 
     const toggleExpand = (teamId, setExpandedTeams, expandedTeams) => {
         setExpandedTeams(prevExpanded =>
@@ -110,6 +113,7 @@ function Teams() {
                             <option key={year} value={year}>{year}</option>
                         ))}
                     </select>
+                    <button onClick={refreshTeams} style={{ marginLeft: '10px' }}>🔄 Obnovit týmy</button>
                 </div>
             )}
 

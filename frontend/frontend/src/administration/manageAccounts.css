@@ -73,56 +73,37 @@
     gap: 14px;
     align-items: center;
     margin-bottom: 30px;
-}
-
-.input-row {
-    display: flex;
-    gap: 16px;
-    flex-wrap: wrap;
-    justify-content: center;
-    margin-bottom: 10px;
     width: 100%;
 }
 
-.input-row input,
-.input-row select {
-    flex: 1 1 220px;
+/* NEW LAYOUT */
+.form-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+    width: 100%;
+    flex-wrap: wrap;
+}
+
+.form-row input,
+.form-row select {
+    flex: 1 1 30%;
+    min-width: 200px;
     max-width: 280px;
-    box-sizing: border-box;
     padding: 10px 14px;
     background-color: #222;
     color: white;
     border: 1px solid #555;
     border-radius: 6px;
     font-size: 1rem;
-}
-
-.submit-wrapper {
-    display: flex;
-    justify-content: center;
-    margin-top: 12px;
-    width: 100%;
-}
-
-.submit-wrapper button {
-    background-color: #f0b323;
-    color: black;
-    border: none;
-    padding: 10px 14px;
-    border-radius: 6px;
-    font-weight: bold;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-    width: 200px;
-}
-
-.submit-wrapper button:hover {
-    background-color: #e09f1f;
+    box-sizing: border-box;
 }
 
 .password-wrapper {
     position: relative;
-    width: 100%;
+    flex: 1 1 30%;
+    min-width: 200px;
+    max-width: 280px;
 }
 
 .password-wrapper input {
@@ -178,6 +159,29 @@
     color: #f44336;
 }
 
+.submit-wrapper {
+    display: flex;
+    justify-content: center;
+    margin-top: 12px;
+    width: 100%;
+}
+
+.submit-wrapper button {
+    background-color: #f0b323;
+    color: black;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 6px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    width: 180px;
+}
+
+.submit-wrapper button:hover {
+    background-color: #e09f1f;
+}
+
 .error-msg {
     color: #f44336;
     margin-top: 10px;
@@ -196,13 +200,13 @@
         padding: 20px;
     }
 
-    .input-row {
+    .form-row {
         flex-direction: column;
         align-items: stretch;
     }
 
-    .input-row input,
-    .input-row select,
+    .form-row input,
+    .form-row select,
     .submit-wrapper button {
         width: 100%;
         max-width: 100%;
@@ -220,8 +224,8 @@
 
 /* ========= Tablets ========== */
 @media (min-width: 601px) and (max-width: 1024px) {
-    .input-row input,
-    .input-row select {
+    .form-row input,
+    .form-row select {
         flex: 1 1 45%;
     }
 

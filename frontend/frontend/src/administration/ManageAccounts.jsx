@@ -119,7 +119,7 @@ const ManageAccounts = () => {
                 <form className="create-user-form" onSubmit={handleCreateUser} aria-label="Vytvořit uživatele">
                     <h3>Přidat nový účet</h3>
 
-                    <div className="input-row">
+                    <div className="form-row">
                         <input
                             type="email"
                             placeholder="Email"
@@ -137,8 +137,8 @@ const ManageAccounts = () => {
                                 required
                             />
                             <span className="toggle-password" onClick={() => setShowPassword(!showPassword)}>
-                                <i className={`bx ${showPassword ? 'bxs-hide' : 'bxs-show'}`}></i>
-                            </span>
+                <i className={`bx ${showPassword ? 'bxs-hide' : 'bxs-show'}`}></i>
+            </span>
                         </div>
 
                         <select
@@ -151,6 +151,7 @@ const ManageAccounts = () => {
                     </div>
 
                     <p className="password-hint">Heslo musí splňovat následující kritéria:</p>
+
                     <ul className="password-checklist">
                         {passwordChecks.map((rule, index) => {
                             const passed = rule.test(newUser.password);

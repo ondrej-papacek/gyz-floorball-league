@@ -221,7 +221,7 @@ const AdminLiveBroadcast = () => {
             const matchEntryA = { opponent: liveData.teamB_name, score: `${liveData.scoreA}-${liveData.scoreB}`, matchId };
             const matchEntryB = { opponent: liveData.teamA_name, score: `${liveData.scoreB}-${liveData.scoreA}`, matchId };
 
-            const alreadyExists = teamAData.matches?.some(m => m.matchId === matchId);
+            const alreadyExists = cleanTeamAData.matches?.some(m => m.matchId === matchId);
             if (alreadyExists) return alert("Zápas již zapsán.");
 
             let pointsA = 0, pointsB = 0, winA = 0, winB = 0, drawA = 0, drawB = 0, lossA = 0, lossB = 0;
@@ -262,7 +262,7 @@ const AdminLiveBroadcast = () => {
                             goals: increment(scorer.goals)
                         });
                     } else {
-                        await setDoc(doc(goalScorersRef), {
+                        await setDoc(doc(db, `leagues/${year}_${division}/goalScorers/${playerId}`), {
                             id: playerId,
                             name: scorer.name,
                             goals: scorer.goals,
@@ -273,33 +273,34 @@ const AdminLiveBroadcast = () => {
                 }
             };
 
+            const scorerA = consolidateScorers(liveData.scorerA);
+            const scorerB = consolidateScorers(liveData.scorerB);
+
             await Promise.all([
-                setDoc(teamARef, {
-                    ...cleanTeamAData,
-                    points: (cleanTeamAData.points || 0) + pointsA,
-                    wins: (cleanTeamAData.wins || 0) + winA,
-                    draws: (cleanTeamAData.draws || 0) + drawA,
-                    losses: (cleanTeamAData.losses || 0) + lossA,
-                    goalsScored: (cleanTeamAData.goalsScored || 0) + liveData.scoreA,
-                    goalsConceded: (cleanTeamAData.goalsConceded || 0) + liveData.scoreB,
-                    matchesPlayed: (cleanTeamAData.matchesPlayed || 0) + 1,
+                updateDoc(teamARef, {
+                    points: increment(pointsA),
+                    wins: increment(winA),
+                    draws: increment(drawA),
+                    losses: increment(lossA),
+                    goalsScored: increment(liveData.scoreA),
+                    goalsConceded: increment(liveData.scoreB),
+                    matchesPlayed: increment(1),
                     matches: [...(cleanTeamAData.matches || []), matchEntryA]
                 }),
-                setDoc(teamBRef, {
-                    ...cleanTeamBData,
-                    points: (cleanTeamBData.points || 0) + pointsB,
-                    wins: (cleanTeamBData.wins || 0) + winB,
-                    draws: (cleanTeamBData.draws || 0) + drawB,
-                    losses: (cleanTeamBData.losses || 0) + lossB,
-                    goalsScored: (cleanTeamBData.goalsScored || 0) + liveData.scoreB,
-                    goalsConceded: (cleanTeamBData.goalsConceded || 0) + liveData.scoreA,
-                    matchesPlayed: (cleanTeamBData.matchesPlayed || 0) + 1,
+                updateDoc(teamBRef, {
+                    points: increment(pointsB),
+                    wins: increment(winB),
+                    draws: increment(drawB),
+                    losses: increment(lossB),
+                    goalsScored: increment(liveData.scoreB),
+                    goalsConceded: increment(liveData.scoreA),
+                    matchesPlayed: increment(1),
                     matches: [...(cleanTeamBData.matches || []), matchEntryB]
                 }),
-                updatePlayerGoals(liveData.teamA, consolidateScorers(liveData.scorerA)),
-                updatePlayerGoals(liveData.teamB, consolidateScorers(liveData.scorerB)),
-                updateGoalScorerList(division, liveData.teamA, consolidateScorers(liveData.scorerA)),
-                updateGoalScorerList(division, liveData.teamB, consolidateScorers(liveData.scorerB))
+                updatePlayerGoals(liveData.teamA, scorerA),
+                updatePlayerGoals(liveData.teamB, scorerB),
+                updateGoalScorerList(division, liveData.teamA, liveData.teamA_name, scorerA),
+                updateGoalScorerList(division, liveData.teamB, liveData.teamB_name, scorerB)
             ]);
 
             await setDoc(doc(db, 'liveBroadcast', 'currentMatch'), { id: 'placeholder' });
