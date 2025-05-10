@@ -118,49 +118,62 @@ const ManageAccounts = () => {
 
                 <form className="create-user-form" onSubmit={handleCreateUser} aria-label="Vytvořit uživatele">
                     <h3>Přidat nový účet</h3>
-                    <input
-                        type="email"
-                        placeholder="Email"
-                        value={newUser.email}
-                        onChange={(e) => setNewUser({ ...newUser, email: e.target.value.trim() })}
-                        required
-                    />
-                    <div className="password-wrapper">
+
+                    <div className="input-row">
                         <input
-                            type={showPassword ? 'text' : 'password'}
-                            placeholder="Heslo"
-                            value={newUser.password}
-                            onChange={(e) => setNewUser({ ...newUser, password: e.target.value })}
+                            type="email"
+                            placeholder="Email"
+                            value={newUser.email}
+                            onChange={(e) => setNewUser({ ...newUser, email: e.target.value.trim() })}
                             required
                         />
-                        <span className="toggle-password" onClick={() => setShowPassword(!showPassword)}>
-                            <i className={`bx ${showPassword ? 'bxs-hide' : 'bxs-show'}`}></i>
-                        </span>
+
+                        <div className="password-wrapper">
+                            <input
+                                type={showPassword ? 'text' : 'password'}
+                                placeholder="Heslo"
+                                value={newUser.password}
+                                onChange={(e) => setNewUser({ ...newUser, password: e.target.value })}
+                                required
+                            />
+                            <span className="toggle-password" onClick={() => setShowPassword(!showPassword)}>
+                                <i className={`bx ${showPassword ? 'bxs-hide' : 'bxs-show'}`}></i>
+                            </span>
+                        </div>
+
+                        <select
+                            value={newUser.role}
+                            onChange={(e) => setNewUser({ ...newUser, role: e.target.value })}
+                        >
+                            <option value="admin">Admin</option>
+                            <option value="helper">Helper</option>
+                        </select>
                     </div>
+
                     <p className="password-hint">Heslo musí splňovat následující kritéria:</p>
                     <ul className="password-checklist">
                         {passwordChecks.map((rule, index) => {
                             const passed = rule.test(newUser.password);
                             return (
                                 <li key={index}>
-                                  <span className={passed ? 'check-icon green' : 'check-icon red'}>
-                                    {passed ? '✔' : '✖'}
-                                  </span>{' '}
+                    <span className={passed ? 'check-icon green' : 'check-icon red'}>
+                        {passed ? '✔' : '✖'}
+                    </span>{' '}
                                     {rule.label}
                                 </li>
                             );
                         })}
                     </ul>
-                    <select
-                        value={newUser.role}
-                        onChange={(e) => setNewUser({ ...newUser, role: e.target.value })}
-                    >
-                        <option value="admin">Admin</option>
-                        <option value="helper">Helper</option>
-                    </select>
-                    <button type="submit" disabled={!passwordChecks.every(rule => rule.test(newUser.password))}>
-                        + Přidat účet
-                    </button>
+
+                    <div className="submit-wrapper">
+                        <button
+                            type="submit"
+                            disabled={!passwordChecks.every(rule => rule.test(newUser.password))}
+                        >
+                            + Přidat účet
+                        </button>
+                    </div>
+
                     {error && <p className="error-msg">{error}</p>}
                     {success && <p className="success-msg">{success}</p>}
                 </form>

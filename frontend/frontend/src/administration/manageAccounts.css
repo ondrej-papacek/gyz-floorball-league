@@ -69,27 +69,42 @@
 
 .create-user-form {
     display: flex;
-    flex-wrap: wrap;
-    gap: 14px 16px;
-    align-items: flex-start;
+    flex-direction: column;
+    gap: 14px;
+    align-items: center;
     margin-bottom: 30px;
-    justify-content: center;
 }
 
-.create-user-form input,
-.create-user-form select {
+.input-row {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-bottom: 10px;
+    width: 100%;
+}
+
+.input-row input,
+.input-row select {
+    flex: 1 1 220px;
+    max-width: 280px;
+    box-sizing: border-box;
     padding: 10px 14px;
     background-color: #222;
     color: white;
     border: 1px solid #555;
     border-radius: 6px;
     font-size: 1rem;
-    flex: 1 1 240px;
-    max-width: 300px;
-    box-sizing: border-box;
 }
 
-.create-user-form button {
+.submit-wrapper {
+    display: flex;
+    justify-content: center;
+    margin-top: 12px;
+    width: 100%;
+}
+
+.submit-wrapper button {
     background-color: #f0b323;
     color: black;
     border: none;
@@ -98,11 +113,10 @@
     font-weight: bold;
     cursor: pointer;
     transition: background-color 0.3s ease;
-    flex: 1 1 240px;
-    min-width: 160px;
+    width: 200px;
 }
 
-.create-user-form button:hover {
+.submit-wrapper button:hover {
     background-color: #e09f1f;
 }
 
@@ -112,7 +126,7 @@
 }
 
 .password-wrapper input {
-    flex: 1;
+    width: 100%;
 }
 
 .toggle-password .bx {
@@ -135,6 +149,7 @@
     color: #aaa;
     margin: 4px 0;
     width: 100%;
+    text-align: center;
 }
 
 .password-checklist {
@@ -146,6 +161,7 @@
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
     gap: 6px 12px;
+    width: 100%;
 }
 
 .check-icon {
@@ -180,16 +196,16 @@
         padding: 20px;
     }
 
-    .create-user-form {
+    .input-row {
         flex-direction: column;
         align-items: stretch;
     }
 
-    .create-user-form input,
-    .create-user-form select,
-    .create-user-form button {
-        flex: 1 1 auto;
+    .input-row input,
+    .input-row select,
+    .submit-wrapper button {
         width: 100%;
+        max-width: 100%;
     }
 
     .manage-accounts table {
@@ -204,9 +220,8 @@
 
 /* ========= Tablets ========== */
 @media (min-width: 601px) and (max-width: 1024px) {
-    .create-user-form input,
-    .create-user-form select,
-    .create-user-form button {
+    .input-row input,
+    .input-row select {
         flex: 1 1 45%;
     }
 
