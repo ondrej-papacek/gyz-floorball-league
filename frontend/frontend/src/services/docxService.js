@@ -1,4 +1,5 @@
 ﻿import axios from 'axios';
+import { triggerDownload } from '../utils/download';
 
 const API_URL = import.meta.env.VITE_API_URL + '/api/docx';
 

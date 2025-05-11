@@ -5,13 +5,17 @@ const { generateSeasonSummaryDoc } = require('../utils/docxGenerator/generateSea
 
 router.post('/generate-round', async (req, res, next) => {
     try {
-        const roundData = req.body; // date, round, matches[]
+        console.log('[DOCX ROUTE] /generate-round triggered');
+        const roundData = req.body;
+        console.log('[DOCX ROUTE] Received payload:', JSON.stringify(roundData, null, 2));
+
         const docBuffer = await generateRoundPreviewDoc(roundData);
 
         res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document');
         res.setHeader('Content-Disposition', 'attachment; filename=round-preview.docx');
         res.send(docBuffer);
     } catch (err) {
+        console.error('[DOCX ROUTE] Error generating round DOCX:', err);
         res.status(500).json({
             error: 'DOCX generation failed',
             message: err.message || 'Unknown error occurred'

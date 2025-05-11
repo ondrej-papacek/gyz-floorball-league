@@ -12,27 +12,27 @@ function loadTemplate(templateName) {
 }
 
 function generateDocxFromTemplate(templateName, data) {
-    const content = loadTemplate(templateName);
-    const zip = new PizZip(content);
-
-    const doc = new Docxtemplater(zip, {
-        paragraphLoop: true,
-        linebreaks: true,
-        parser: tag => ({
-            get: s => s === '.' ? tag : s,
-        })
-    });
-
-    doc.setData(data);
-
     try {
+        const content = loadTemplate(templateName);
+        const zip = new PizZip(content);
+
+        const doc = new Docxtemplater(zip, {
+            paragraphLoop: true,
+            linebreaks: true,
+            parser: tag => ({
+                get: s => s === '.' ? tag : s,
+            })
+        });
+
+        doc.setData(data);
+
         doc.render();
+        return doc.getZip().generate({ type: 'nodebuffer' });
     } catch (error) {
-        console.error("Docx rendering error:", error);
+        console.error('[DOCX UTILS] Template render error:', error);
+        console.error('[DOCX UTILS] Problematic data:', JSON.stringify(data, null, 2));
         throw error;
     }
-
-    return doc.getZip().generate({ type: 'nodebuffer' });
 }
 
 module.exports = {

@@ -1,9 +1,10 @@
 ﻿const { generateDocxFromTemplate } = require('./docxUtils');
 
 async function generateRoundPreviewDoc(roundData) {
+    console.log('[DOCX][generateRoundPreviewDoc] Incoming roundData:', JSON.stringify(roundData, null, 2));
+
     const formattedMatches = roundData.matches.map((m, index) => {
         let rawDate = m.date;
-
         if (rawDate?.seconds) {
             rawDate = new Date(rawDate.seconds * 1000);
         } else {
@@ -34,7 +35,14 @@ async function generateRoundPreviewDoc(roundData) {
         matches: formattedMatches
     };
 
-    return generateDocxFromTemplate('rounds-template.docx', data);
+    console.log('[DOCX][generateRoundPreviewDoc] Final parsed data for DOCX:', JSON.stringify(data, null, 2));
+
+    try {
+        return generateDocxFromTemplate('rounds-template.docx', data);
+    } catch (err) {
+        console.error('[DOCX][generateRoundPreviewDoc] Error during template generation:', err);
+        throw err;
+    }
 }
 
 module.exports = {
