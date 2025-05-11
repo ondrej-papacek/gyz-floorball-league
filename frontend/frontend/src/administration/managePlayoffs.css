@@ -132,6 +132,23 @@
     border: 1px solid #777;
 }
 
+.match-layout input[type="number"] {
+    padding: 10px 14px;
+    border-radius: 6px;
+    background-color: #444;
+    color: white;
+    font-size: 1rem;
+    border: 1px solid #777;
+    width: 60px;
+    text-align: center;
+    transition: border-color 0.2s ease;
+}
+
+.match-layout input[type="number"]:focus {
+    border-color: #f0b323;
+    outline: none;
+}
+
 .scorer-form select {
     padding: 8px 12px;
     border-radius: 6px;
