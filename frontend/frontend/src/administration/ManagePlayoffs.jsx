@@ -523,6 +523,7 @@ const ManagePlayoffs = () => {
             <AdminNavbar />
             <div className="manage-playoffs-page">
                 <h2>Správa Playoff</h2>
+
                 <div className="playoff-controls">
                     <label>Vyberte ligu:</label>
                     <select value={selectedLeague} onChange={(e) => setSelectedLeague(e.target.value)}>
@@ -542,166 +543,150 @@ const ManagePlayoffs = () => {
                                 🗑️ Smazat kolo
                             </button>
                         </div>
+
                         {round.matches.map((match, i) => {
                             const teamAId = teams.find(t => t.name === match.teamA)?.id;
                             const teamBId = teams.find(t => t.name === match.teamB)?.id;
 
                             return (
+                                <div className="match-card" key={match.id}>
+                                    <div className="match-layout">
+                                        <div className="team-wrapper">
+                                            <select
+                                                value={match.teamA || ''}
+                                                onChange={(e) => handleChange(round.round, i, 'teamA', e.target.value)}
+                                                onFocus={() => fetchPlayersForTeam(teamAId)}
+                                            >
+                                                {teams.map(t => (
+                                                    <option key={t.id} value={t.name}>{t.name}</option>
+                                                ))}
+                                            </select>
+                                            <div className="scorer-form">
+                                                <select
+                                                    value={selectedScorer[match.id]?.teamA || ''}
+                                                    onChange={(e) => setSelectedScorer(prev => ({
+                                                        ...prev,
+                                                        [match.id]: {
+                                                            ...prev[match.id],
+                                                            teamA: e.target.value
+                                                        }
+                                                    }))}
+                                                >
+                                                    <option value="">Vyberte hráče</option>
+                                                    {(players[teamAId] || []).map(name => (
+                                                        <option key={name} value={name}>{name}</option>
+                                                    ))}
+                                                </select>
+                                                <button
+                                                    onClick={() => {
+                                                        const name = selectedScorer[match.id]?.teamA;
+                                                        if (!name) return;
+                                                        const isExisting = (scorers[match.id]?.teamA || []).includes(name);
 
-                            <div key={match.id} className="playoff-match-row">
+                                                        if (isExisting) {
+                                                            const currentGoals = scorerGoals[match.id]?.teamA?.[name] || 1;
+                                                            handleGoalCountChange(match.id, 'teamA', name, currentGoals + 1);
+                                                        } else {
+                                                            handleScorerChange(match.id, 'teamA', [
+                                                                ...(scorers[match.id]?.teamA || []),
+                                                                name
+                                                            ]);
+                                                            handleGoalCountChange(match.id, 'teamA', name, 1);
+                                                        }
+                                                    }}
+                                                >
+                                                    +
+                                                </button>
+                                                <ul className="scorer-list">
+                                                    {(scorers[match.id]?.teamA || []).map(name => (
+                                                        <li key={name}>
+                                                            {name} ({scorerGoals[match.id]?.teamA?.[name] || 1} gólů)
+                                                            <button
+                                                                className="decrement-btn"
+                                                                onClick={() => handleDecrementGoal(match.id, 'teamA', name)}
+                                                            >
+                                                                −
+                                                            </button>
+                                                        </li>
+                                                    ))}
+                                                </ul>
+                                            </div>
+                                        </div>
 
-                                {/* TEAM A */}
-                                <div className="team-block">
-                                    <select
-                                        value={match.teamA || ''}
-                                        onChange={(e) => handleChange(round.round, i, 'teamA', e.target.value)}
-                                        onFocus={() => fetchPlayersForTeam(teamAId)}
-                                    >
-                                        {teams.map(t => (
-                                            <option key={t.id} value={t.name}>{t.name}</option>
-                                        ))}
-                                    </select>
+                                        <div className="score-wrapper">
+                                            <input type="number" value={match.scoreA ?? 0}
+                                                   onChange={(e) => handleChange(round.round, i, 'scoreA', parseInt(e.target.value))} />
+                                            <span>vs</span>
+                                            <input type="number" value={match.scoreB ?? 0}
+                                                   onChange={(e) => handleChange(round.round, i, 'scoreB', parseInt(e.target.value))} />
+                                        </div>
 
-                                    {/* TEAM A SCORERS */}
-                                    <div className="scorer-form">
-                                        <select
-                                            value={selectedScorer[match.id]?.teamA || ''}
-                                            onChange={(e) => setSelectedScorer(prev => ({
-                                                ...prev,
-                                                [match.id]: {
-                                                    ...prev[match.id],
-                                                    teamA: e.target.value
-                                                }
-                                            }))}
-                                        >
-                                            <option value="">Vyberte hráče</option>
-                                            {(players[teamAId] || []).map(name => (
-                                                <option key={name} value={name}>{name}</option>
-                                            ))}
-                                        </select>
-                                        <button
-                                            onClick={() => {
-                                                const teamKey = 'teamA';
-                                                const name = selectedScorer[match.id]?.[teamKey];
-                                                if (!name) return;
+                                        <div className="team-wrapper">
+                                            <select
+                                                value={match.teamB || ''}
+                                                onChange={(e) => handleChange(round.round, i, 'teamB', e.target.value)}
+                                                onFocus={() => fetchPlayersForTeam(teamBId)}
+                                            >
+                                                {teams.map(t => (
+                                                    <option key={t.id} value={t.name}>{t.name}</option>
+                                                ))}
+                                            </select>
+                                            <div className="scorer-form">
+                                                <select
+                                                    value={selectedScorer[match.id]?.teamB || ''}
+                                                    onChange={(e) => setSelectedScorer(prev => ({
+                                                        ...prev,
+                                                        [match.id]: {
+                                                            ...prev[match.id],
+                                                            teamB: e.target.value
+                                                        }
+                                                    }))}
+                                                >
+                                                    <option value="">Vyberte hráče</option>
+                                                    {(players[teamBId] || []).map(name => (
+                                                        <option key={name} value={name}>{name}</option>
+                                                    ))}
+                                                </select>
+                                                <button
+                                                    onClick={() => {
+                                                        const name = selectedScorer[match.id]?.teamB;
+                                                        if (!name) return;
+                                                        const isExisting = (scorers[match.id]?.teamB || []).includes(name);
 
-                                                const isExisting = (scorers[match.id]?.[teamKey] || []).includes(name);
-
-                                                if (isExisting) {
-                                                    const currentGoals = scorerGoals[match.id]?.[teamKey]?.[name] || 1;
-                                                    handleGoalCountChange(match.id, teamKey, name, currentGoals + 1);
-                                                } else {
-                                                    handleScorerChange(match.id, teamKey, [
-                                                        ...(scorers[match.id]?.[teamKey] || []),
-                                                        name
-                                                    ]);
-                                                    handleGoalCountChange(match.id, teamKey, name, 1);
-                                                }
-                                            }}
-                                        >
-                                            +
-                                        </button>
-
-                                        <ul className="scorer-list">
-                                            {(scorers[match.id]?.teamA || []).map((name) => (
-                                                <li key={name}>
-                                                    {name} ({scorerGoals[match.id]?.teamA?.[name] || 1} gólů)
-                                                    <button
-                                                        onClick={() => handleDecrementGoal(match.id, 'teamA', name)}
-                                                        className="decrement-btn"
-                                                    >
-                                                        —
-                                                    </button>
-                                                </li>
-                                            ))}
-                                        </ul>
+                                                        if (isExisting) {
+                                                            const currentGoals = scorerGoals[match.id]?.teamB?.[name] || 1;
+                                                            handleGoalCountChange(match.id, 'teamB', name, currentGoals + 1);
+                                                        } else {
+                                                            handleScorerChange(match.id, 'teamB', [
+                                                                ...(scorers[match.id]?.teamB || []),
+                                                                name
+                                                            ]);
+                                                            handleGoalCountChange(match.id, 'teamB', name, 1);
+                                                        }
+                                                    }}
+                                                >
+                                                    +
+                                                </button>
+                                                <ul className="scorer-list">
+                                                    {(scorers[match.id]?.teamB || []).map(name => (
+                                                        <li key={name}>
+                                                            {name} ({scorerGoals[match.id]?.teamB?.[name] || 1} gólů)
+                                                            <button
+                                                                className="decrement-btn"
+                                                                onClick={() => handleDecrementGoal(match.id, 'teamB', name)}
+                                                            >
+                                                                −
+                                                            </button>
+                                                        </li>
+                                                    ))}
+                                                </ul>
+                                            </div>
+                                        </div>
                                     </div>
-
-                                </div>
-
-                                {/* SCORE A */}
-                                <input type="number" value={match.scoreA ?? 0}
-                                       onChange={(e) => handleChange(round.round, i, 'scoreA', parseInt(e.target.value))}
-                                />
-
-                                <span>vs</span>
-
-                                {/* SCORE B */}
-                                <input type="number" value={match.scoreB ?? 0}
-                                       onChange={(e) => handleChange(round.round, i, 'scoreB', parseInt(e.target.value))}
-                                />
-
-                                {/* TEAM B */}
-                                <div className="team-block">
-                                    <select
-                                        value={match.teamB || ''}
-                                        onChange={(e) => handleChange(round.round, i, 'teamB', e.target.value)}
-                                        onFocus={() => fetchPlayersForTeam(teamBId)}
-                                    >
-                                        {teams.map(t => (
-                                            <option key={t.id} value={t.name}>{t.name}</option>
-                                        ))}
-                                    </select>
-
-                                    {/* TEAM B SCORERS */}
-                                    <div className="scorer-form">
-                                        <select
-                                            value={selectedScorer[match.id]?.teamB || ''}
-                                            onChange={(e) => setSelectedScorer(prev => ({
-                                                ...prev,
-                                                [match.id]: {
-                                                    ...prev[match.id],
-                                                    teamB: e.target.value
-                                                }
-                                            }))}
-                                        >
-                                            <option value="">Vyberte hráče</option>
-                                            {(players[teamBId] || []).map(name => (
-                                                <option key={name} value={name}>{name}</option>
-                                            ))}
-                                        </select>
-                                        <button
-                                            onClick={() => {
-                                                const teamKey = 'teamB';
-                                                const name = selectedScorer[match.id]?.[teamKey];
-                                                if (!name) return;
-
-                                                const isExisting = (scorers[match.id]?.[teamKey] || []).includes(name);
-
-                                                if (isExisting) {
-                                                    const currentGoals = scorerGoals[match.id]?.[teamKey]?.[name] || 1;
-                                                    handleGoalCountChange(match.id, teamKey, name, currentGoals + 1);
-                                                } else {
-                                                    handleScorerChange(match.id, teamKey, [
-                                                        ...(scorers[match.id]?.[teamKey] || []),
-                                                        name
-                                                    ]);
-                                                    handleGoalCountChange(match.id, teamKey, name, 1);
-                                                }
-                                            }}
-                                        >
-                                            +
-                                        </button>
-
-                                        <ul className="scorer-list">
-                                            {(scorers[match.id]?.teamB || []).map((name) => (
-                                                <li key={name}>
-                                                    {name} ({scorerGoals[match.id]?.teamB?.[name] || 1} gólů)
-                                                    <button
-                                                        onClick={() => handleDecrementGoal(match.id, 'teamB', name)}
-                                                        className="decrement-btn"
-                                                    >
-                                                        —
-                                                    </button>
-                                                </li>
-                                            ))}
-                                        </ul>
+                                    <div className="match-actions">
+                                        <button onClick={() => saveMatch(round.round, i)}>Uložit</button>
                                     </div>
-
                                 </div>
-
-                                <button onClick={() => saveMatch(round.round, i)}>Uložit</button>
-                            </div>
                             );
                         })}
                     </div>
@@ -718,22 +703,24 @@ const ManagePlayoffs = () => {
                         onChange={(e) => setNewRoundName(e.target.value)}
                     />
                     {newMatches.map((match, i) => (
-                        <div key={i} className="playoff-match-row">
-                            <select value={match.teamA} onChange={(e) => handleNewMatchChange(i, 'teamA', e.target.value)}>
-                                <option value="">Vyberte tým A</option>
-                                {teams.map(t => (
-                                    <option key={t.id} value={t.name}>{t.name}</option>
-                                ))}
-                            </select>
-                            <input type="number" value={match.scoreA} onChange={(e) => handleNewMatchChange(i, 'scoreA', parseInt(e.target.value))} />
-                            <span>vs</span>
-                            <input type="number" value={match.scoreB} onChange={(e) => handleNewMatchChange(i, 'scoreB', parseInt(e.target.value))} />
-                            <select value={match.teamB} onChange={(e) => handleNewMatchChange(i, 'teamB', e.target.value)}>
-                                <option value="">Vyberte tým B</option>
-                                {teams.map(t => (
-                                    <option key={t.id} value={t.name}>{t.name}</option>
-                                ))}
-                            </select>
+                        <div key={i} className="match-card">
+                            <div className="match-layout">
+                                <select value={match.teamA} onChange={(e) => handleNewMatchChange(i, 'teamA', e.target.value)}>
+                                    <option value="">Vyberte tým A</option>
+                                    {teams.map(t => (
+                                        <option key={t.id} value={t.name}>{t.name}</option>
+                                    ))}
+                                </select>
+                                <input type="number" value={match.scoreA} onChange={(e) => handleNewMatchChange(i, 'scoreA', parseInt(e.target.value))} />
+                                <span>vs</span>
+                                <input type="number" value={match.scoreB} onChange={(e) => handleNewMatchChange(i, 'scoreB', parseInt(e.target.value))} />
+                                <select value={match.teamB} onChange={(e) => handleNewMatchChange(i, 'teamB', e.target.value)}>
+                                    <option value="">Vyberte tým B</option>
+                                    {teams.map(t => (
+                                        <option key={t.id} value={t.name}>{t.name}</option>
+                                    ))}
+                                </select>
+                            </div>
                         </div>
                     ))}
                     <div className="button-row">
