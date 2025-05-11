@@ -15,6 +15,7 @@
     "docxtemplater": "^3.61.1",
     "express": "^4.21.0",
     "firebase-admin": "^12.6.0",
+    "iconv-lite": "^0.6.3",
     "pizzip": "^3.1.8"
   }
 }

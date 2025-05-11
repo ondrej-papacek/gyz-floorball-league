@@ -1,12 +1,12 @@
-﻿function generateRoundPreviewDoc(roundData) {
-    const formattedMatches = (roundData.matches || []).map((m, index) => {
-        return {
-            index: index + 1,
-            teamA: m.teamA || '---',
-            teamB: m.teamB || '---',
-            match_time: '---'
-        };
-    });
+﻿const iconv = require('iconv-lite');
+
+function generateRoundPreviewDoc(roundData) {
+    const formattedMatches = (roundData.matches || []).map((m, index) => ({
+        index: index + 1,
+        teamA: m.teamA || '---',
+        teamB: m.teamB || '---',
+        match_time: '---'
+    }));
 
     let roundDate = '---';
     try {
@@ -18,7 +18,8 @@
 
     const rtfParts = [];
 
-    rtfParts.push('{\\rtf1\\ansi\\deff0');
+    // 🧠 Central European encoding + minimal header
+    rtfParts.push('{\\rtf1\\ansi\\ansicpg1250\\deff0');
     rtfParts.push(`\\b Kolo ${roundData.round} \\b0\\line`);
     rtfParts.push(`${roundDate}\\line\\line`);
 
@@ -28,7 +29,7 @@
 
     rtfParts.push('}');
 
-    return Buffer.from(rtfParts.join('\n'), 'utf-8');
+    return iconv.encode(rtfParts.join('\n'), 'windows-1250');
 }
 
 module.exports = {

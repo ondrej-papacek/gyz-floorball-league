@@ -1,4 +1,5 @@
-﻿const { db } = require('../../firebase');
+﻿const iconv = require('iconv-lite');
+const { db } = require('../../firebase');
 
 async function getGoalScorers(year, division) {
     try {
@@ -23,7 +24,7 @@ async function generateSeasonSummaryDoc(seasonData) {
 
     const rtfParts = [];
 
-    rtfParts.push('{\\rtf1\\ansi\\deff0');
+    rtfParts.push('{\\rtf1\\ansi\\ansicpg1250\\deff0');
     rtfParts.push(`\\b Shrnutí sezóny ${year} \\b0\\line\\line`);
 
     const section = (title) => `\\b ${title} \\b0\\line`;
@@ -61,7 +62,7 @@ async function generateSeasonSummaryDoc(seasonData) {
 
     rtfParts.push('}');
 
-    return Buffer.from(rtfParts.join('\n'), 'utf-8');
+    return iconv.encode(rtfParts.join('\n'), 'windows-1250');
 }
 
 module.exports = { generateSeasonSummaryDoc };
