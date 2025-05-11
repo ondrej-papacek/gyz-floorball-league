@@ -21,9 +21,16 @@ async function generateRoundPreviewDoc(roundData) {
         };
     });
 
+    let roundDateObj;
+    if (roundData.date?.seconds) {
+        roundDateObj = new Date(roundData.date.seconds * 1000);
+    } else {
+        roundDateObj = new Date(roundData.date);
+    }
+
     const data = {
         roundNumber: roundData.round,
-        roundDate: new Date(roundData.date).toLocaleDateString("cs-CZ"),
+        roundDate: roundDateObj.toLocaleDateString("cs-CZ"),
         matches: formattedMatches
     };
 
