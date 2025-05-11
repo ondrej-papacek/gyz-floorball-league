@@ -5,7 +5,7 @@ import AdminNavbar from "../components/AdminNavbar.jsx";
 import { db } from '../services/firebase';
 import { collection, doc, setDoc, getDocs } from 'firebase/firestore';
 import { useLeague } from '../services/leagueContext';
-import { generateSeasonSummary } from '../services/docxService';
+import { generateSeasonSummary } from '../services/rtfService';
 
 const ManageLeague = () => {
     const navigate = useNavigate();

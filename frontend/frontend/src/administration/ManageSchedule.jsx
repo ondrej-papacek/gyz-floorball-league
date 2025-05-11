@@ -10,7 +10,7 @@ import {
     deleteRound,
     forceFinishMatch
 } from '../services/scheduleService';
-import { generateRoundPreview } from '../services/docxService';
+import { generateRoundPreview } from '../services/rtfService';
 import { collection, getDocs, doc, setDoc } from 'firebase/firestore';
 import { db } from '../services/firebase';
 import './manageSchedule.css';
@@ -189,7 +189,7 @@ const ManageSchedule = () => {
         try {
             await generateRoundPreview(roundInfo);
         } catch (err) {
-            console.error('Failed to generate DOCX:', err);
+            console.error('Failed to generate RTF:', err);
             alert('Chyba při generování dokumentu.');
         }
     };
@@ -257,8 +257,8 @@ const ManageSchedule = () => {
                                             <button onClick={() => handleRoundAction(round, 'delete')}>Smazat kolo</button>
                                         </div>
 
-                                        <div className="docx-generate">
-                                            <button className="docx-btn" onClick={() => safeGenerateRoundPreview({
+                                        <div className="rtf-generate">
+                                            <button className="rtf-btn" onClick={() => safeGenerateRoundPreview({
                                                 round: round.round,
                                                 date: round.date,
                                                 matches: round.matches.map(m => ({
