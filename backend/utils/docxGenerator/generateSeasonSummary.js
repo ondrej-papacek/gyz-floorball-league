@@ -2,8 +2,13 @@
 const { db } = require('../../firebase');
 
 async function getGoalScorers(year, division) {
-    const snap = await db.collection(`leagues/${year}_${division}/goalScorers`).get();
-    return snap.docs.map(doc => doc.data());
+    try {
+        const snap = await db.collection(`leagues/${year}_${division}/goalScorers`).get();
+        return snap.docs.map(doc => doc.data());
+    } catch (err) {
+        console.error(`Failed to fetch goal scorers for ${year}_${division}:`, err);
+        return [];
+    }
 }
 
 async function generateSeasonSummaryDoc(seasonData) {
@@ -15,7 +20,7 @@ async function generateSeasonSummaryDoc(seasonData) {
     const data = {
         year,
 
-        lowerLeagueTable: seasonData.lowerLeagueTable.map(team => ({
+        lowerLeagueTable: (seasonData.lowerLeagueTable || []).map(team => ({
             team: team.name,
             games: team.matchesPlayed,
             wins: team.wins,
@@ -26,7 +31,7 @@ async function generateSeasonSummaryDoc(seasonData) {
             points: team.points
         })),
 
-        upperLeagueTable: seasonData.upperLeagueTable.map(team => ({
+        upperLeagueTable: (seasonData.upperLeagueTable || []).map(team => ({
             team: team.name,
             games: team.matchesPlayed,
             wins: team.wins,
@@ -37,17 +42,21 @@ async function generateSeasonSummaryDoc(seasonData) {
             points: team.points
         })),
 
-        goalScorers_lower: lowerGoalscorers.map(scorer => ({
-            goal_scorer: scorer.name,
-            goals: scorer.goals,
-            team: scorer.team
-        })),
+        goalScorers_lower: lowerGoalscorers
+            .sort((a, b) => b.goals - a.goals)
+            .map(scorer => ({
+                goal_scorer: scorer.name,
+                goals: scorer.goals,
+                team: scorer.team
+            })),
 
-        goalScorers_upper: upperGoalscorers.map(scorer => ({
-            goal_scorer: scorer.name,
-            goals: scorer.goals,
-            team: scorer.team
-        })),
+        goalScorers_upper: upperGoalscorers
+            .sort((a, b) => b.goals - a.goals)
+            .map(scorer => ({
+                goal_scorer: scorer.name,
+                goals: scorer.goals,
+                team: scorer.team
+            })),
 
         PlayoffBracket_lower: seasonData.PlayoffBracket_lower || '',
         PlayoffBracket_upper: seasonData.PlayoffBracket_upper || '',
