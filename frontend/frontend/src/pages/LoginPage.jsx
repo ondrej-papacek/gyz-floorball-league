@@ -10,7 +10,6 @@ import {
     browserSessionPersistence
 } from 'firebase/auth';
 
-
 const LoginPage = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -54,7 +53,7 @@ const LoginPage = () => {
                 }
 
                 if (role === 'admin') navigate('/admin');
-                else if (role === 'helper') navigate('/liveBroadcast');
+                else if (role === 'helper') navigate('/admin');
                 else setError('Vaše role není platná. Kontaktujte administrátora.');
             } else {
                 setError('Uživatel nebyl nalezen v databázi.');

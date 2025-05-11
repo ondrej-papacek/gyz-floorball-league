@@ -82,7 +82,7 @@ function GoalScorers() {
     return (
         <div className="goal-scorers-page">
             <h2 className="goal-scorers-title">Střelci</h2>
-            <button onClick={fetchGoalScorers}>Načíst znovu</button>
+            <button className="goal-scorers-refresh-btn" onClick={fetchGoalScorers}>Načíst hráče</button>
 
             {/* Nižší gymnázium */}
             <div className="gym-section">

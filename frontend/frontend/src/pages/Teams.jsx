@@ -119,7 +119,7 @@ function Teams() {
                             <option key={year} value={year}>{year}</option>
                         ))}
                     </select>
-                    <button onClick={refreshTeams} style={{ marginLeft: '10px' }}>🔄 Obnovit týmy</button>
+                    <button className="teams-refresh-btn" onClick={refreshTeams} style={{ marginLeft: '10px' }}>Načíst týmy</button>
                 </div>
             )}
 
