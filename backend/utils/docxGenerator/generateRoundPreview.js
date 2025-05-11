@@ -13,8 +13,8 @@ async function generateRoundPreviewDoc(roundData) {
 
         return {
             index: index + 1,
-            teamA: m.teamA_name,
-            teamB: m.teamB_name,
+            teamA: m.teamA_name || '---',
+            teamB: m.teamB_name || '---',
             match_time: rawDate.toLocaleTimeString("cs-CZ", {
                 hour: "2-digit",
                 minute: "2-digit"
