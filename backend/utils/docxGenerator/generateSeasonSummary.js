@@ -43,6 +43,12 @@ async function fetchGoalScorersFromCollection(path) {
     return snap.docs.map(doc => doc.data());
 }
 
+async function fetchGoalScorersFromDocument(path) {
+    const doc = await db.doc(path).get();
+    const data = doc.data();
+    return data && Array.isArray(data.goalScorers) ? data.goalScorers : [];
+}
+
 function extractScorersFromTeamPlayers(teams) {
     const scorers = [];
     for (const team of teams) {
@@ -136,11 +142,11 @@ async function generateSeasonSummaryDoc(seasonData) {
     ] = await Promise.all([
         fetchGoalScorersFromCollection(`leagues/${year}_lower/goalScorers`),
         Promise.resolve(extractScorersFromTeamPlayers(lowerTeams)),
-        fetchGoalScorersFromCollection(`leagues/${year}_lower/playoff/goalScorers`),
+        fetchGoalScorersFromDocument(`leagues/${year}_lower/playoff/goalScorers`),
 
         fetchGoalScorersFromCollection(`leagues/${year}_upper/goalScorers`),
         Promise.resolve(extractScorersFromTeamPlayers(upperTeams)),
-        fetchGoalScorersFromCollection(`leagues/${year}_upper/playoff/goalScorers`),
+        fetchGoalScorersFromDocument(`leagues/${year}_upper/playoff/goalScorers`),
     ]);
 
     const finalScorersLower = mergeGoalScorers(g1_lower, g2_lower, g3_lower);
