@@ -1,7 +1,6 @@
 ﻿const express = require('express');
 const router = express.Router();
-const admin = require('../firebase');
-const db = admin.firestore();
+const { admin, db } = require('../firebase');
 
 router.post('/create-user', async (req, res) => {
     const { email, password, role } = req.body;
