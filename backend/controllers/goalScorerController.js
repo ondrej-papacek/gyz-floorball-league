@@ -1,5 +1,4 @@
-﻿const admin = require('../firebase');
-const db = admin.firestore();
+﻿const { admin, db } = require('../firebase');
 
 exports.getGoalScorers = async (req, res, next) => {
     try {

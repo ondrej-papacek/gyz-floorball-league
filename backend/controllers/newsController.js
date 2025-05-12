@@ -1,5 +1,4 @@
-﻿const admin = require('../firebase');
-const db = admin.firestore();
+﻿const { admin, db } = require('../firebase');
 
 const parseDate = (date) => {
     if (!date) return null;

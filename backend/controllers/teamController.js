@@ -1,5 +1,4 @@
-﻿const admin = require('../firebase');
-const db = admin.firestore();
+﻿const { admin, db } = require('../firebase');
 const { generateTeamIdFromName } = require('../utils/teamUtils');
 
 exports.getTeams = async (req, res, next) => {
