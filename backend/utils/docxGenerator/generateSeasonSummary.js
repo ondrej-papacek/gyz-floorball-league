@@ -22,7 +22,7 @@ async function fetchMatchesFromDB(year, division) {
 
 async function fetchPlayoffMatchesGrouped(year, division) {
     const snap = await db
-        .collection(`leagues/${year}_${division}/rounds/bracketMatches`)
+        .collection(`leagues/${year}_${division}/playoff/rounds/bracketMatches`)
         .get();
 
     const roundsMap = {};
