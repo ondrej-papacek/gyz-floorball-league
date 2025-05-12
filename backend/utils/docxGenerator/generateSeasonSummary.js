@@ -110,8 +110,6 @@ async function generateSeasonSummaryDoc(seasonData) {
     const playoffLower = seasonData.PlayoffBracket_lower || "---";
     const playoffUpper = seasonData.PlayoffBracket_upper || "---";
 
-    const doc = new Document();
-
     const children = [
         sectionTitle(`Shrnutí sezóny ${year}`),
         new Paragraph({ text: "" }),
@@ -170,7 +168,13 @@ async function generateSeasonSummaryDoc(seasonData) {
         textLine(playoffUpper),
     ];
 
-    doc.addSection({ children });
+    const doc = new Document({
+        sections: [
+            {
+                children,
+            },
+        ],
+    });
 
     return await Packer.toBuffer(doc);
 }
