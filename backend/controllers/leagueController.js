@@ -1,5 +1,4 @@
-﻿const admin = require('../firebase');
-const db = admin.firestore();
+﻿const { admin, db } = require('../firebase');
 
 exports.getLeagues = async (req, res, next) => {
     try {
@@ -36,15 +35,11 @@ exports.updateLeague = async (req, res, next) => {
 exports.deleteLeague = async (req, res, next) => {
     try {
         const leagueId = req.params.id;
-
         const leagueRef = db.collection('leagues').doc(leagueId);
-
         await admin.firestore().recursiveDelete(leagueRef);
-
         res.status(200).json({ message: 'Liga a všechny její poddokumenty byly úspěšně smazány.' });
     } catch (error) {
         console.error("🔥 Error during recursive league delete:", error);
         next(new Error('Nepodařilo se smazat ligu a její data.'));
     }
 };
-
