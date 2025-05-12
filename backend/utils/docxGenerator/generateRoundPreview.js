@@ -17,14 +17,40 @@ async function generateRoundPreviewDoc(roundData) {
         ? roundDateObj.toLocaleDateString("cs-CZ")
         : "---";
 
-    // Load logos
     const logoPath = path.join(__dirname, "assets", "logo.png");
     const logoTextPath = path.join(__dirname, "assets", "logo-text.jpg");
-
     const logoImage = fs.readFileSync(logoPath);
     const logoTextImage = fs.readFileSync(logoTextPath);
 
+    const matchParagraphs = matches.map((match, i) => {
+        const teamA = match.teamA || "---";
+        const teamB = match.teamB || "---";
+
+        return new Paragraph({
+            alignment: AlignmentType.CENTER,
+            spacing: { after: 200 },
+            children: [
+                new TextRun({
+                    text: `Zápas ${i + 1}: ${teamA} vs ${teamB}`,
+                    size: 26,
+                }),
+            ],
+        });
+    });
+
     const doc = new Document({
+        styles: {
+            default: {
+                document: {
+                    run: {
+                        font: "Cambria",
+                    },
+                    paragraph: {
+                        spacing: { line: 276 },
+                    },
+                },
+            },
+        },
         sections: [
             {
                 properties: {
@@ -42,8 +68,10 @@ async function generateRoundPreviewDoc(roundData) {
                     },
                 },
                 children: [
+                    // Logo
                     new Paragraph({
                         alignment: AlignmentType.CENTER,
+                        spacing: { after: 300 },
                         children: [
                             new ImageRun({
                                 data: logoImage,
@@ -58,51 +86,28 @@ async function generateRoundPreviewDoc(roundData) {
                     new Paragraph({
                         alignment: AlignmentType.CENTER,
                         children: [
-                            new TextRun({
-                                text: `Kolo ${round}`,
-                                bold: true,
-                                size: 36,
-                            }),
+                            new TextRun({ text: `Kolo ${round}`, bold: true, size: 36 }),
                         ],
                     }),
-
                     new Paragraph({
                         alignment: AlignmentType.CENTER,
+                        spacing: { after: 400 },
                         children: [
-                            new TextRun({
-                                text: formattedDate,
-                                size: 28,
-                            }),
+                            new TextRun({ text: formattedDate, size: 28 }),
                         ],
                     }),
 
-                    new Paragraph({ text: "" }),
-
-                    ...matches.map((match, i) => {
-                        const teamA = match.teamA || "---";
-                        const teamB = match.teamB || "---";
-                        return new Paragraph({
-                            alignment: AlignmentType.LEFT,
-                            spacing: { after: 200 },
-                            children: [
-                                new TextRun({
-                                    text: `Zápas ${i + 1}: ${teamA} vs ${teamB}`,
-                                    size: 26,
-                                }),
-                            ],
-                        });
-                    }),
-
-                    new Paragraph({ text: "" }),
+                    ...matchParagraphs,
 
                     new Paragraph({
                         alignment: AlignmentType.CENTER,
+                        spacing: { before: 600 },
                         children: [
                             new ImageRun({
                                 data: logoTextImage,
                                 transformation: {
-                                    width: 250,
-                                    height: 60,
+                                    width: 175,
+                                    height: 42,
                                 },
                             }),
                         ],
