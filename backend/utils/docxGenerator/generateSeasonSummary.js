@@ -34,14 +34,50 @@ async function fetchMatchesFromDB(year, division) {
     }
 }
 
-async function getGoalScorers(year, division) {
+async function fetchGoalScorersFromCollection(path) {
     try {
-        const snap = await db.collection(`leagues/${year}_${division}/goalScorers`).get();
+        const snap = await db.collection(path).get();
         return snap.docs.map(doc => doc.data());
     } catch (err) {
-        console.error(`Failed to fetch goal scorers for ${year}_${division}:`, err);
+        console.error(`Failed to fetch goal scorers from ${path}:`, err);
         return [];
     }
+}
+
+function mergeGoalScorers(...sources) {
+    const map = new Map();
+
+    for (const list of sources) {
+        for (const scorer of list) {
+            const name = scorer.name?.trim();
+            const team = scorer.team?.trim();
+            const goals = Number(scorer.goals || 0);
+
+            if (!name || !team || isNaN(goals)) continue;
+
+            const key = `${name}__${team}`;
+            if (!map.has(key)) {
+                map.set(key, { name, team, goals: 0 });
+            }
+
+            map.get(key).goals += goals;
+        }
+    }
+
+    return Array.from(map.values()).sort((a, b) => b.goals - a.goals);
+}
+
+function extractScorersFromTeamPlayers(teams) {
+    const scorers = [];
+    for (const team of teams) {
+        const players = Array.isArray(team.players) ? team.players : [];
+        for (const p of players) {
+            if (p.name && p.goals) {
+                scorers.push({ name: p.name, team: team.name, goals: p.goals });
+            }
+        }
+    }
+    return scorers;
 }
 
 function groupMatchesByRound(matches) {
@@ -109,11 +145,6 @@ async function generateSeasonSummaryDoc(seasonData) {
         fetchTeamsFromDB(year, "upper"),
     ]);
 
-    const [lowerScorers, upperScorers] = await Promise.all([
-        getGoalScorers(year, "lower"),
-        getGoalScorers(year, "upper"),
-    ]);
-
     const [lowerMatches, upperMatches] = await Promise.all([
         fetchMatchesFromDB(year, "lower"),
         fetchMatchesFromDB(year, "upper"),
@@ -125,7 +156,25 @@ async function generateSeasonSummaryDoc(seasonData) {
     const playoffLower = seasonData.PlayoffBracket_lower || "---";
     const playoffUpper = seasonData.PlayoffBracket_upper || "---";
 
-    // === Load logo ===
+    const [
+        g1_lower,
+        g2_lower,
+        g3_lower,
+        g1_upper,
+        g2_upper,
+        g3_upper,
+    ] = await Promise.all([
+        fetchGoalScorersFromCollection(`leagues/${year}_lower/goalScorers`),
+        Promise.resolve(extractScorersFromTeamPlayers(lowerTeams)),
+        fetchGoalScorersFromCollection(`leagues/${year}_lower/playoff/goalScorers`),
+        fetchGoalScorersFromCollection(`leagues/${year}_upper/goalScorers`),
+        Promise.resolve(extractScorersFromTeamPlayers(upperTeams)),
+        fetchGoalScorersFromCollection(`leagues/${year}_upper/playoff/goalScorers`),
+    ]);
+
+    const finalScorersLower = mergeGoalScorers(g1_lower, g2_lower, g3_lower);
+    const finalScorersUpper = mergeGoalScorers(g1_upper, g2_upper, g3_upper);
+
     const logoPath = path.join(__dirname, "assets", "logo.png");
     const logoImage = fs.readFileSync(logoPath);
 
@@ -161,14 +210,14 @@ async function generateSeasonSummaryDoc(seasonData) {
                     new Paragraph({ children: [new PageBreak()] }),
 
                     sectionTitle("Střelci - Nižší Gymnázium"),
-                    ...lowerScorers.sort((a, b) => b.goals - a.goals).map(s =>
+                    ...finalScorersLower.map(s =>
                         textLine(`${s.name} (${s.team}): ${s.goals} gólů`)
                     ),
 
                     new Paragraph({ children: [new PageBreak()] }),
 
                     sectionTitle("Střelci - Vyšší Gymnázium"),
-                    ...upperScorers.sort((a, b) => b.goals - a.goals).map(s =>
+                    ...finalScorersUpper.map(s =>
                         textLine(`${s.name} (${s.team}): ${s.goals} gólů`)
                     ),
 
