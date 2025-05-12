@@ -20,6 +20,39 @@ async function fetchTeamsFromDB(year, division) {
     }
 }
 
+async function fetchMatchesFromDB(year, division) {
+    try {
+        const snap = await db.collection(`leagues/${year}_${division}/matches`).get();
+        return snap.docs
+            .map(doc => doc.data())
+            .filter(match => match.id !== "placeholder");
+    } catch (err) {
+        console.error(`Error fetching matches for ${year}_${division}:`, err);
+        return [];
+    }
+}
+
+function groupMatchesByRound(matches) {
+    const grouped = {};
+
+    matches.forEach(match => {
+        const round = match.round ?? 0;
+        const date = match.date?.seconds ? new Date(match.date.seconds * 1000) : new Date();
+
+        if (!grouped[round]) {
+            grouped[round] = { round, date, matches: [] };
+        }
+
+        grouped[round].matches.push(match);
+
+        if (date < grouped[round].date) {
+            grouped[round].date = date;
+        }
+    });
+
+    return Object.values(grouped).sort((a, b) => a.round - b.round);
+}
+
 async function getGoalScorers(year, division) {
     try {
         const snap = await db.collection(`leagues/${year}_${division}/goalScorers`).get();
@@ -45,13 +78,34 @@ function textLine(text) {
     });
 }
 
+function matchLine(match, i) {
+    const teamA = match.teamA_name || "---";
+    const teamB = match.teamB_name || "---";
+    const scoreA = typeof match.scoreA === 'number' ? match.scoreA : "-";
+    const scoreB = typeof match.scoreB === 'number' ? match.scoreB : "-";
+    return textLine(`Zápas ${i + 1}: ${teamA} ${scoreA} : ${scoreB} ${teamB}`);
+}
+
 async function generateSeasonSummaryDoc(seasonData) {
     const year = seasonData.year;
 
-    const lowerLeagueTable = await fetchTeamsFromDB(year, "lower");
-    const upperLeagueTable = await fetchTeamsFromDB(year, "upper");
-    const lowerScorers = await getGoalScorers(year, "lower");
-    const upperScorers = await getGoalScorers(year, "upper");
+    const [lowerTeams, upperTeams] = await Promise.all([
+        fetchTeamsFromDB(year, "lower"),
+        fetchTeamsFromDB(year, "upper"),
+    ]);
+
+    const [lowerScorers, upperScorers] = await Promise.all([
+        getGoalScorers(year, "lower"),
+        getGoalScorers(year, "upper"),
+    ]);
+
+    const [lowerMatches, upperMatches] = await Promise.all([
+        fetchMatchesFromDB(year, "lower"),
+        fetchMatchesFromDB(year, "upper"),
+    ]);
+
+    const groupedLower = groupMatchesByRound(lowerMatches);
+    const groupedUpper = groupMatchesByRound(upperMatches);
 
     const playoffLower = seasonData.PlayoffBracket_lower || "---";
     const playoffUpper = seasonData.PlayoffBracket_upper || "---";
@@ -63,30 +117,48 @@ async function generateSeasonSummaryDoc(seasonData) {
         new Paragraph({ text: "" }),
 
         sectionTitle("Tabulka - Liga Nižší Gymnázium"),
-        ...lowerLeagueTable.map(team =>
+        ...lowerTeams.map(team =>
             textLine(`${team.name}: ${team.points ?? 0} bodů (V:${team.wins ?? 0}, R:${team.draws ?? 0}, P:${team.losses ?? 0}, ${team.goalsScored ?? 0}:${team.goalsConceded ?? 0})`)
         ),
 
         new Paragraph({ children: [new PageBreak()] }),
 
         sectionTitle("Tabulka - Liga Vyšší Gymnázium"),
-        ...upperLeagueTable.map(team =>
+        ...upperTeams.map(team =>
             textLine(`${team.name}: ${team.points ?? 0} bodů (V:${team.wins ?? 0}, R:${team.draws ?? 0}, P:${team.losses ?? 0}, ${team.goalsScored ?? 0}:${team.goalsConceded ?? 0})`)
         ),
 
         new Paragraph({ children: [new PageBreak()] }),
 
         sectionTitle("Střelci - Nižší Gymnázium"),
-        ...lowerScorers.sort((a, b) => b.goals - a.goals).map(scorer =>
-            textLine(`${scorer.name} (${scorer.team}): ${scorer.goals} gólů`)
+        ...lowerScorers.sort((a, b) => b.goals - a.goals).map(s =>
+            textLine(`${s.name} (${s.team}): ${s.goals} gólů`)
         ),
 
         new Paragraph({ children: [new PageBreak()] }),
 
         sectionTitle("Střelci - Vyšší Gymnázium"),
-        ...upperScorers.sort((a, b) => b.goals - a.goals).map(scorer =>
-            textLine(`${scorer.name} (${scorer.team}): ${scorer.goals} gólů`)
+        ...upperScorers.sort((a, b) => b.goals - a.goals).map(s =>
+            textLine(`${s.name} (${s.team}): ${s.goals} gólů`)
         ),
+
+        new Paragraph({ children: [new PageBreak()] }),
+
+        sectionTitle("Rozpis zápasů – Nižší Gymnázium"),
+        ...groupedLower.flatMap(round => [
+            textLine(`Kolo ${round.round} – ${round.date.toLocaleDateString("cs-CZ")}`),
+            ...round.matches.map(matchLine),
+            new Paragraph({ text: "" })
+        ]),
+
+        new Paragraph({ children: [new PageBreak()] }),
+
+        sectionTitle("Rozpis zápasů – Vyšší Gymnázium"),
+        ...groupedUpper.flatMap(round => [
+            textLine(`Kolo ${round.round} – ${round.date.toLocaleDateString("cs-CZ")}`),
+            ...round.matches.map(matchLine),
+            new Paragraph({ text: "" })
+        ]),
 
         new Paragraph({ children: [new PageBreak()] }),
 

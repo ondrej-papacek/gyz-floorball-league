@@ -17,14 +17,18 @@ async function generateRoundPreviewDoc(roundData) {
         ? roundDateObj.toLocaleDateString("cs-CZ")
         : "---";
 
-    // Load logos
     const logoPath = path.join(__dirname, "assets", "logo.png");
     const logoTextPath = path.join(__dirname, "assets", "logo-text.jpg");
 
     const logoImage = fs.readFileSync(logoPath);
     const logoTextImage = fs.readFileSync(logoTextPath);
 
-    const doc = new Document();
+    // 🔧 Fixed - added required metadata fields
+    const doc = new Document({
+        creator: "GymLiga",
+        title: `Rozpis kola ${round}`,
+        description: "Automaticky generovaný rozpis zápasů pro dané kolo",
+    });
 
     doc.addSection({
         properties: {
@@ -47,10 +51,7 @@ async function generateRoundPreviewDoc(roundData) {
                 children: [
                     new ImageRun({
                         data: logoImage,
-                        transformation: {
-                            width: 150,
-                            height: 150,
-                        },
+                        transformation: { width: 150, height: 150 },
                     }),
                 ],
             }),
@@ -81,6 +82,7 @@ async function generateRoundPreviewDoc(roundData) {
             ...matches.map((match, i) => {
                 const teamA = match.teamA || "---";
                 const teamB = match.teamB || "---";
+
                 return new Paragraph({
                     alignment: AlignmentType.LEFT,
                     spacing: { after: 200 },
@@ -100,10 +102,7 @@ async function generateRoundPreviewDoc(roundData) {
                 children: [
                     new ImageRun({
                         data: logoTextImage,
-                        transformation: {
-                            width: 250,
-                            height: 60,
-                        },
+                        transformation: { width: 250, height: 60 },
                     }),
                 ],
             }),
