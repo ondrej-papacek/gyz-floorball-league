@@ -12,8 +12,6 @@ const {
 
 const { db } = require("../../firebase");
 
-// === Helpers ===
-
 async function fetchTeamsFromDB(year, division) {
     try {
         const snap = await db.collection(`leagues/${year}_${division}/teams`).get();
@@ -52,13 +50,10 @@ function mergeGoalScorers(...sources) {
             const name = scorer.name?.trim();
             const team = scorer.team?.trim();
             const goals = Number(scorer.goals || 0);
-
             if (!name || !team || isNaN(goals)) continue;
 
             const key = `${name}__${team}`;
-            if (!map.has(key)) {
-                map.set(key, { name, team, goals: 0 });
-            }
+            if (!map.has(key)) map.set(key, { name, team, goals: 0 });
 
             map.get(key).goals += goals;
         }
@@ -85,35 +80,38 @@ function groupMatchesByRound(matches) {
     matches.forEach(match => {
         const round = match.round ?? 0;
         const date = match.date?.seconds ? new Date(match.date.seconds * 1000) : new Date();
-        if (!grouped[round]) {
-            grouped[round] = { round, date, matches: [] };
-        }
+        if (!grouped[round]) grouped[round] = { round, date, matches: [] };
         grouped[round].matches.push(match);
-        if (date < grouped[round].date) {
-            grouped[round].date = date;
-        }
+        if (date < grouped[round].date) grouped[round].date = date;
     });
     return Object.values(grouped).sort((a, b) => a.round - b.round);
 }
 
-// === Formatting ===
+async function fetchPlayoffRounds(year, division) {
+    try {
+        const snap = await db.collection(`leagues/${year}_${division}/playoff/rounds`).get();
+        const rounds = snap.docs.map(doc => doc.data());
+        return rounds
+            .filter(r => Array.isArray(r.matches))
+            .sort((a, b) => (a.round || 0) - (b.round || 0));
+    } catch (err) {
+        console.error(`Failed to fetch playoff rounds for ${year}_${division}:`, err);
+        return [];
+    }
+}
 
 function sectionTitle(text) {
     return new Paragraph({
         spacing: { after: 200 },
         alignment: AlignmentType.LEFT,
-        children: [
-            new TextRun({ text, bold: true, size: 28, font: "Cambria" }),
-        ],
+        children: [new TextRun({ text, bold: true, size: 28, font: "Cambria" })],
     });
 }
 
 function textLine(text) {
     return new Paragraph({
         alignment: AlignmentType.LEFT,
-        children: [
-            new TextRun({ text, size: 24, font: "Cambria" }),
-        ],
+        children: [new TextRun({ text, size: 24, font: "Cambria" })],
     });
 }
 
@@ -121,21 +119,17 @@ function centeredTitle(text, size = 32) {
     return new Paragraph({
         alignment: AlignmentType.CENTER,
         spacing: { after: 300 },
-        children: [
-            new TextRun({ text, bold: true, size, font: "Cambria" }),
-        ],
+        children: [new TextRun({ text, bold: true, size, font: "Cambria" })],
     });
 }
 
 function matchLine(match, i) {
     const teamA = match.teamA_name || "---";
     const teamB = match.teamB_name || "---";
-    const scoreA = typeof match.scoreA === 'number' ? match.scoreA : "-";
-    const scoreB = typeof match.scoreB === 'number' ? match.scoreB : "-";
+    const scoreA = typeof match.scoreA === "number" ? match.scoreA : "-";
+    const scoreB = typeof match.scoreB === "number" ? match.scoreB : "-";
     return textLine(`Zápas ${i + 1}: ${teamA} ${scoreA} : ${scoreB} ${teamB}`);
 }
-
-// === Main Generation ===
 
 async function generateSeasonSummaryDoc(seasonData) {
     const year = seasonData.year;
@@ -153,20 +147,19 @@ async function generateSeasonSummaryDoc(seasonData) {
     const groupedLower = groupMatchesByRound(lowerMatches);
     const groupedUpper = groupMatchesByRound(upperMatches);
 
-    const playoffLower = seasonData.PlayoffBracket_lower || "---";
-    const playoffUpper = seasonData.PlayoffBracket_upper || "---";
+    const [playoffLowerRounds, playoffUpperRounds] = await Promise.all([
+        fetchPlayoffRounds(year, "lower"),
+        fetchPlayoffRounds(year, "upper"),
+    ]);
 
     const [
-        g1_lower,
-        g2_lower,
-        g3_lower,
-        g1_upper,
-        g2_upper,
-        g3_upper,
+        g1_lower, g2_lower, g3_lower,
+        g1_upper, g2_upper, g3_upper
     ] = await Promise.all([
         fetchGoalScorersFromCollection(`leagues/${year}_lower/goalScorers`),
         Promise.resolve(extractScorersFromTeamPlayers(lowerTeams)),
         fetchGoalScorersFromCollection(`leagues/${year}_lower/playoff/goalScorers`),
+
         fetchGoalScorersFromCollection(`leagues/${year}_upper/goalScorers`),
         Promise.resolve(extractScorersFromTeamPlayers(upperTeams)),
         fetchGoalScorersFromCollection(`leagues/${year}_upper/playoff/goalScorers`),
@@ -242,11 +235,24 @@ async function generateSeasonSummaryDoc(seasonData) {
                     new Paragraph({ children: [new PageBreak()] }),
 
                     sectionTitle("Playoff - Nižší Gymnázium"),
-                    textLine(playoffLower),
+                    ...playoffLowerRounds.flatMap(round => [
+                        textLine(`Kolo ${round.round}`),
+                        ...round.matches.map((m, i) =>
+                            matchLine(m, i)
+                        ),
+                        new Paragraph({ text: "" })
+                    ]),
 
-                    new Paragraph({ text: "" }),
+                    new Paragraph({ children: [new PageBreak()] }),
+
                     sectionTitle("Playoff - Vyšší Gymnázium"),
-                    textLine(playoffUpper),
+                    ...playoffUpperRounds.flatMap(round => [
+                        textLine(`Kolo ${round.round}`),
+                        ...round.matches.map((m, i) =>
+                            matchLine(m, i)
+                        ),
+                        new Paragraph({ text: "" })
+                    ]),
 
                     new Paragraph({ text: "" }),
                     new Paragraph({
