@@ -106,8 +106,8 @@ async function generateRoundPreviewDoc(roundData) {
                             new ImageRun({
                                 data: logoTextImage,
                                 transformation: {
-                                    width: 150,
-                                    height: 37,
+                                    width: 170,
+                                    height: 60,
                                 },
                             }),
                         ],
