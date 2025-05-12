@@ -7,59 +7,40 @@ const {
     TextRun,
     ImageRun,
     AlignmentType,
-    PageBreak,
 } = require("docx");
-
 const { db } = require("../../firebase");
 
 async function fetchTeamsFromDB(year, division) {
-    try {
-        const snap = await db.collection(`leagues/${year}_${division}/teams`).get();
-        return snap.docs.map(doc => doc.data()).filter(team => team.name);
-    } catch (err) {
-        console.error(`Error fetching ${division} league teams for ${year}:`, err);
-        return [];
-    }
+    const snap = await db.collection(`leagues/${year}_${division}/teams`).get();
+    return snap.docs.map(doc => doc.data()).filter(team => team.name);
 }
 
 async function fetchMatchesFromDB(year, division) {
-    try {
-        const snap = await db.collection(`leagues/${year}_${division}/matches`).get();
-        return snap.docs.map(doc => doc.data()).filter(match => match.id !== "placeholder");
-    } catch (err) {
-        console.error(`Error fetching matches for ${year}_${division}:`, err);
-        return [];
-    }
+    const snap = await db.collection(`leagues/${year}_${division}/matches`).get();
+    return snap.docs.map(doc => doc.data()).filter(match => match.id !== "placeholder");
+}
+
+async function fetchPlayoffMatchesGrouped(year, division) {
+    const snap = await db
+        .collection(`leagues/${year}_${division}/rounds/bracketMatches`)
+        .get();
+
+    const roundsMap = {};
+    snap.docs.map(doc => doc.data()).forEach(match => {
+        const round = match.tournamentRoundText || "Neznámé kolo";
+        if (!roundsMap[round]) roundsMap[round] = [];
+        roundsMap[round].push(match);
+    });
+
+    return Object.entries(roundsMap).map(([round, matches]) => ({
+        round,
+        matches,
+    }));
 }
 
 async function fetchGoalScorersFromCollection(path) {
-    try {
-        const snap = await db.collection(path).get();
-        return snap.docs.map(doc => doc.data());
-    } catch (err) {
-        console.error(`Failed to fetch goal scorers from ${path}:`, err);
-        return [];
-    }
-}
-
-function mergeGoalScorers(...sources) {
-    const map = new Map();
-
-    for (const list of sources) {
-        for (const scorer of list) {
-            const name = scorer.name?.trim();
-            const team = scorer.team?.trim();
-            const goals = Number(scorer.goals || 0);
-            if (!name || !team || isNaN(goals)) continue;
-
-            const key = `${name}__${team}`;
-            if (!map.has(key)) map.set(key, { name, team, goals: 0 });
-
-            map.get(key).goals += goals;
-        }
-    }
-
-    return Array.from(map.values()).sort((a, b) => b.goals - a.goals);
+    const snap = await db.collection(path).get();
+    return snap.docs.map(doc => doc.data());
 }
 
 function extractScorersFromTeamPlayers(teams) {
@@ -75,6 +56,19 @@ function extractScorersFromTeamPlayers(teams) {
     return scorers;
 }
 
+function mergeGoalScorers(...sources) {
+    const map = new Map();
+    for (const list of sources) {
+        for (const { name, team, goals } of list) {
+            if (!name || !team || !goals) continue;
+            const key = `${name}__${team}`;
+            if (!map.has(key)) map.set(key, { name, team, goals: 0 });
+            map.get(key).goals += goals;
+        }
+    }
+    return Array.from(map.values()).sort((a, b) => b.goals - a.goals);
+}
+
 function groupMatchesByRound(matches) {
     const grouped = {};
     matches.forEach(match => {
@@ -85,19 +79,6 @@ function groupMatchesByRound(matches) {
         if (date < grouped[round].date) grouped[round].date = date;
     });
     return Object.values(grouped).sort((a, b) => a.round - b.round);
-}
-
-async function fetchPlayoffRounds(year, division) {
-    try {
-        const snap = await db.collection(`leagues/${year}_${division}/playoff/rounds`).get();
-        const rounds = snap.docs.map(doc => doc.data());
-        return rounds
-            .filter(r => Array.isArray(r.matches))
-            .sort((a, b) => (a.round || 0) - (b.round || 0));
-    } catch (err) {
-        console.error(`Failed to fetch playoff rounds for ${year}_${division}:`, err);
-        return [];
-    }
 }
 
 function sectionTitle(text) {
@@ -124,8 +105,8 @@ function centeredTitle(text, size = 32) {
 }
 
 function matchLine(match, i) {
-    const teamA = match.teamA_name || "---";
-    const teamB = match.teamB_name || "---";
+    const teamA = match.teamA || match.teamA_name || "---";
+    const teamB = match.teamB || match.teamB_name || "---";
     const scoreA = typeof match.scoreA === "number" ? match.scoreA : "-";
     const scoreB = typeof match.scoreB === "number" ? match.scoreB : "-";
     return textLine(`Zápas ${i + 1}: ${teamA} ${scoreA} : ${scoreB} ${teamB}`);
@@ -144,12 +125,9 @@ async function generateSeasonSummaryDoc(seasonData) {
         fetchMatchesFromDB(year, "upper"),
     ]);
 
-    const groupedLower = groupMatchesByRound(lowerMatches);
-    const groupedUpper = groupMatchesByRound(upperMatches);
-
-    const [playoffLowerRounds, playoffUpperRounds] = await Promise.all([
-        fetchPlayoffRounds(year, "lower"),
-        fetchPlayoffRounds(year, "upper"),
+    const [playoffLower, playoffUpper] = await Promise.all([
+        fetchPlayoffMatchesGrouped(year, "lower"),
+        fetchPlayoffMatchesGrouped(year, "upper"),
     ]);
 
     const [
@@ -168,107 +146,85 @@ async function generateSeasonSummaryDoc(seasonData) {
     const finalScorersLower = mergeGoalScorers(g1_lower, g2_lower, g3_lower);
     const finalScorersUpper = mergeGoalScorers(g1_upper, g2_upper, g3_upper);
 
+    const groupedLower = groupMatchesByRound(lowerMatches);
+    const groupedUpper = groupMatchesByRound(upperMatches);
+
     const logoPath = path.join(__dirname, "assets", "logo.png");
     const logoImage = fs.readFileSync(logoPath);
 
-    const doc = new Document({
-        sections: [
-            {
-                children: [
-                    new Paragraph({
-                        alignment: AlignmentType.CENTER,
-                        children: [
-                            new ImageRun({
-                                data: logoImage,
-                                transformation: { width: 100, height: 100 },
-                            }),
-                        ],
-                    }),
+    const children = [
+        new Paragraph({
+            alignment: AlignmentType.CENTER,
+            children: [
+                new ImageRun({
+                    data: logoImage,
+                    transformation: { width: 100, height: 100 },
+                }),
+            ],
+        }),
 
-                    centeredTitle(`Shrnutí sezóny ${year}`),
-                    new Paragraph({ children: [new PageBreak()] }),
+        centeredTitle(`Shrnutí sezóny ${year}`),
 
-                    sectionTitle("Tabulka - Liga Nižší Gymnázium"),
-                    ...lowerTeams.map(team =>
-                        textLine(`${team.name}: ${team.points ?? 0} bodů (V:${team.wins ?? 0}, R:${team.draws ?? 0}, P:${team.losses ?? 0}, ${team.goalsScored ?? 0}:${team.goalsConceded ?? 0})`)
-                    ),
+        sectionTitle("Tabulka - Liga Nižší Gymnázium"),
+        ...lowerTeams.map(team =>
+            textLine(`${team.name}: ${team.points ?? 0} bodů (V:${team.wins ?? 0}, R:${team.draws ?? 0}, P:${team.losses ?? 0}, ${team.goalsScored ?? 0}:${team.goalsConceded ?? 0})`)
+        ),
 
-                    new Paragraph({ children: [new PageBreak()] }),
+        sectionTitle("Tabulka - Liga Vyšší Gymnázium"),
+        ...upperTeams.map(team =>
+            textLine(`${team.name}: ${team.points ?? 0} bodů (V:${team.wins ?? 0}, R:${team.draws ?? 0}, P:${team.losses ?? 0}, ${team.goalsScored ?? 0}:${team.goalsConceded ?? 0})`)
+        ),
 
-                    sectionTitle("Tabulka - Liga Vyšší Gymnázium"),
-                    ...upperTeams.map(team =>
-                        textLine(`${team.name}: ${team.points ?? 0} bodů (V:${team.wins ?? 0}, R:${team.draws ?? 0}, P:${team.losses ?? 0}, ${team.goalsScored ?? 0}:${team.goalsConceded ?? 0})`)
-                    ),
+        sectionTitle("Střelci - Nižší Gymnázium"),
+        ...finalScorersLower.map(s =>
+            textLine(`${s.name} (${s.team}): ${s.goals} gólů`)
+        ),
 
-                    new Paragraph({ children: [new PageBreak()] }),
+        sectionTitle("Střelci - Vyšší Gymnázium"),
+        ...finalScorersUpper.map(s =>
+            textLine(`${s.name} (${s.team}): ${s.goals} gólů`)
+        ),
 
-                    sectionTitle("Střelci - Nižší Gymnázium"),
-                    ...finalScorersLower.map(s =>
-                        textLine(`${s.name} (${s.team}): ${s.goals} gólů`)
-                    ),
+        sectionTitle("Rozpis zápasů – Nižší Gymnázium"),
+        ...groupedLower.flatMap(round => [
+            textLine(`Kolo ${round.round} – ${round.date.toLocaleDateString("cs-CZ")}`),
+            ...round.matches.map(matchLine),
+            new Paragraph({ text: "" }),
+        ]),
 
-                    new Paragraph({ children: [new PageBreak()] }),
+        sectionTitle("Rozpis zápasů – Vyšší Gymnázium"),
+        ...groupedUpper.flatMap(round => [
+            textLine(`Kolo ${round.round} – ${round.date.toLocaleDateString("cs-CZ")}`),
+            ...round.matches.map(matchLine),
+            new Paragraph({ text: "" }),
+        ]),
 
-                    sectionTitle("Střelci - Vyšší Gymnázium"),
-                    ...finalScorersUpper.map(s =>
-                        textLine(`${s.name} (${s.team}): ${s.goals} gólů`)
-                    ),
+        sectionTitle("Playoff - Nižší Gymnázium"),
+        ...playoffLower.flatMap(round => [
+            textLine(round.round),
+            ...round.matches.map((m, i) => matchLine(m, i)),
+            new Paragraph({ text: "" }),
+        ]),
 
-                    new Paragraph({ children: [new PageBreak()] }),
+        sectionTitle("Playoff - Vyšší Gymnázium"),
+        ...playoffUpper.flatMap(round => [
+            textLine(round.round),
+            ...round.matches.map((m, i) => matchLine(m, i)),
+            new Paragraph({ text: "" }),
+        ]),
 
-                    sectionTitle("Rozpis zápasů – Nižší Gymnázium"),
-                    ...groupedLower.flatMap(round => [
-                        textLine(`Kolo ${round.round} – ${round.date.toLocaleDateString("cs-CZ")}`),
-                        ...round.matches.map(matchLine),
-                        new Paragraph({ text: "" })
-                    ]),
+        new Paragraph({
+            alignment: AlignmentType.CENTER,
+            children: [
+                new ImageRun({
+                    data: logoImage,
+                    transformation: { width: 80, height: 80 },
+                }),
+            ],
+        }),
+    ];
 
-                    new Paragraph({ children: [new PageBreak()] }),
-
-                    sectionTitle("Rozpis zápasů – Vyšší Gymnázium"),
-                    ...groupedUpper.flatMap(round => [
-                        textLine(`Kolo ${round.round} – ${round.date.toLocaleDateString("cs-CZ")}`),
-                        ...round.matches.map(matchLine),
-                        new Paragraph({ text: "" })
-                    ]),
-
-                    new Paragraph({ children: [new PageBreak()] }),
-
-                    sectionTitle("Playoff - Nižší Gymnázium"),
-                    ...playoffLowerRounds.flatMap(round => [
-                        textLine(`Kolo ${round.round}`),
-                        ...round.matches.map((m, i) =>
-                            matchLine(m, i)
-                        ),
-                        new Paragraph({ text: "" })
-                    ]),
-
-                    new Paragraph({ children: [new PageBreak()] }),
-
-                    sectionTitle("Playoff - Vyšší Gymnázium"),
-                    ...playoffUpperRounds.flatMap(round => [
-                        textLine(`Kolo ${round.round}`),
-                        ...round.matches.map((m, i) =>
-                            matchLine(m, i)
-                        ),
-                        new Paragraph({ text: "" })
-                    ]),
-
-                    new Paragraph({ text: "" }),
-                    new Paragraph({
-                        alignment: AlignmentType.CENTER,
-                        children: [
-                            new ImageRun({
-                                data: logoImage,
-                                transformation: { width: 80, height: 80 },
-                            }),
-                        ],
-                    }),
-                ],
-            },
-        ],
-    });
-
+    const doc = new Document({ sections: [{ children }] });
     return await Packer.toBuffer(doc);
 }
 
