@@ -142,7 +142,7 @@
 
 
 .round-actions,
-.rtf-generate {
+.docx-generate {
     display: flex;
     justify-content: center;
     gap: 10px;
@@ -150,7 +150,7 @@
 }
 
 .round-actions button,
-.rtf-btn {
+.docx-btn {
     background-color: #666;
     color: white;
     padding: 8px 12px;
@@ -163,12 +163,12 @@
 }
 
 .round-actions button:hover,
-.rtf-btn:hover {
+.docx-btn:hover {
     background-color: #f0b323;
     color: #fff;
 }
 
-.rtf-generate {
+.docx-generate {
     margin-top: 10px;
 }
 
