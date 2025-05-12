@@ -156,6 +156,7 @@
     display: flex;
     justify-content: center;
     gap: 10px;
+    flex-wrap: wrap;
 }
 
 .player-select {
@@ -199,47 +200,109 @@
     margin-left: 10px;
 }
 
-/* ========== 📱 Landscape smartphones ========== */
+/* ✅ Landscape Smartphones – compact layout */
 @media (max-width: 850px) and (orientation: landscape) {
+    .live-match-container {
+        padding: 20px 12px;
+    }
+
     .scoreboard {
         flex-direction: row;
         flex-wrap: wrap;
+        justify-content: center;
+        gap: 14px;
     }
 
-    .team, .score-info {
-        flex: 1 1 30%;
-        max-width: 30%;
+    .team,
+    .score-info {
+        flex: 1 1 45%;
+        max-width: 45%;
     }
 
+    .team img {
+        width: 140px;
+        height: 140px;
+    }
+
+    .score {
+        font-size: 2.2rem;
+    }
+
+    .match-info {
+        font-size: 0.95rem;
+    }
+
+    .scorer-form {
+        flex-direction: column;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .player-select,
+    .scorer-form button {
+        width: 100%;
+        max-width: 240px;
+    }
+}
+
+/* 📱 Smartphones (≤ 480px) */
+@media (max-width: 480px) {
+    .scoreboard {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .team,
+    .score-info {
+        flex: 1 1 100%;
+        max-width: 100%;
+    }
+
+    .team img {
+        width: 130px;
+        height: 130px;
+    }
+
+    .score {
+        font-size: 2.2rem;
+    }
+}
+
+/* 📲 Tablets (481px - 768px) */
+@media (min-width: 481px) and (max-width: 768px) {
     .team img {
         width: 160px;
         height: 160px;
     }
 
     .score {
-        font-size: 2.4rem;
+        font-size: 2.5rem;
     }
 }
 
-/* ========== 📱 Portrait smartphones ========== */
-@media (max-width: 850px) and (orientation: portrait) {
-    .live-match-container {
-        display: none;
-    }
-}
-
-/* ========== Tablets ========= */
-@media (min-width: 851px) and (max-width: 1024px) {
+/* 💻 Small Laptops (769px - 1024px) */
+@media (min-width: 769px) and (max-width: 1024px) {
     .team img {
         width: 180px;
         height: 180px;
     }
+
+    .score {
+        font-size: 2.6rem;
+    }
 }
 
-/* ========== Desktops ========= */
-@media (min-width: 1025px) {
+/* 🖥️ Laptops (1025px - 1366px) */
+@media (min-width: 1025px) and (max-width: 1366px) {
     .team img {
         width: 200px;
         height: 200px;
+    }
+}
+
+/* 🖥️🔝 Desktops (≥ 1367px) */
+@media (min-width: 1367px) {
+    .live-match-container {
+        max-width: 1300px;
     }
 }

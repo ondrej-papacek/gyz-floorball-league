@@ -10,6 +10,7 @@
     border-top-right-radius: 15px;
     flex-wrap: wrap;
     box-sizing: border-box;
+    position: relative;
 }
 
 .logo-container {
@@ -74,10 +75,18 @@
     background-color: #d9a326;
 }
 
-/* ============ Responsive Breakpoints ============ */
+/* ==================== Hamburger Menu Toggle ==================== */
+.menu-toggle {
+    display: none;
+    font-size: 1.8rem;
+    color: #f0b323;
+    cursor: pointer;
+    user-select: none;
+}
 
-/* Smartphones */
-@media (max-width: 480px) {
+/* ==================== Responsive + Animation ==================== */
+
+@media (max-width: 768px) {
     .admin-navbar {
         flex-direction: column;
         height: auto;
@@ -89,47 +98,68 @@
         margin-bottom: 1rem;
     }
 
+    .menu-toggle {
+        display: block;
+        position: absolute;
+        right: 20px;
+        top: 26px;
+        z-index: 10;
+    }
+
     .admin-nav-links {
         flex-direction: column;
-        align-items: center;
-        gap: 10px;
-        margin-top: 10px;
+        width: 100%;
+        text-align: center;
+        background-color: #2d2d2d;
+        margin-top: 60px;
+        border-top: 1px solid #444;
+        max-height: 0;
+        overflow: hidden;
+        padding: 0;
+        opacity: 0;
+        transition: max-height 0.35s ease-in-out, padding 0.3s ease, opacity 0.3s ease;
+    }
+
+    .admin-nav-links.show {
+        max-height: 500px;
+        padding: 10px 0;
+        opacity: 1;
+    }
+
+    .admin-nav-links li {
+        opacity: 0;
+        transform: translateY(-5px);
+        transition: opacity 0.3s ease, transform 0.3s ease;
+    }
+
+    .admin-nav-links.show li {
+        opacity: 1;
+        transform: translateY(0);
     }
 
     .admin-nav-links li a {
         font-size: 0.95rem;
+        padding: 10px 0;
+        display: block;
     }
 
     .logout-button {
         font-size: 0.95rem;
         padding: 8px 12px;
+        width: 80%;
+        margin: 10px auto;
     }
 }
 
-/* Tablets */
-@media (min-width: 481px) and (max-width: 768px) {
-    .admin-navbar {
-        flex-wrap: wrap;
-    }
-
-    .admin-nav-links {
-        gap: 15px;
-    }
-
-    .school-name-logo {
-        height: 45px;
-    }
-}
-
-/* Small Laptops */
+/* Small Laptops (769px - 1024px) */
 @media (min-width: 769px) and (max-width: 1024px) {
     .admin-nav-links {
         gap: 18px;
     }
 }
 
-/* XL Screens */
-@media (min-width: 1440px) {
+/* XL Screens (≥ 1367px) */
+@media (min-width: 1367px) {
     .admin-navbar {
         max-width: 1400px;
         margin: 20px auto 0 auto;

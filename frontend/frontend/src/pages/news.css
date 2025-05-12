@@ -75,7 +75,6 @@
 .news-image-container {
     margin-left: 1rem;
     width: 150px;
-    height: auto;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -84,13 +83,8 @@
 
 .news-image {
     width: 100%;
-    height: auto;
     border-radius: 8px;
     cursor: pointer;
-}
-
-.news-image-container p {
-    margin-bottom: 3px;
 }
 
 .news-image-caption {
@@ -100,7 +94,6 @@
     margin-top: 0.5rem;
 }
 
-/* Lightbox styling */
 .lightbox {
     position: fixed;
     top: 0;

@@ -29,11 +29,14 @@
     background-color: #2d2d2d;
     overflow-x: auto;
     min-width: 300px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.4);
 }
 
 .error {
     color: #ff4f4f;
     font-weight: bold;
+    margin-top: 20px;
+    font-size: 1.1rem;
 }
 
 /* ============ Responsive Breakpoints ============ */

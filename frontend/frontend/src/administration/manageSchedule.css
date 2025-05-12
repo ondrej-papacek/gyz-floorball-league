@@ -1,4 +1,5 @@
-﻿.manage-schedule {
+﻿/* Core Styles */
+.manage-schedule {
     background-color: #333;
     padding: 2rem;
     color: white;
@@ -16,21 +17,7 @@
     font-weight: 700;
 }
 
-.manage-schedule-select {
-    padding: 10px 14px;
-    font-size: 1rem;
-    border-radius: 6px;
-    background-color: #444;
-    color: white;
-    border: 1px solid #777;
-    font-family: 'Poppins', sans-serif;
-    margin-bottom: 20px;
-}
-
-.manage-schedule-start-date {
-    margin-bottom: 15px;
-}
-
+.manage-schedule-select,
 .manage-schedule-start-date input[type="date"] {
     padding: 10px 14px;
     font-size: 1rem;
@@ -39,11 +26,14 @@
     color: white;
     border: 1px solid #777;
     font-family: 'Poppins', sans-serif;
-    appearance: none;
-    -webkit-appearance: none;
-    -moz-appearance: none;
-    cursor: pointer;
-    margin-left: 10px;
+}
+
+.manage-schedule-select {
+    margin-bottom: 20px;
+}
+
+.manage-schedule-start-date {
+    margin-bottom: 15px;
 }
 
 .manage-schedule-start-date label {
@@ -72,6 +62,7 @@
     cursor: pointer;
     transition: background 0.2s ease;
 }
+
 .manage-schedule-generate-buttons button:hover {
     background-color: #b0861a;
 }
@@ -129,7 +120,8 @@
     display: block;
 }
 
-.round-controls input[type="datetime-local"] {
+.round-controls input[type="datetime-local"],
+.match-card input[type="datetime-local"] {
     width: 100%;
     padding: 10px;
     background: #444;
@@ -140,6 +132,10 @@
     margin-bottom: 10px;
 }
 
+.match-card input[type="datetime-local"] {
+    max-width: 240px;
+    margin: 8px auto 12px;
+}
 
 .round-actions,
 .docx-generate {
@@ -211,19 +207,6 @@
     font-size: 1rem;
 }
 
-.match-card input[type="datetime-local"] {
-    display: block;
-    width: 100%;
-    max-width: 240px;
-    margin: 8px auto 12px;
-    padding: 8px;
-    border-radius: 6px;
-    background: #444;
-    border: 1px solid #777;
-    color: white;
-    font-family: 'Poppins', sans-serif;
-}
-
 .match-status-select {
     display: flex;
     align-items: center;
@@ -231,6 +214,7 @@
     gap: 8px;
     margin-bottom: 12px;
 }
+
 .match-status-select select {
     padding: 6px 10px;
     border-radius: 6px;
@@ -245,6 +229,7 @@
     flex-direction: column;
     gap: 8px;
 }
+
 .actions button {
     background-color: #555;
     color: white;
@@ -255,6 +240,7 @@
     font-family: 'Poppins', sans-serif;
     transition: background 0.2s ease;
 }
+
 .actions button:hover {
     background-color: #f0b323;
     color: #fff;
@@ -269,7 +255,7 @@
     margin-bottom: 1.5rem;
 }
 
-/* ===== Smartphones ===== */
+/* 📱 Smartphones Portrait (≤ 480px) */
 @media (max-width: 480px) {
     .match-status-select {
         flex-direction: column;
@@ -288,18 +274,11 @@
         font-size: 1.6rem;
     }
 
-    .manage-schedule-round-header {
-        align-items: flex-start;
-    }
-
     .manage-schedule-round-controls,
-    .manage-schedule-round-actions {
-        flex-direction: column;
-        width: 100%;
-    }
-
+    .manage-schedule-round-actions,
     .manage-schedule-generate-buttons {
         flex-direction: column;
+        width: 100%;
         align-items: center;
     }
 
@@ -308,7 +287,40 @@
     }
 }
 
-/* ===== Tablets ===== */
+/* 📱 Smartphones Landscape (≤ 850px & landscape) */
+@media (max-width: 850px) and (orientation: landscape) {
+    .manage-schedule {
+        padding: 1rem;
+    }
+
+    .manage-schedule-grid-of-rounds {
+        grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    }
+
+    .match-status-select {
+        flex-direction: row;
+        justify-content: space-around;
+    }
+
+    .actions {
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
+    .manage-schedule-generate-buttons {
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
+    .manage-schedule-title {
+        font-size: 1.6rem;
+        text-align: center;
+    }
+}
+
+/* 📲 Tablets (481px - 768px) */
 @media (min-width: 481px) and (max-width: 768px) {
     .manage-schedule {
         padding: 1.5rem;
@@ -323,7 +335,7 @@
     }
 }
 
-/* ===== Small Laptops ===== */
+/* 💻 Small Laptops (769px - 1024px) */
 @media (min-width: 769px) and (max-width: 1024px) {
     .manage-schedule-title {
         font-size: 2rem;
@@ -334,15 +346,15 @@
     }
 }
 
-/* ===== Desktops ===== */
-@media (min-width: 1025px) and (max-width: 1440px) {
+/* 🖥️ Laptops (1025px - 1366px) */
+@media (min-width: 1025px) and (max-width: 1366px) {
     .manage-schedule-title {
         font-size: 2rem;
     }
 }
 
-/* ===== 4K / Ultra-Wide ===== */
-@media (min-width: 1441px) {
+/* 🖥️🔝 XL Screens (≥ 1367px) */
+@media (min-width: 1367px) {
     .manage-schedule {
         max-width: 1400px;
         margin: 0 auto;

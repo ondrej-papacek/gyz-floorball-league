@@ -84,9 +84,7 @@
     background-color: #d9a326;
 }
 
-/* ================= Responsive Breakpoints ================= */
-
-/* Smartphones */
+/* ========== 📱 Smartphones (≤ 480px) ========== */
 @media (max-width: 480px) {
     .footer {
         flex-direction: column;
@@ -124,11 +122,13 @@
     }
 }
 
-/* Tablets */
+/* ========== 📲 Tablets (481px - 768px) ========== */
 @media (min-width: 481px) and (max-width: 768px) {
     .footer {
-        flex-wrap: wrap;
-        padding: 30px 40px;
+        padding: 30px 30px 10px 30px;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
     }
 
     .footer-league-logo,
@@ -138,18 +138,27 @@
 
     .footer-links {
         align-items: center;
+        margin-top: 20px;
+    }
+
+    .footer-socials-container {
+        flex-direction: row;
+        margin-top: 20px;
     }
 }
 
-/* Small Laptops */
+/* ========== 💻 Small Laptops (769px - 1024px) ========== */
 @media (min-width: 769px) and (max-width: 1024px) {
     .footer {
-        padding: 40px 80px 10px 80px;
+        padding: 40px 60px 10px 60px;
     }
 }
 
-/* XL Screens */
-@media (min-width: 1440px) {
+/* ========== 🖥️ Laptops (1025px - 1366px) ========== */
+/* Base styles cover this range effectively */
+
+/* ========== 🖥️🔝 XL Screens (≥ 1367px) ========== */
+@media (min-width: 1367px) {
     .footer {
         max-width: 1400px;
     }

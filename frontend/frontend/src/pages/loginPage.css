@@ -124,7 +124,7 @@
     transform: scale(1.02);
 }
 
-/* ========== Smartphones (<=480px) ========== */
+/* ========== Smartphones (≤480px) ========== */
 @media (max-width: 480px) {
     .login-box {
         padding: 20px;

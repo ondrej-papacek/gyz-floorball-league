@@ -271,7 +271,7 @@
     background-color: #b33a3a;
 }
 
-/* =================== Responsive =================== */
+/* 📱 Smartphones Portrait (≤ 480px) */
 @media (max-width: 480px) {
     .manage-playoffs-page {
         padding: 1rem;
@@ -309,7 +309,54 @@
     }
 }
 
-/* Tablets: two-column layout with tighter spacing */
+/* 📱 Smartphones Landscape (≤ 850px & landscape) */
+@media (max-width: 850px) and (orientation: landscape) {
+    .manage-playoffs-page {
+        padding: 1rem;
+    }
+
+    .match-layout {
+        flex-direction: row;
+        flex-wrap: wrap;
+        gap: 10px;
+        justify-content: center;
+    }
+
+    .team-wrapper {
+        flex: 1 1 45%;
+        min-width: 160px;
+    }
+
+    .score-wrapper {
+        flex: 1 1 45%;
+        justify-content: center;
+    }
+
+    .round-header {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .match-actions {
+        justify-content: center;
+        width: 100%;
+    }
+
+    .scorer-form {
+        flex-direction: column;
+        align-items: center;
+        gap: 8px;
+        width: 100%;
+    }
+
+    .scorer-form select,
+    .scorer-form button {
+        width: 100%;
+        max-width: 240px;
+    }
+}
+
+/* 📲 Tablets (481px - 768px) */
 @media (min-width: 481px) and (max-width: 768px) {
     .manage-playoffs-page {
         padding: 1.5rem;
@@ -342,7 +389,7 @@
     }
 }
 
-/* Small Laptops: fit 2 rows per match, 3-per-row layout if needed */
+/* 💻 Small Laptops (769px - 1024px) */
 @media (min-width: 769px) and (max-width: 1024px) {
     .manage-playoffs-page h2 {
         font-size: 1.8rem;
@@ -367,8 +414,8 @@
     }
 }
 
-/* Laptops / Desktops */
-@media (min-width: 1025px) and (max-width: 1440px) {
+/* 🖥️ Laptops (1025px - 1366px) */
+@media (min-width: 1025px) and (max-width: 1366px) {
     .manage-playoffs-page h2 {
         font-size: 2rem;
     }
@@ -386,8 +433,8 @@
     }
 }
 
-/* XL / 4K+ screens */
-@media (min-width: 1441px) {
+/* 🖥️🔝 XL Screens (≥ 1367px) */
+@media (min-width: 1367px) {
     .manage-playoffs-page {
         max-width: 1400px;
         margin: 0 auto;

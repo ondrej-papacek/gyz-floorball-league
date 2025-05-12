@@ -4,7 +4,9 @@
     position: relative;
 }
 
-.hero-slider, .hero-content, .hero-section {
+.hero-slider,
+.hero-content,
+.hero-section {
     max-width: 1280px;
     margin: 0 auto;
     position: relative;
@@ -19,12 +21,14 @@
     z-index: 1;
 }
 
-.uk-position-center-left, .uk-position-center-right {
+.uk-position-center-left,
+.uk-position-center-right {
     width: 40px;
     height: 40px;
 }
 
-.uk-position-center-left::before, .uk-position-center-right::before {
+.uk-position-center-left::before,
+.uk-position-center-right::before {
     font-size: 2rem;
     color: white;
 }
@@ -72,9 +76,7 @@
     width: 40%;
 }
 
-/* ================= Responsive Breakpoints ================= */
-
-/* 📱 Smartphones */
+/* 📱 Smartphones (≤ 480px) */
 @media (max-width: 480px) {
     .hero-img {
         max-height: 300px;
@@ -90,17 +92,19 @@
         margin-top: 30px;
     }
 
-    .uk-position-center-left, .uk-position-center-right {
+    .uk-position-center-left,
+    .uk-position-center-right {
         width: 30px;
         height: 30px;
     }
 
-    .uk-position-center-left::before, .uk-position-center-right::before {
+    .uk-position-center-left::before,
+    .uk-position-center-right::before {
         font-size: 1.5rem;
     }
 }
 
-/* 📱 Tablets */
+/* 📲 Tablets (481px - 768px) */
 @media (min-width: 481px) and (max-width: 768px) {
     .hero-img {
         max-height: 400px;
@@ -116,7 +120,7 @@
     }
 }
 
-/* 💻 Small Laptops */
+/* 💻 Small Laptops (769px - 1024px) */
 @media (min-width: 769px) and (max-width: 1024px) {
     .hero-img {
         max-height: 500px;
@@ -127,8 +131,19 @@
     }
 }
 
-/* 🖥️ XL Screens */
-@media (min-width: 1440px) {
+/* 🖥️ Desktops (1025px - 1366px) */
+@media (min-width: 1025px) and (max-width: 1366px) {
+    .hero-img {
+        max-height: 600px;
+    }
+
+    .hero-content h1 {
+        font-size: 2.8rem;
+    }
+}
+
+/* 🖥️🔝 XL Screens (≥ 1367px) */
+@media (min-width: 1367px) {
     .hero-img {
         max-height: 700px;
     }

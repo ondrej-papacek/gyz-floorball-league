@@ -7,6 +7,7 @@
     align-items: center;
     min-height: 30vh;
     box-sizing: border-box;
+    width: 100%;
 }
 
 .goal-scorers-title {
@@ -14,6 +15,7 @@
     text-align: center;
     margin-bottom: 2rem;
     font-size: 2rem;
+    font-weight: bold;
 }
 
 .goal-scorers-refresh-btn {
@@ -25,19 +27,22 @@
     font-size: 1.1rem;
     border-radius: 10px;
     transition: transform 0.2s ease, background-color 0.3s ease;
+    margin-bottom: 2rem;
+    cursor: pointer;
 }
 
 .goal-scorers-refresh-btn:hover {
     background-color: #e09f1f;
-    color: #fff;
     transform: scale(1.05);
 }
 
 .gym-section {
     width: 100%;
-    max-width: 800px;
-    margin-bottom: 2rem;
+    max-width: 900px;
+    margin-bottom: 2.5rem;
     overflow-x: auto;
+    padding: 0 1rem;
+    box-sizing: border-box;
 }
 
 .gym-title {
@@ -45,6 +50,7 @@
     text-align: left;
     margin-bottom: 1rem;
     font-size: 1.5rem;
+    font-weight: 600;
 }
 
 .goal-scorers-table {
@@ -54,26 +60,30 @@
     border-radius: 8px;
     overflow: hidden;
     min-width: 400px;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.4);
 }
 
-.goal-scorers-table th, .goal-scorers-table td {
+.goal-scorers-table th,
+.goal-scorers-table td {
     padding: 0.75rem;
     text-align: center;
     color: #fff;
     border-bottom: 1px solid #555;
     font-size: 1rem;
+    vertical-align: middle;
 }
 
 .goal-scorers-table th {
     background-color: #555;
     font-size: 1.1rem;
+    font-weight: 600;
 }
 
 .goal-scorers-table tr:hover {
     background-color: #666;
 }
 
-/* =================== Responsive Breakpoints =================== */
+/* ============ Responsive Breakpoints ============ */
 
 /* Smartphones */
 @media (max-width: 480px) {
@@ -89,9 +99,15 @@
         font-size: 1.2rem;
     }
 
-    .goal-scorers-table th, .goal-scorers-table td {
+    .goal-scorers-table th,
+    .goal-scorers-table td {
         font-size: 0.9rem;
         padding: 0.5rem;
+    }
+
+    .goal-scorers-refresh-btn {
+        font-size: 1rem;
+        padding: 8px 12px;
     }
 
     .gym-section {
@@ -109,7 +125,8 @@
         font-size: 1.3rem;
     }
 
-    .goal-scorers-table th, .goal-scorers-table td {
+    .goal-scorers-table th,
+    .goal-scorers-table td {
         font-size: 1rem;
     }
 }
@@ -125,8 +142,9 @@
     }
 }
 
-/* Big Screens */
-@media (min-width: 1440px) {
+
+/* XL Screens */
+@media (min-width: 1367px) {
     .gym-section {
         max-width: 1000px;
     }

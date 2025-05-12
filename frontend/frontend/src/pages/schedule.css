@@ -106,7 +106,9 @@
     color: #ccc;
 }
 
-/* ===== Responsive ===== */
+/* ===== Responsive Breakpoints ===== */
+
+/* 📱 Smartphones (≤480px) */
 @media (max-width: 480px) {
     .schedule-page {
         padding: 1rem;
@@ -136,8 +138,14 @@
     .schedule-round-card {
         padding: 12px;
     }
+
+    .schedule-grid-of-rounds {
+        grid-template-columns: 1fr;
+        padding: 10px;
+    }
 }
 
+/* 📲 Tablets (481px - 768px) */
 @media (min-width: 481px) and (max-width: 768px) {
     .schedule-title {
         font-size: 1.8rem;
@@ -147,15 +155,12 @@
         font-size: 1rem;
     }
 
-    .schedule-round-title span {
-        font-size: 1.2rem;
-    }
-
-    .schedule-match-score-line {
-        font-size: 1rem;
+    .schedule-grid-of-rounds {
+        grid-template-columns: 1fr;
     }
 }
 
+/* 💻 Small Laptops (769px - 1024px) */
 @media (min-width: 769px) and (max-width: 1024px) {
     .schedule-title {
         font-size: 2rem;
@@ -164,11 +169,27 @@
     .schedule-selector {
         font-size: 1rem;
     }
+
+    .schedule-grid-of-rounds {
+        grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    }
 }
 
-@media (min-width: 1440px) {
+/* 🖥️ Desktops (1025px - 1440px) */
+@media (min-width: 1025px) and (max-width: 1440px) {
+    .schedule-title {
+        font-size: 2rem;
+    }
+}
+
+/* 🖥️ XL / 4K Screens (≥1441px) */
+@media (min-width: 1441px) {
     .schedule-page {
         max-width: 1400px;
         margin: 0 auto;
+    }
+
+    .schedule-title {
+        font-size: 2.2rem;
     }
 }

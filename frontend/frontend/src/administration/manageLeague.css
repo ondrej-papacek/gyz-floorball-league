@@ -3,9 +3,11 @@
     font-family: Poppins, sans-serif;
     color: white;
     background-color: #1f1f1f;
-    min-height: 75vh;
+    min-height: 45vh;
     box-sizing: border-box;
+    width: 90%;
     max-width: 1400px;
+    margin: 0 auto;
 }
 
 .manage-league-page h1 {
@@ -124,8 +126,10 @@
     background-color: #cc0000;
 }
 
-/* ==================== 📱 Smartphones ==================== */
-@media (max-width: 600px) {
+/* === Unified Media Queries === */
+
+/* 📱 Smartphones (≤ 480px) */
+@media (max-width: 480px) {
     .manage-league-page {
         padding: 20px 10px;
     }
@@ -159,10 +163,11 @@
     }
 }
 
-/* ==================== 💻 Tablets ==================== */
-@media (min-width: 601px) and (max-width: 1024px) {
+/* 📲 Tablets (481px - 768px) */
+@media (min-width: 481px) and (max-width: 768px) {
     .add-league-form {
         flex-wrap: wrap;
+        justify-content: space-between;
     }
 
     .add-league-form input,
@@ -170,12 +175,41 @@
     .add-league-form button {
         flex: 1 1 45%;
     }
+
+    .league-item h2 {
+        font-size: 1.4rem;
+    }
 }
 
-/* ==================== 🖥️ Desktops ==================== */
-@media (min-width: 1025px) {
+/* 💻 Small Laptops (769px - 1024px) */
+@media (min-width: 769px) and (max-width: 1024px) {
+    .add-league-form input,
+    .add-league-form select,
+    .add-league-form button {
+        flex: 1 1 30%;
+    }
+
+    .league-item {
+        padding: 26px;
+    }
+}
+
+/* 🖥️ Laptops (1025px - 1366px) */
+@media (min-width: 1025px) and (max-width: 1366px) {
+    .add-league-form input,
+    .add-league-form select,
+    .add-league-form button {
+        flex: 1 1 28%;
+    }
+
+    .league-item h2 {
+        font-size: 1.6rem;
+    }
+}
+
+/* 🖥️🔝 Desktops (1367px and up) */
+@media (min-width: 1367px) {
     .manage-league-page {
         max-width: 1400px;
-        margin: 0 auto;
     }
 }

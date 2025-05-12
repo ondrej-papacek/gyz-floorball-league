@@ -96,9 +96,7 @@
     margin-top: 4px;
 }
 
-/* ================= Responsive Breakpoints ================= */
-
-/* 📱 Smartphones */
+/* 📱 Smartphones (≤ 480px) */
 @media (max-width: 480px) {
     .scoreboard {
         flex-direction: column;
@@ -119,10 +117,7 @@
         font-size: 1.6rem;
     }
 
-    .period-info {
-        font-size: 0.9rem;
-    }
-
+    .period-info,
     .time-left {
         font-size: 0.9rem;
     }
@@ -132,7 +127,7 @@
     }
 }
 
-/* 📱 Tablets */
+/* 📲 Tablets (481px - 768px) */
 @media (min-width: 481px) and (max-width: 768px) {
     .scoreboard {
         flex-direction: column;
@@ -151,13 +146,9 @@
     .score {
         font-size: 1.8rem;
     }
-
-    .period-info {
-        font-size: 1rem;
-    }
 }
 
-/* 💻 Small Laptops */
+/* 💻 Small Laptops (769px - 1024px) */
 @media (min-width: 769px) and (max-width: 1024px) {
     .scoreboard {
         flex-wrap: wrap;
@@ -165,8 +156,8 @@
     }
 }
 
-/* 🖥️ XL Screens */
-@media (min-width: 1440px) {
+/* 🖥️🔝 XL Screens (≥ 1367px) */
+@media (min-width: 1367px) {
     .live-match-component-container {
         max-width: 1200px;
     }

@@ -10,6 +10,8 @@
     border-top-left-radius: 15px;
     border-top-right-radius: 15px;
     flex-wrap: wrap;
+    position: relative;
+    box-sizing: border-box;
 }
 
 .logo-container {
@@ -96,10 +98,65 @@
     color: white;
 }
 
-/* ============ Responsive Breakpoints ============ */
+/* ==================== Hamburger Menu Toggle ==================== */
+.menu-toggle {
+    display: none;
+    font-size: 1.8rem;
+    color: #e09f1f;
+    cursor: pointer;
+    user-select: none;
+}
 
-/* 📱 Smartphones */
-@media (max-width: 480px) {
+/* ==================== Responsive + Animation ==================== */
+
+@media (max-width: 768px) {
+    .menu-toggle {
+        display: block;
+        position: absolute;
+        top: 24px;
+        right: 20px;
+        z-index: 10;
+    }
+
+    .nav-links {
+        flex-direction: column;
+        align-items: center;
+        width: 100%;
+        text-align: center;
+        background-color: #333;
+        padding: 0;
+        margin-top: 60px;
+        border-top: 1px solid #444;
+
+        max-height: 0;
+        overflow: hidden;
+        opacity: 0;
+        transition: max-height 0.35s ease, opacity 0.3s ease, padding 0.3s ease;
+    }
+
+    .nav-links.show {
+        max-height: 500px;
+        opacity: 1;
+        padding: 10px 0;
+    }
+
+    .nav-links li {
+        opacity: 0;
+        transform: translateY(-5px);
+        transition: opacity 0.3s ease, transform 0.3s ease;
+    }
+
+    .nav-links.show li {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    .nav-links a {
+        font-size: 0.95rem;
+        padding: 10px 0;
+        display: block;
+    }
+
     .navbar {
         flex-direction: column;
         height: auto;
@@ -110,17 +167,8 @@
         margin-bottom: 10px;
     }
 
-    .nav-links {
-        flex-direction: column;
-        gap: 10px;
-    }
-
-    .nav-links a {
-        font-size: 0.95rem;
-    }
-
     .social-icons {
-        margin-top: 15px;
+        margin-top: 10px;
         gap: 10px;
     }
 

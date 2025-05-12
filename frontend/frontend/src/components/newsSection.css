@@ -79,9 +79,7 @@
     font-size: 1rem;
 }
 
-/* ============ Responsive Breakpoints ============ */
-
-/* 📱 Smartphones */
+/* 📱 Smartphones (≤ 480px) */
 @media (max-width: 480px) {
     .news-section {
         padding: 1rem;
@@ -108,11 +106,11 @@
     }
 
     .news-section:hover {
-        transform: scale(1.01); /* lighter hover effect for mobile */
+        transform: scale(1.01); /* softer on mobile */
     }
 }
 
-/* 📱 Tablets */
+/* 📲 Tablets (481px - 768px) */
 @media (min-width: 481px) and (max-width: 768px) {
     .news-section h2 {
         font-size: 1.8rem;
@@ -127,15 +125,18 @@
     }
 }
 
-/* 💻 Small Laptops */
+/* 💻 Small Laptops (769px - 1024px) */
 @media (min-width: 769px) and (max-width: 1024px) {
     .news-section h2 {
         font-size: 2rem;
     }
 }
 
-/* 🖥️ XL Screens */
-@media (min-width: 1440px) {
+/* 🖥️ Desktops (1025px - 1366px) */
+/* Covered by base styles */
+
+/* 🖥️🔝 XL Screens (≥ 1367px) */
+@media (min-width: 1367px) {
     .news-section {
         max-width: 1280px;
     }

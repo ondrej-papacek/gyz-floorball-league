@@ -10,6 +10,20 @@
     margin-bottom: 20px;
 }
 
+.manage-year-selector {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    gap: 10px;
+}
+
+.manage-year-selector label {
+    margin-right: 10px;
+    font-weight: bold;
+    color: #f0b323;
+}
+
 .manage-year-selector select {
     padding: 10px 16px;
     font-size: 1rem;
@@ -23,20 +37,6 @@
     transition: all 0.2s ease-in-out;
     text-align: center;
     min-width: 140px;
-}
-
-.manage-year-selector label {
-    margin-right: 10px;
-    font-weight: bold;
-    color: #f0b323;
-}
-
-.manage-year-selector {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin-bottom: 1.5rem;
-    gap: 10px;
 }
 
 .add-team {
@@ -96,7 +96,8 @@
     overflow: hidden;
 }
 
-.team-table th, .team-table td {
+.team-table th,
+.team-table td {
     padding: 10px;
     text-align: center;
     border-bottom: 1px solid #444;
@@ -181,7 +182,7 @@
     border-bottom: 1px solid #444;
 }
 
-/* =================== Smartphones (Vertical) =================== */
+/* 📱 Smartphones (≤ 480px) */
 @media (max-width: 480px) {
     .add-team {
         flex-direction: column;
@@ -203,7 +204,7 @@
     }
 }
 
-/* =================== Tablets =================== */
+/* 📲 Tablets (481px - 768px) */
 @media (min-width: 481px) and (max-width: 768px) {
     .add-team {
         flex-wrap: wrap;
@@ -216,23 +217,23 @@
     }
 }
 
-/* =================== Small Laptops =================== */
+/* 💻 Small Laptops (769px - 1024px) */
 @media (min-width: 769px) and (max-width: 1024px) {
     .manage-teams {
         padding: 30px;
     }
 }
 
-/* =================== Desktops =================== */
-@media (min-width: 1025px) and (max-width: 1440px) {
+/* 🖥️ Laptops (1025px - 1366px) */
+@media (min-width: 1025px) and (max-width: 1366px) {
     .manage-teams {
         max-width: 1200px;
         margin: 0 auto;
     }
 }
 
-/* =================== XL Screens (4K etc.) =================== */
-@media (min-width: 1441px) {
+/* 🖥️🔝 XL Screens (≥ 1367px) */
+@media (min-width: 1367px) {
     .manage-teams {
         max-width: 1400px;
         margin: 0 auto;

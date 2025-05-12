@@ -32,8 +32,21 @@
 
 .teams-refresh-btn:hover {
     background-color: #e09f1f;
-    color: #fff;
     transform: scale(1.05);
+}
+
+.teams-year-selector {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    gap: 10px;
+}
+
+.teams-year-selector label {
+    margin-right: 10px;
+    font-weight: bold;
+    color: #f0b323;
 }
 
 .teams-year-selector select {
@@ -45,24 +58,8 @@
     border: 1px solid #777;
     font-family: 'Poppins', sans-serif;
     appearance: none;
-    outline: none;
-    transition: all 0.2s ease-in-out;
-    text-align: center;
     min-width: 140px;
-}
-
-.teams-year-selector label {
-    margin-right: 10px;
-    font-weight: bold;
-    color: #f0b323;
-}
-
-.teams-year-selector {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin-bottom: 1.5rem;
-    gap: 10px;
+    text-align: center;
 }
 
 .gym-section {
@@ -88,7 +85,8 @@
     min-width: 400px;
 }
 
-.teams-table th, .teams-table td {
+.teams-table th,
+.teams-table td {
     padding: 0.75rem;
     text-align: center;
     color: #fff;
@@ -153,10 +151,8 @@ tr.expanded-row:hover {
     font-size: 0.95rem;
 }
 
-/* ============ Responsive Breakpoints ============ */
-
-/* 📱 Smartphones */
-@media (max-width: 480px) {
+/* 📱 Smartphones (Portrait) */
+@media (max-width: 480px) and (orientation: portrait) {
     .teams-page {
         padding: 1rem;
     }
@@ -169,9 +165,10 @@ tr.expanded-row:hover {
         font-size: 1.2rem;
     }
 
-    .teams-table th, .teams-table td {
-        padding: 0.5rem;
+    .teams-table th,
+    .teams-table td {
         font-size: 0.9rem;
+        padding: 0.5rem;
     }
 
     .expand-btn {
@@ -188,6 +185,36 @@ tr.expanded-row:hover {
     }
 }
 
+/* 📱 Smartphones (Landscape) */
+@media (max-width: 812px) and (orientation: landscape) {
+    .teams-page {
+        padding: 1rem 1.5rem;
+    }
+
+    .teams-title {
+        font-size: 1.7rem;
+    }
+
+    .gym-title {
+        font-size: 1.3rem;
+    }
+
+    .teams-table th,
+    .teams-table td {
+        font-size: 1rem;
+        padding: 0.6rem;
+    }
+
+    .match-details li {
+        font-size: 0.95rem;
+    }
+
+    .teams-refresh-btn {
+        font-size: 1rem;
+        padding: 8px 14px;
+    }
+}
+
 /* 📱 Tablets */
 @media (min-width: 481px) and (max-width: 768px) {
     .teams-title {
@@ -196,10 +223,6 @@ tr.expanded-row:hover {
 
     .gym-title {
         font-size: 1.3rem;
-    }
-
-    .teams-table th, .teams-table td {
-        font-size: 1rem;
     }
 }
 

@@ -8,6 +8,7 @@ function AdminNavbar() {
     const location = useLocation();
     const navigate = useNavigate();
     const [role, setRole] = useState(null);
+    const [menuOpen, setMenuOpen] = useState(false); // ✅ mobile toggle state
 
     useEffect(() => {
         const fetchUserRole = async () => {
@@ -43,10 +44,15 @@ function AdminNavbar() {
             <div className="logo-container">
                 <img src="/images/logo-text.jpg" alt="Admin Logo" className="school-name-logo" />
             </div>
-            <ul className="admin-nav-links">
+
+            {/* 🍔 Hamburger toggle (mobile only) */}
+            <div className="menu-toggle" onClick={() => setMenuOpen(!menuOpen)}>
+                &#9776;
+            </div>
+
+            <ul className={`admin-nav-links ${menuOpen ? 'show' : ''}`}>
                 <li className={isActive('/admin') ? 'active' : ''}><Link to="/admin">Dashboard</Link></li>
 
-                {/* ADMIN-ONLY ROUTES */}
                 {role === 'admin' && (
                     <>
                         <li className={isActive('/admin/manage-league') ? 'active' : ''}>
@@ -58,7 +64,6 @@ function AdminNavbar() {
                     </>
                 )}
 
-                {/* ADMIN + HELPER SHARED ROUTES - ORDERED */}
                 {(role === 'admin' || role === 'helper') && (
                     <>
                         <li className={isActive('/admin/manage-players') ? 'active' : ''}>
@@ -79,14 +84,12 @@ function AdminNavbar() {
                     </>
                 )}
 
-                {/* ADMIN-ONLY LAST OPTION */}
                 {role === 'admin' && (
                     <li className={isActive('/admin/manage-accounts') ? 'active' : ''}>
                         <Link to="/admin/manage-accounts">Účty</Link>
                     </li>
                 )}
 
-                {/* LOGOUT */}
                 <li>
                     <button className="logout-button" onClick={handleLogout}>Odhlásit se</button>
                 </li>

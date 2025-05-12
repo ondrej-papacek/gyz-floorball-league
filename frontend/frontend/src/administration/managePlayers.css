@@ -135,11 +135,12 @@
     background-color: #b03939;
 }
 
-/* === MEDIA QUERIES === */
+/* === Unified Media Queries === */
 
-/* Smartphones up to 480px */
+/* 📱 Smartphones (≤ 480px) */
 @media (max-width: 480px) {
-    .select-controls, .add-player-form {
+    .select-controls,
+    .add-player-form {
         flex-direction: column;
     }
 
@@ -187,12 +188,13 @@
     }
 }
 
-/* Tablets 481px - 768px */
+/* 📲 Tablets (481px - 768px) */
 @media (min-width: 481px) and (max-width: 768px) {
     .select-controls,
     .add-player-form {
         flex-direction: row;
         flex-wrap: wrap;
+        gap: 14px;
     }
 
     .select-controls select,
@@ -200,25 +202,33 @@
     .add-player-form button {
         flex: 1 1 45%;
     }
+
+    .manage-players table {
+        font-size: 0.9rem;
+    }
 }
 
-/* Small Laptops 769px - 1024px */
+/* 💻 Small Laptops (769px - 1024px) */
 @media (min-width: 769px) and (max-width: 1024px) {
     .select-controls,
     .add-player-form {
         flex-direction: row;
         gap: 20px;
     }
+
+    .manage-players table {
+        font-size: 0.95rem;
+    }
 }
 
-/* Laptops 1025px - 1366px */
+/* 🖥️ Laptops (1025px - 1366px) */
 @media (min-width: 1025px) and (max-width: 1366px) {
     .manage-players {
         padding: 40px;
     }
 }
 
-/* Big Desktops 1367px+ */
+/* 🖥️🔝 Desktops (≥ 1367px) */
 @media (min-width: 1367px) {
     .manage-players {
         max-width: 1200px;

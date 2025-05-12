@@ -63,8 +63,6 @@
     text-align: center;
 }
 
-/* ============ Responsive Breakpoints ============ */
-
 /* 📱 Smartphones */
 @media (max-width: 480px) {
     .upcoming-match {
@@ -92,8 +90,12 @@
     }
 }
 
-/* 📱 Tablets */
+/* 📲 Tablets */
 @media (min-width: 481px) and (max-width: 768px) {
+    .upcoming-match {
+        padding: 18px;
+    }
+
     .upcoming-match h2 {
         font-size: 1.6rem;
     }
@@ -110,8 +112,11 @@
     }
 }
 
-/* 🖥️ XL Screens */
-@media (min-width: 1440px) {
+/* 🖥️ Desktops (1025px - 1366px) */
+/* Defaults apply */
+
+/* 🖥️🔝 XL Screens */
+@media (min-width: 1367px) {
     .upcoming-match {
         max-width: 1200px;
     }

@@ -137,6 +137,7 @@
     display: flex;
     gap: 10px;
     margin-top: 10px;
+    flex-wrap: wrap;
 }
 
 .edit-button,
@@ -193,12 +194,28 @@
         height: 180px;
     }
 
+    .news-content h3 {
+        font-size: 1.1rem;
+    }
+
+    .news-content p {
+        font-size: 0.9rem;
+    }
+
     .news-buttons {
         flex-direction: column;
         width: 100%;
     }
 
     .news-buttons button {
+        width: 100%;
+    }
+
+    .news-form {
+        padding: 20px;
+    }
+
+    .news-form button {
         width: 100%;
     }
 }
@@ -220,6 +237,14 @@
         flex-wrap: wrap;
         justify-content: flex-start;
     }
+
+    .news-content h3 {
+        font-size: 1.2rem;
+    }
+
+    .news-content p {
+        font-size: 0.93rem;
+    }
 }
 
 /* Small Laptops 769px - 1024px */
@@ -231,6 +256,14 @@
     .news-image-container {
         flex: 0 0 130px;
         height: 100px;
+    }
+
+    .news-content h3 {
+        font-size: 1.25rem;
+    }
+
+    .news-content p {
+        font-size: 0.95rem;
     }
 }
 

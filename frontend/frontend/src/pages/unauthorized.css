@@ -34,3 +34,77 @@
     background-color: #e09f1f;
     text-decoration: none;
 }
+
+/* 📱 Smartphones (Portrait) */
+@media (max-width: 480px) {
+    .unauthorized-page {
+        padding: 3rem 1rem;
+    }
+
+    .unauthorized-page h1 {
+        font-size: 2rem;
+    }
+
+    .unauthorized-page p {
+        font-size: 1rem;
+    }
+
+    .back-home {
+        font-size: 0.95rem;
+        padding: 10px 16px;
+    }
+}
+
+/* 📱 Smartphones (Landscape) */
+@media (max-width: 812px) and (orientation: landscape) {
+    .unauthorized-page h1 {
+        font-size: 2.2rem;
+    }
+
+    .unauthorized-page p {
+        font-size: 1.05rem;
+    }
+
+    .back-home {
+        font-size: 1rem;
+        padding: 10px 18px;
+    }
+}
+
+/* 💻 Tablets */
+@media (min-width: 481px) and (max-width: 768px) {
+    .unauthorized-page h1 {
+        font-size: 2.3rem;
+    }
+
+    .unauthorized-page p {
+        font-size: 1.1rem;
+    }
+}
+
+/* 🖥️ Small Laptops */
+@media (min-width: 769px) and (max-width: 1024px) {
+    .unauthorized-page h1 {
+        font-size: 2.4rem;
+    }
+
+    .unauthorized-page p {
+        font-size: 1.15rem;
+    }
+}
+
+/* 🖥️ XL Screens */
+@media (min-width: 1440px) {
+    .unauthorized-page {
+        max-width: 1000px;
+        margin: 0 auto;
+    }
+
+    .unauthorized-page h1 {
+        font-size: 2.6rem;
+    }
+
+    .unauthorized-page p {
+        font-size: 1.3rem;
+    }
+}

@@ -195,8 +195,8 @@
     text-align: center;
 }
 
-/* ========= Smartphones ========== */
-@media (max-width: 600px) {
+/* 📱 Smartphones (≤ 480px) */
+@media (max-width: 480px) {
     .manage-accounts {
         padding: 20px;
     }
@@ -223,8 +223,8 @@
     }
 }
 
-/* ========= Tablets ========== */
-@media (min-width: 601px) and (max-width: 1024px) {
+/* 📲 Tablets (481px - 768px) */
+@media (min-width: 481px) and (max-width: 768px) {
     .manage-accounts .form-row input,
     .manage-accounts .form-row select {
         flex: 1 1 45%;
@@ -235,8 +235,27 @@
     }
 }
 
-/* ========= Desktops ========== */
-@media (min-width: 1025px) {
+/* 💻 Small Laptops (769px - 1024px) */
+@media (min-width: 769px) and (max-width: 1024px) {
+    .manage-accounts .form-row input,
+    .manage-accounts .form-row select {
+        flex: 1 1 32%;
+    }
+
+    .manage-accounts table {
+        font-size: 0.95rem;
+    }
+}
+
+/* 🖥️ Laptops (1025px - 1366px) */
+@media (min-width: 1025px) and (max-width: 1366px) {
+    .manage-accounts {
+        max-width: 900px;
+    }
+}
+
+/* 🖥️🔝 Desktops (≥ 1367px) */
+@media (min-width: 1367px) {
     .manage-accounts {
         max-width: 900px;
     }
