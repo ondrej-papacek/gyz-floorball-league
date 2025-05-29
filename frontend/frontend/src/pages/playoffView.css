@@ -39,9 +39,9 @@
     font-size: 1.1rem;
 }
 
-/* ============ Responsive Breakpoints ============ */
+/* Responsive Breakpoints */
 
-/* 📱 Smartphones */
+/* Smartphones */
 @media (max-width: 480px) {
     .playoff-view-page {
         padding: 1rem;
@@ -61,7 +61,7 @@
     }
 }
 
-/* 📱 Tablets */
+/* Tablets */
 @media (min-width: 481px) and (max-width: 768px) {
     .playoff-title {
         font-size: 1.8rem;
@@ -76,7 +76,7 @@
     }
 }
 
-/* 💻 Small Laptops */
+/* Small Laptops */
 @media (min-width: 769px) and (max-width: 1024px) {
     .playoff-title {
         font-size: 2rem;
@@ -87,7 +87,7 @@
     }
 }
 
-/* 🖥️ XL Screens */
+/* XL Screens */
 @media (min-width: 1440px) {
     .playoff-view-page {
         max-width: 1400px;

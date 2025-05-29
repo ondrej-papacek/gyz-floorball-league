@@ -135,9 +135,8 @@
     background-color: #b03939;
 }
 
-/* === Unified Media Queries === */
-
-/* 📱 Smartphones (≤ 480px) */
+/* Responsive breakpoints */
+/* Smartphones (≤ 480px) */
 @media (max-width: 480px) {
     .select-controls,
     .add-player-form {
@@ -188,7 +187,7 @@
     }
 }
 
-/* 📲 Tablets (481px - 768px) */
+/* Tablets (481px - 768px) */
 @media (min-width: 481px) and (max-width: 768px) {
     .select-controls,
     .add-player-form {
@@ -208,7 +207,7 @@
     }
 }
 
-/* 💻 Small Laptops (769px - 1024px) */
+/* Small Laptops (769px - 1024px) */
 @media (min-width: 769px) and (max-width: 1024px) {
     .select-controls,
     .add-player-form {
@@ -221,14 +220,14 @@
     }
 }
 
-/* 🖥️ Laptops (1025px - 1366px) */
+/* Laptops (1025px - 1366px) */
 @media (min-width: 1025px) and (max-width: 1366px) {
     .manage-players {
         padding: 40px;
     }
 }
 
-/* 🖥️🔝 Desktops (≥ 1367px) */
+/* Desktops (≥ 1367px) */
 @media (min-width: 1367px) {
     .manage-players {
         max-width: 1200px;

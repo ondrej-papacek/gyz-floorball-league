@@ -8,7 +8,7 @@ function AdminNavbar() {
     const location = useLocation();
     const navigate = useNavigate();
     const [role, setRole] = useState(null);
-    const [menuOpen, setMenuOpen] = useState(false); // ✅ mobile toggle state
+    const [menuOpen, setMenuOpen] = useState(false);
 
     useEffect(() => {
         const fetchUserRole = async () => {
@@ -45,7 +45,7 @@ function AdminNavbar() {
                 <img src="/images/logo-text.jpg" alt="Admin Logo" className="school-name-logo" />
             </div>
 
-            {/* 🍔 Hamburger toggle (mobile only) */}
+            {/* Hamburger toggle (mobile only) */}
             <div className="menu-toggle" onClick={() => setMenuOpen(!menuOpen)}>
                 &#9776;
             </div>

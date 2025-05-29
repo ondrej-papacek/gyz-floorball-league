@@ -182,7 +182,7 @@
     border-bottom: 1px solid #444;
 }
 
-/* 📱 Smartphones (≤ 480px) */
+/* Smartphones (≤ 480px) */
 @media (max-width: 480px) {
     .add-team {
         flex-direction: column;
@@ -204,7 +204,7 @@
     }
 }
 
-/* 📲 Tablets (481px - 768px) */
+/* Tablets (481px - 768px) */
 @media (min-width: 481px) and (max-width: 768px) {
     .add-team {
         flex-wrap: wrap;
@@ -217,14 +217,14 @@
     }
 }
 
-/* 💻 Small Laptops (769px - 1024px) */
+/* Small Laptops (769px - 1024px) */
 @media (min-width: 769px) and (max-width: 1024px) {
     .manage-teams {
         padding: 30px;
     }
 }
 
-/* 🖥️ Laptops (1025px - 1366px) */
+/* Laptops (1025px - 1366px) */
 @media (min-width: 1025px) and (max-width: 1366px) {
     .manage-teams {
         max-width: 1200px;
@@ -232,7 +232,7 @@
     }
 }
 
-/* 🖥️🔝 XL Screens (≥ 1367px) */
+/* XL Screens (≥ 1367px) */
 @media (min-width: 1367px) {
     .manage-teams {
         max-width: 1400px;

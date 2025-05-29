@@ -117,7 +117,7 @@
     stroke-width: 2px;
 }
 
-/* ======= 📱 Smartphones (≤ 480px) ======= */
+/* Smartphones (≤ 480px) */
 @media (max-width: 480px) {
     .playoff-bracket {
         padding: 1rem;
@@ -158,7 +158,7 @@
     }
 }
 
-/* ======= 📲 Tablets (481px - 768px) ======= */
+/* Tablets (481px - 768px) */
 @media (min-width: 481px) and (max-width: 768px) {
     .playoff-round-block h3 {
         font-size: 1.3rem;
@@ -177,7 +177,7 @@
     }
 }
 
-/* ======= 💻 Small Laptops (769px - 1024px) ======= */
+/* Small Laptops (769px - 1024px) */
 @media (min-width: 769px) and (max-width: 1024px) {
     .playoff-round-block h3 {
         font-size: 1.4rem;
@@ -188,7 +188,7 @@
     }
 }
 
-/* ======= 🖥️🔝 XL Screens (≥ 1367px) ======= */
+/* XL Screens (≥ 1367px) */
 @media (min-width: 1367px) {
     .playoff-bracket {
         max-width: 1200px;

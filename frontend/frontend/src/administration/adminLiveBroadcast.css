@@ -245,7 +245,7 @@
     }
 }
 
-/* 📱 Smartphones (≤ 480px) */
+/* Smartphones (≤ 480px) */
 @media (max-width: 480px) {
     .scoreboard {
         flex-direction: column;
@@ -268,7 +268,7 @@
     }
 }
 
-/* 📲 Tablets (481px - 768px) */
+/* Tablets (481px - 768px) */
 @media (min-width: 481px) and (max-width: 768px) {
     .team img {
         width: 160px;
@@ -280,7 +280,7 @@
     }
 }
 
-/* 💻 Small Laptops (769px - 1024px) */
+/* Small Laptops (769px - 1024px) */
 @media (min-width: 769px) and (max-width: 1024px) {
     .team img {
         width: 180px;
@@ -292,7 +292,7 @@
     }
 }
 
-/* 🖥️ Laptops (1025px - 1366px) */
+/* Laptops (1025px - 1366px) */
 @media (min-width: 1025px) and (max-width: 1366px) {
     .team img {
         width: 200px;
@@ -300,7 +300,7 @@
     }
 }
 
-/* 🖥️🔝 Desktops (≥ 1367px) */
+/* Desktops (≥ 1367px) */
 @media (min-width: 1367px) {
     .live-match-container {
         max-width: 1300px;

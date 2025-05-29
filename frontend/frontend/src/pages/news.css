@@ -126,7 +126,7 @@
     100% { transform: scale(1); opacity: 1; }
 }
 
-/* =================== Smartphones =================== */
+/* Smartphones */
 @media (max-width: 480px) {
     .news-page {
         padding: 1rem;
@@ -164,7 +164,7 @@
     }
 }
 
-/* =================== Tablets =================== */
+/* Tablets */
 @media (min-width: 481px) and (max-width: 768px) {
     .news-page {
         padding: 1.5rem;
@@ -202,7 +202,7 @@
     }
 }
 
-/* =================== Small Laptops =================== */
+/* Small Laptops */
 @media (min-width: 769px) and (max-width: 1024px) {
     .news-title {
         font-size: 2rem;
@@ -227,7 +227,7 @@
     }
 }
 
-/* =================== Desktops =================== */
+/* Desktops */
 @media (min-width: 1025px) and (max-width: 1440px) {
     .news-title {
         font-size: 2rem;
@@ -243,7 +243,7 @@
     }
 }
 
-/* =================== XL / 4K Screens =================== */
+/* XL / 4K Screens */
 @media (min-width: 1441px) {
     .news-page {
         max-width: 1400px;

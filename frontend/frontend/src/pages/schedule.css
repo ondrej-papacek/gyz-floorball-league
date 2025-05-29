@@ -106,9 +106,9 @@
     color: #ccc;
 }
 
-/* ===== Responsive Breakpoints ===== */
+/* Responsive Breakpoints */
 
-/* 📱 Smartphones (≤480px) */
+/* Smartphones (≤480px) */
 @media (max-width: 480px) {
     .schedule-page {
         padding: 1rem;
@@ -145,7 +145,7 @@
     }
 }
 
-/* 📲 Tablets (481px - 768px) */
+/* Tablets (481px - 768px) */
 @media (min-width: 481px) and (max-width: 768px) {
     .schedule-title {
         font-size: 1.8rem;
@@ -160,7 +160,7 @@
     }
 }
 
-/* 💻 Small Laptops (769px - 1024px) */
+/* Small Laptops (769px - 1024px) */
 @media (min-width: 769px) and (max-width: 1024px) {
     .schedule-title {
         font-size: 2rem;
@@ -175,14 +175,14 @@
     }
 }
 
-/* 🖥️ Desktops (1025px - 1440px) */
+/* Desktops (1025px - 1440px) */
 @media (min-width: 1025px) and (max-width: 1440px) {
     .schedule-title {
         font-size: 2rem;
     }
 }
 
-/* 🖥️ XL / 4K Screens (≥1441px) */
+/* XL / 4K Screens (≥1441px) */
 @media (min-width: 1441px) {
     .schedule-page {
         max-width: 1400px;

@@ -2,7 +2,6 @@
 const router = express.Router();
 const scheduleController = require('../controllers/scheduleController');
 
-// API Endpoints
 router.post("/generate-schedule", scheduleController.generateSchedule);
 router.get("/:year/:division/matches", scheduleController.getMatches);
 router.put("/:year/:division/matches/:matchId", scheduleController.updateMatch);

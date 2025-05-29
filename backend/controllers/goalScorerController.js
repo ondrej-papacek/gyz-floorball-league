@@ -18,7 +18,6 @@ exports.addGoalScorer = async (req, res, next) => {
     try {
         const { year, division } = req.params;
         const goalScorerData = req.body;
-
         const goalScorerRef = await db.collection('leagues').doc(`${year}_${division}`).collection('goalScorers').add(goalScorerData);
 
         res.status(201).json({ id: goalScorerRef.id, ...goalScorerData });
@@ -55,7 +54,6 @@ exports.deleteGoalScorer = async (req, res, next) => {
 exports.updateGoalScorersAfterMatch = async (year, division, scorerA, scorerB, teamA, teamB) => {
     try {
         const goalScorersRef = db.collection('leagues').doc(`${year}_${division}`).collection('goalScorers');
-
         const updateGoalScorer = async (name, team) => {
             if (!name) return;
 

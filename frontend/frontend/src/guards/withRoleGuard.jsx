@@ -2,9 +2,7 @@
 import { Navigate } from 'react-router-dom';
 
 /**
- * HOC to protect a component based on user role(s)
- * @param Component - the React component to protect
- * @param requiredRoles - string or array of strings defining allowed roles
+ * to protect a component based on user role(s)
  */
 export default function withRoleGuard(Component, requiredRoles) {
     return function RoleGuarded(props) {

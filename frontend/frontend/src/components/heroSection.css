@@ -76,7 +76,7 @@
     width: 40%;
 }
 
-/* 📱 Smartphones (≤ 480px) */
+/* Smartphones (≤ 480px) */
 @media (max-width: 480px) {
     .hero-img {
         max-height: 300px;
@@ -104,7 +104,7 @@
     }
 }
 
-/* 📲 Tablets (481px - 768px) */
+/* Tablets (481px - 768px) */
 @media (min-width: 481px) and (max-width: 768px) {
     .hero-img {
         max-height: 400px;
@@ -120,7 +120,7 @@
     }
 }
 
-/* 💻 Small Laptops (769px - 1024px) */
+/* Small Laptops (769px - 1024px) */
 @media (min-width: 769px) and (max-width: 1024px) {
     .hero-img {
         max-height: 500px;
@@ -131,7 +131,7 @@
     }
 }
 
-/* 🖥️ Desktops (1025px - 1366px) */
+/* Desktops (1025px - 1366px) */
 @media (min-width: 1025px) and (max-width: 1366px) {
     .hero-img {
         max-height: 600px;
@@ -142,7 +142,7 @@
     }
 }
 
-/* 🖥️🔝 XL Screens (≥ 1367px) */
+/* XL Screens (≥ 1367px) */
 @media (min-width: 1367px) {
     .hero-img {
         max-height: 700px;

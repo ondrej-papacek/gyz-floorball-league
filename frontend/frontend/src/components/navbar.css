@@ -98,7 +98,7 @@
     color: white;
 }
 
-/* ==================== Hamburger Menu Toggle ==================== */
+/* Hamburger Menu Toggle */
 .menu-toggle {
     display: none;
     font-size: 1.8rem;
@@ -107,7 +107,7 @@
     user-select: none;
 }
 
-/* ==================== Responsive + Animation ==================== */
+/* Responsive + Animation */
 
 @media (max-width: 768px) {
     .menu-toggle {
@@ -177,7 +177,7 @@
     }
 }
 
-/* 📱 Tablets */
+/* Tablets */
 @media (min-width: 481px) and (max-width: 768px) {
     .nav-links {
         gap: 15px;
@@ -188,14 +188,14 @@
     }
 }
 
-/* 💻 Small Laptops */
+/* Small Laptops */
 @media (min-width: 769px) and (max-width: 1024px) {
     .nav-links {
         gap: 18px;
     }
 }
 
-/* 🖥️ XL Screens */
+/* XL Screens */
 @media (min-width: 1440px) {
     .navbar {
         max-width: 1400px;

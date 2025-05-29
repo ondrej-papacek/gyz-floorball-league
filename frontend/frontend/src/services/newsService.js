@@ -2,7 +2,6 @@
 
 const BASE_URL = `${import.meta.env.VITE_API_URL}/api/news`;
 
-// Fetch all news articles
 export const fetchNews = async () => {
     try {
         const response = await axios.get(BASE_URL);
@@ -16,7 +15,6 @@ export const fetchNews = async () => {
     }
 };
 
-// Fetch only the latest 3 news articles for NewsSection.jsx
 export const fetchLatestNews = async () => {
     try {
         const response = await axios.get(`${BASE_URL}/latest`);
@@ -30,7 +28,6 @@ export const fetchLatestNews = async () => {
     }
 };
 
-// Add a new news article
 export const addNews = async (newsData) => {
     try {
         const formattedNewsData = {
@@ -46,7 +43,6 @@ export const addNews = async (newsData) => {
     }
 };
 
-// Update an existing news article
 export const updateNews = async (id, updatedData) => {
     try {
         const formattedUpdatedData = {
@@ -62,7 +58,6 @@ export const updateNews = async (id, updatedData) => {
     }
 };
 
-// Delete a news article
 export const deleteNews = async (id) => {
     try {
         const response = await axios.delete(`${BASE_URL}/${id}`);

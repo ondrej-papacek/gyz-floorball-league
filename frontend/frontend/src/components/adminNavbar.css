@@ -75,7 +75,7 @@
     background-color: #d9a326;
 }
 
-/* ==================== Hamburger Menu Toggle ==================== */
+/* Hamburger Menu Toggle */
 .menu-toggle {
     display: none;
     font-size: 1.8rem;
@@ -84,7 +84,7 @@
     user-select: none;
 }
 
-/* ==================== Responsive + Animation ==================== */
+/* Responsive + Animation */
 
 @media (max-width: 768px) {
     .admin-navbar {

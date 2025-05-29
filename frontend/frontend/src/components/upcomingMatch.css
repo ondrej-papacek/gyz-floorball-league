@@ -63,7 +63,7 @@
     text-align: center;
 }
 
-/* 📱 Smartphones */
+/* Smartphones */
 @media (max-width: 480px) {
     .upcoming-match {
         padding: 15px;
@@ -86,11 +86,11 @@
     }
 
     .upcoming-match:hover {
-        transform: scale(1.01); /* softer on small devices */
+        transform: scale(1.01);
     }
 }
 
-/* 📲 Tablets */
+/* Tablets */
 @media (min-width: 481px) and (max-width: 768px) {
     .upcoming-match {
         padding: 18px;
@@ -105,17 +105,14 @@
     }
 }
 
-/* 💻 Small Laptops */
+/* Small Laptops */
 @media (min-width: 769px) and (max-width: 1024px) {
     .round-box p {
         font-size: 1.05rem;
     }
 }
 
-/* 🖥️ Desktops (1025px - 1366px) */
-/* Defaults apply */
-
-/* 🖥️🔝 XL Screens */
+/* XL Screens */
 @media (min-width: 1367px) {
     .upcoming-match {
         max-width: 1200px;

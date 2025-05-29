@@ -124,7 +124,7 @@
     transform: scale(1.02);
 }
 
-/* ========== Smartphones (≤480px) ========== */
+/* Smartphones (≤480px) */
 @media (max-width: 480px) {
     .login-box {
         padding: 20px;
@@ -148,7 +148,7 @@
     }
 }
 
-/* ========== Tablets (481px - 768px) ========== */
+/* Tablets (481px - 768px) */
 @media (min-width: 481px) and (max-width: 768px) {
     .login-box {
         padding: 25px;
@@ -167,7 +167,7 @@
     }
 }
 
-/* ========== Small Laptops (769px - 1024px) ========== */
+/* Small Laptops (769px - 1024px) */
 @media (min-width: 769px) and (max-width: 1024px) {
     .login-box {
         padding: 30px;
@@ -178,7 +178,7 @@
     }
 }
 
-/* ========== XL Screens (1440px +) ========== */
+/* XL Screens (1440px +) */
 @media (min-width: 1440px) {
     .login-box {
         max-width: 500px;

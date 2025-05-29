@@ -34,7 +34,6 @@
             });
         }
 
-        // Rotate teams (except the first)
         const first = teamsCopy[0];
         const rotated = [first, ...rotateRight(teamsCopy.slice(1))];
         for (let i = 0; i < totalTeams; i++) {

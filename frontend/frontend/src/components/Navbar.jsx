@@ -15,7 +15,7 @@ function Navbar() {
                 />
             </div>
 
-            {/* ☰ Hamburger */}
+            {/*  Hamburger MENU */}
             <div className="menu-toggle" onClick={() => setMenuOpen(!menuOpen)}>
                 &#9776;
             </div>

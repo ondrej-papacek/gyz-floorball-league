@@ -39,7 +39,7 @@ exports.deleteLeague = async (req, res, next) => {
         await admin.firestore().recursiveDelete(leagueRef);
         res.status(200).json({ message: 'Liga a všechny její poddokumenty byly úspěšně smazány.' });
     } catch (error) {
-        console.error("🔥 Error during recursive league delete:", error);
+        console.error("Error during recursive league delete:", error);
         next(new Error('Nepodařilo se smazat ligu a její data.'));
     }
 };

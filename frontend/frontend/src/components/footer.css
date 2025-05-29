@@ -84,7 +84,7 @@
     background-color: #d9a326;
 }
 
-/* ========== 📱 Smartphones (≤ 480px) ========== */
+/* Smartphones (≤ 480px) */
 @media (max-width: 480px) {
     .footer {
         flex-direction: column;
@@ -122,7 +122,7 @@
     }
 }
 
-/* ========== 📲 Tablets (481px - 768px) ========== */
+/* Tablets (481px - 768px) */
 @media (min-width: 481px) and (max-width: 768px) {
     .footer {
         padding: 30px 30px 10px 30px;
@@ -147,17 +147,17 @@
     }
 }
 
-/* ========== 💻 Small Laptops (769px - 1024px) ========== */
+/* Small Laptops (769px - 1024px) */
 @media (min-width: 769px) and (max-width: 1024px) {
     .footer {
         padding: 40px 60px 10px 60px;
     }
 }
 
-/* ========== 🖥️ Laptops (1025px - 1366px) ========== */
+/* Laptops (1025px - 1366px) */
 /* Base styles cover this range effectively */
 
-/* ========== 🖥️🔝 XL Screens (≥ 1367px) ========== */
+/* XL Screens (≥ 1367px) */
 @media (min-width: 1367px) {
     .footer {
         max-width: 1400px;

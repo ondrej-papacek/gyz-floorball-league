@@ -126,9 +126,8 @@
     background-color: #cc0000;
 }
 
-/* === Unified Media Queries === */
-
-/* 📱 Smartphones (≤ 480px) */
+/* Responsive breakpoints */
+/* Smartphones (≤ 480px) */
 @media (max-width: 480px) {
     .manage-league-page {
         padding: 20px 10px;
@@ -163,7 +162,7 @@
     }
 }
 
-/* 📲 Tablets (481px - 768px) */
+/* Tablets (481px - 768px) */
 @media (min-width: 481px) and (max-width: 768px) {
     .add-league-form {
         flex-wrap: wrap;
@@ -181,7 +180,7 @@
     }
 }
 
-/* 💻 Small Laptops (769px - 1024px) */
+/* Small Laptops (769px - 1024px) */
 @media (min-width: 769px) and (max-width: 1024px) {
     .add-league-form input,
     .add-league-form select,
@@ -194,7 +193,7 @@
     }
 }
 
-/* 🖥️ Laptops (1025px - 1366px) */
+/* Laptops (1025px - 1366px) */
 @media (min-width: 1025px) and (max-width: 1366px) {
     .add-league-form input,
     .add-league-form select,
@@ -207,7 +206,7 @@
     }
 }
 
-/* 🖥️🔝 Desktops (1367px and up) */
+/* Desktops (1367px and up) */
 @media (min-width: 1367px) {
     .manage-league-page {
         max-width: 1400px;

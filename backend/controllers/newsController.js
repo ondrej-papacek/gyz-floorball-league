@@ -2,12 +2,11 @@
 
 const parseDate = (date) => {
     if (!date) return null;
-    if (typeof date.toDate === 'function') return date.toDate(); // Firestore Timestamp
+    if (typeof date.toDate === 'function') return date.toDate();
     if (typeof date === 'string' || typeof date === 'number') return new Date(date);
     return null;
 };
 
-// Fetch all news articles, sorted by date
 exports.getNews = async (req, res, next) => {
     try {
         const snapshot = await db.collection('news').orderBy('date', 'desc').get();
@@ -44,7 +43,6 @@ exports.getLatestNews = async (req, res, next) => {
     }
 };
 
-// Add a new news article
 exports.addNews = async (req, res, next) => {
     try {
         const { title, shortDescription, longDescription, image, date } = req.body;
@@ -57,7 +55,6 @@ exports.addNews = async (req, res, next) => {
     }
 };
 
-// Update an existing news article
 exports.updateNews = async (req, res, next) => {
     try {
         const { id } = req.params;
@@ -71,7 +68,6 @@ exports.updateNews = async (req, res, next) => {
     }
 };
 
-// Delete a news article
 exports.deleteNews = async (req, res, next) => {
     try {
         const { id } = req.params;

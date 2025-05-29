@@ -195,7 +195,7 @@
     text-align: center;
 }
 
-/* 📱 Smartphones (≤ 480px) */
+/* Smartphones (≤ 480px) */
 @media (max-width: 480px) {
     .manage-accounts {
         padding: 20px;
@@ -223,7 +223,7 @@
     }
 }
 
-/* 📲 Tablets (481px - 768px) */
+/* Tablets (481px - 768px) */
 @media (min-width: 481px) and (max-width: 768px) {
     .manage-accounts .form-row input,
     .manage-accounts .form-row select {
@@ -235,7 +235,7 @@
     }
 }
 
-/* 💻 Small Laptops (769px - 1024px) */
+/* Small Laptops (769px - 1024px) */
 @media (min-width: 769px) and (max-width: 1024px) {
     .manage-accounts .form-row input,
     .manage-accounts .form-row select {
@@ -247,14 +247,14 @@
     }
 }
 
-/* 🖥️ Laptops (1025px - 1366px) */
+/* Laptops (1025px - 1366px) */
 @media (min-width: 1025px) and (max-width: 1366px) {
     .manage-accounts {
         max-width: 900px;
     }
 }
 
-/* 🖥️🔝 Desktops (≥ 1367px) */
+/* Desktops (≥ 1367px) */
 @media (min-width: 1367px) {
     .manage-accounts {
         max-width: 900px;

@@ -3,8 +3,7 @@ import { auth, db } from '../services/firebase';
 import { doc, getDoc } from 'firebase/firestore';
 
 /**
- * Custom hook to fetch the current user's role from Firestore.
- * Returns role and loading state.
+ * to fetch the current user's role from Firestore.
  */
 export function useAuthRole() {
     const [role, setRole] = useState(null);
@@ -30,7 +29,7 @@ export function useAuthRole() {
                     if (snap.exists()) {
                         setRole(snap.data().role);
                     } else {
-                        setRole(null); // no role found
+                        setRole(null);
                     }
                     setLoading(false);
                 }
