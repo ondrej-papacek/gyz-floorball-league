@@ -1,6 +1,6 @@
 ﻿import axios from 'axios';
 
-const API_BASE = 'https://gyz-floorball-league.onrender.com/api/schedule';
+const API_BASE = `${import.meta.env.VITE_API_URL}/api/schedule`;
 
 export const fetchMatches = async (year, division) => {
     const res = await axios.get(`${API_BASE}/${year}/${division}/matches`);

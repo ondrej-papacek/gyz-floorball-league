@@ -1,6 +1,6 @@
 ﻿import axios from 'axios';
 
-const API_BASE = 'https://gyz-floorball-league.onrender.com/api/players';
+const API_BASE = `${import.meta.env.VITE_API_URL}/api/players`;
 
 export const getPlayers = async (year, division, teamId) => {
     const res = await axios.get(`${API_BASE}/${year}/${division}/teams/${teamId}/players`);

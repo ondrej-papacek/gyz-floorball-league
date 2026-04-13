@@ -50,28 +50,3 @@ exports.deleteGoalScorer = async (req, res, next) => {
         next(new Error('Nepodařilo se smazat střelce gólů.'));
     }
 };
-
-exports.updateGoalScorersAfterMatch = async (year, division, scorerA, scorerB, teamA, teamB) => {
-    try {
-        const goalScorersRef = db.collection('leagues').doc(`${year}_${division}`).collection('goalScorers');
-        const updateGoalScorer = async (name, team) => {
-            if (!name) return;
-
-            const scorerQuery = await goalScorersRef.where("name", "==", name).limit(1).get();
-            if (!scorerQuery.empty) {
-                const scorerDoc = scorerQuery.docs[0];
-                await goalScorersRef.doc(scorerDoc.id).update({
-                    goals: scorerDoc.data().goals + 1
-                });
-            } else {
-                await goalScorersRef.add({ name, goals: 1, team });
-            }
-        };
-
-        await updateGoalScorer(scorerA, teamA);
-        await updateGoalScorer(scorerB, teamB);
-
-    } catch (error) {
-        console.error("Error updating goal scorers:", error);
-    }
-};

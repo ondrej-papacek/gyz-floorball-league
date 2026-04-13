@@ -57,7 +57,7 @@ const ManageAccounts = () => {
     const handleDelete = async (id) => {
         if (window.confirm('Opravdu chcete tohoto uživatele odstranit?')) {
             try {
-                await fetch(`https://gyz-floorball-league.onrender.com/api/users/${id}`, {
+                await fetch(`${import.meta.env.VITE_API_URL}/api/users/${id}`, {
                     method: 'DELETE',
                 });
                 setUsers(users.filter(u => u.id !== id));
@@ -69,7 +69,7 @@ const ManageAccounts = () => {
     };
 
     const handleRoleChange = async (id, newRole) => {
-        await fetch(`https://gyz-floorball-league.onrender.com/api/users/${id}`, {
+        await fetch(`${import.meta.env.VITE_API_URL}/api/users/${id}`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
@@ -85,7 +85,7 @@ const ManageAccounts = () => {
         setSuccess('');
 
         try {
-            const response = await fetch('https://gyz-floorball-league.onrender.com/api/create-user', {
+            const response = await fetch(`${import.meta.env.VITE_API_URL}/api/create-user`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

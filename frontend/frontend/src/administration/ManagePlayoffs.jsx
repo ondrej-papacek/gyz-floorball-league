@@ -10,7 +10,6 @@ import {
     updateDoc,
     runTransaction
 } from 'firebase/firestore';
-import { saveRound, updateRound, deleteRound as deleteRoundAPI } from '../services/playoffService';
 import AdminNavbar from '../components/AdminNavbar';
 import './managePlayoffs.css';
 import { normalizeName } from '../utils/teamUtils';
@@ -356,15 +355,6 @@ const ManagePlayoffs = () => {
             )
         );
 
-        const roundMatches = rounds.find(r => r.round === roundName)?.matches || [];
-        const updatedMatches = [
-            ...roundMatches.slice(0, matchIndex),
-            updated,
-            ...roundMatches.slice(matchIndex + 1)
-        ];
-
-        await updateRound(year, division, roundName, updatedMatches);
-
         alert("Zápas uložen.");
     };
 
@@ -396,7 +386,6 @@ const ManagePlayoffs = () => {
             );
 
         await Promise.all([...deleteMatchDocs, ...deleteScorerDocs]);
-        await deleteRoundAPI(year, division, roundName);
         await fetchRounds();
 
         alert(`Kolo "${roundName}" a všichni střelci byli smazáni.`);
@@ -511,7 +500,6 @@ const ManagePlayoffs = () => {
         );
 
         await Promise.all(savePromises);
-        await saveRound(year, division, newRoundName, enrichedMatches);
         await fetchRounds();
         setNewRoundName('');
         setNewMatches([{ teamA: '', teamB: '', scoreA: 0, scoreB: 0 }]);

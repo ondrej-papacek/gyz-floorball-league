@@ -43,22 +43,18 @@ async function fetchGoalScorersFromCollection(path) {
     return snap.docs.map(doc => doc.data());
 }
 
-async function fetchGoalScorersFromDocument(path) {
-    const doc = await db.doc(path).get();
-    const data = doc.data();
-    return data && Array.isArray(data.goalScorers) ? data.goalScorers : [];
-}
-
-function extractScorersFromTeamPlayers(teams) {
+async function fetchPlayoffGoalScorers(year, division) {
+    const snap = await db.collection(`leagues/${year}_${division}/playoff/rounds/goalScorers`).get();
     const scorers = [];
-    for (const team of teams) {
-        const players = Array.isArray(team.players) ? team.players : [];
-        for (const p of players) {
-            if (p.name && p.goals) {
-                scorers.push({ name: p.name, team: team.name, goals: p.goals });
-            }
+    snap.docs.forEach(doc => {
+        const data = doc.data();
+        if (Array.isArray(data.teamA)) {
+            data.teamA.forEach(p => { if (p.name && p.goals) scorers.push({ name: p.name, team: p.team || '', goals: p.goals }); });
         }
-    }
+        if (Array.isArray(data.teamB)) {
+            data.teamB.forEach(p => { if (p.name && p.goals) scorers.push({ name: p.name, team: p.team || '', goals: p.goals }); });
+        }
+    });
     return scorers;
 }
 
@@ -111,8 +107,8 @@ function centeredTitle(text, size = 32) {
 }
 
 function matchLine(match, i) {
-    const teamA = match.teamA || match.teamA_name || "---";
-    const teamB = match.teamB || match.teamB_name || "---";
+    const teamA = match.teamA_name || match.teamA || "---";
+    const teamB = match.teamB_name || match.teamB || "---";
     const scoreA = typeof match.scoreA === "number" ? match.scoreA : "-";
     const scoreB = typeof match.scoreB === "number" ? match.scoreB : "-";
     return textLine(`Zápas ${i + 1}: ${teamA} ${scoreA} : ${scoreB} ${teamB}`);
@@ -137,20 +133,18 @@ async function generateSeasonSummaryDoc(seasonData) {
     ]);
 
     const [
-        g1_lower, g2_lower, g3_lower,
-        g1_upper, g2_upper, g3_upper
+        g1_lower, g2_lower,
+        g1_upper, g2_upper
     ] = await Promise.all([
         fetchGoalScorersFromCollection(`leagues/${year}_lower/goalScorers`),
-        Promise.resolve(extractScorersFromTeamPlayers(lowerTeams)),
-        fetchGoalScorersFromDocument(`leagues/${year}_lower/playoff/goalScorers`),
+        fetchPlayoffGoalScorers(year, "lower"),
 
         fetchGoalScorersFromCollection(`leagues/${year}_upper/goalScorers`),
-        Promise.resolve(extractScorersFromTeamPlayers(upperTeams)),
-        fetchGoalScorersFromDocument(`leagues/${year}_upper/playoff/goalScorers`),
+        fetchPlayoffGoalScorers(year, "upper"),
     ]);
 
-    const finalScorersLower = mergeGoalScorers(g1_lower, g2_lower, g3_lower);
-    const finalScorersUpper = mergeGoalScorers(g1_upper, g2_upper, g3_upper);
+    const finalScorersLower = mergeGoalScorers(g1_lower, g2_lower);
+    const finalScorersUpper = mergeGoalScorers(g1_upper, g2_upper);
 
     const groupedLower = groupMatchesByRound(lowerMatches);
     const groupedUpper = groupMatchesByRound(upperMatches);

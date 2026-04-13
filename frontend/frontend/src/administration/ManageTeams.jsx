@@ -42,7 +42,7 @@ const ManageTeams = () => {
 
         const [year, division] = selectedLeagueId.split('_');
         const data = await fetchTeams(year, division);
-        const filtered = data.filter(t => t.id !== '__init__');
+        const filtered = data.filter(t => t.id !== 'placeholder');
         const sorted = filtered.sort((a, b) => (b.points ?? 0) - (a.points ?? 0));
         setTeams(sorted);
         setExpanded([]);

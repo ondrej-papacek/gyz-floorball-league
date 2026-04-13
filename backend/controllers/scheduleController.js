@@ -360,7 +360,9 @@ exports.forceFinishMatch = async (req, res, next) => {
             matchRef.update({
                 scoreA,
                 scoreB,
-                status: 'finished'
+                status: 'finished',
+                teamA_id: match.teamA,
+                teamB_id: match.teamB
             }),
             teamARef.update({
                 points: admin.firestore.FieldValue.increment(pointsA),
